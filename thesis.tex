@@ -76,15 +76,21 @@
 \usepackage[nopatch=item]{microtype}   % micro-typographic refinement
 \usepackage{paralist}       % improved enumerate and itemize
 \usepackage[nottoc]{tocbibind} % makes sure that bibliography and the lists
-			    % of figures/tables are included in the table
-			    % of contents
+                % of figures/tables are included in the table
+                % of contents
 \usepackage{xcolor}         % typesetting in color
 
 % The hyperref package for clickable links in PDF and also for storing
 % metadata to PDF (including the table of contents).
 % Most settings are pre-set by the pdfx package.
-\hypersetup{unicode}
-\hypersetup{breaklinks=true}
+\hypersetup{
+    unicode,
+    breaklinks,
+    colorlinks,
+    linkcolor=blue,
+    citecolor=blue!60!white,
+    urlcolor=blue,
+}
 
 % Packages for computer science theses
 \usepackage{algpseudocode}  % part of algorithmicx package
@@ -103,7 +109,7 @@
 % format with your supervisor.
 %
 % The basic format according to the ISO 690 standard with numbered references
-\usepackage[natbib,style=iso-numeric,sorting=none]{biblatex}
+% \usepackage[natbib,style=iso-numeric,sorting=none]{biblatex}
 % ISO 690 with alphanumeric references (abbreviations of authors' names)
 %\usepackage[natbib,style=iso-alphabetic]{biblatex}
 % ISO 690 with references Author (year)
@@ -111,7 +117,7 @@
 %
 % Some fields of research prefer a simple format with numbered references
 % (sorting=none tells that bibliography should be listed in citation order)
-%\usepackage[natbib,style=numeric,sorting=none]{biblatex}
+\usepackage[natbib,style=numeric,sorting=none]{biblatex}
 % Numbered references, but [1,2,3,4,5] is compressed to [1-5]
 %\usepackage[natbib,style=numeric-comp,sorting=none]{biblatex}
 % A simple format with alphanumeric references:
@@ -120,19 +126,32 @@
 % Load the file with bibliography entries
 \addbibresource{bibliography.bib}
 
-\input tex/macros.tex
+\input{tex/macros.tex}
 
 \begin{document}
 
 \include{title}
 
-\include{chapters/0-preface}
+\include{chapters/preface}
 
-\include{chapters/1-chapter1}
+\include{chapters/commentary/0-index}
+\include{chapters/commentary/1-introduction}
+\include{chapters/commentary/2-vision}
+\include{chapters/commentary/3-evolution-propagation}
+\include{chapters/commentary/4-self-adaptation}
+\include{chapters/commentary/5-related-concepts}
 
-\include{chapters/2-chapter2}
+\include{chapters/papers/cikm_2022}
+\include{chapters/papers/edbt_2024}
+\include{chapters/papers/edbt_2025}
+\include{chapters/papers/enase_2025}
+\include{chapters/papers/rcis_2025}
+\include{chapters/papers/sac_2024}
+\include{chapters/papers/vldb_2024}
+\include{chapters/papers/vldb_2025-dortdb}
+\include{chapters/papers/vldb_2025-fdephunter}
 
-\include{chapters/epilog}
+\include{chapters/conclusion}
 
 \include{bibliography}
 
