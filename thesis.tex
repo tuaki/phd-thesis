@@ -79,6 +79,7 @@
                 % of figures/tables are included in the table
                 % of contents
 \usepackage{xcolor}         % typesetting in color
+\usepackage[toc,acronym]{glossaries}
 
 % The hyperref package for clickable links in PDF and also for storing
 % metadata to PDF (including the table of contents).
@@ -100,6 +101,10 @@
 
 % You might want to use cleveref for references
 \usepackage{cleveref}
+
+% Prefix figures with the chapter number + reset figure numbering in each chapter.
+\usepackage{chngcntr}
+\counterwithin{figure}{chapter}
 
 % Set up formatting of bibliography (references to literature)
 % Details can be adjusted in macros.tex.
@@ -128,6 +133,8 @@
 
 \input{tex/macros.tex}
 
+\input{glossary}
+
 \begin{document}
 
 \include{title}
@@ -142,11 +149,12 @@
 \include{chapters/commentary/5-related-concepts}
 
 \include{chapters/papers/cikm_2022}
+\include{chapters/papers/dke_2026}
 \include{chapters/papers/edbt_2024}
 \include{chapters/papers/edbt_2025}
+\include{chapters/papers/edbt_2026}
 \include{chapters/papers/enase_2025}
 \include{chapters/papers/rcis_2025}
-\include{chapters/papers/sac_2024}
 \include{chapters/papers/vldb_2024}
 \include{chapters/papers/vldb_2025-dortdb}
 \include{chapters/papers/vldb_2025-fdephunter}
@@ -155,6 +163,9 @@
 
 \include{bibliography}
 
+% Only page numbers should be used as links in LOF and LOT. Putting this before title would cause the same for TOC, which we don't want.
+\hypersetup{linktoc=page}
+
 %%% Figures used in the thesis (consider if this is needed)
 \listoffigures
 
@@ -162,7 +173,7 @@
 \listoftables
 
 %%% Abbreviations used in the thesis, if any, including their explanation
-\chapwithtoc{List of Abbreviations}
+\printnoidxglossary[type=\acronymtype, title=List of Abbreviations, toctitle=List of Abbreviations]
 
 %%% Doctoral theses must contain a list of author's publications
 \ifx\ThesisType\TypePhD

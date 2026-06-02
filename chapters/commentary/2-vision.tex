@@ -8,8 +8,23 @@ Besides this primary goal, there are several other milestones that will help us 
 
 Both modeling and inference are closely related to the process of \term{evolution}. Because if the schema of the data changes (and it is usually the case of \uv{when} instead of \uv{if}), we have to propagate the changes both to the data and to the queries that depend on it. In a multi-model data world, this might require us to \term{transform} the data between different models.
 
-Lastly, our motivation is not only about an \emph{ability} to do something, but also about the \emph{efficiency} of doing so. In accordance with our primary goal, we want to be able to query data as efficiently as possible. In this regard, multi-model data offers a unique opportunity to optimize querying by choosing the most appropriate model for the task at hand. This is obviously very difficult to do manually, so we want the system to be able to adapt itself---in a process called \term{self-adaptation}---to the current workload and data characteristics. For further details on the vision, see \Cref{chap:vldb_2024}.
+Lastly, our motivation is not only about an \emph{ability} to do something, but also about the \emph{efficiency} of doing so. In accordance with our primary goal, we want to be able to query data as efficiently as possible. In this regard, multi-model data offers a unique opportunity to optimize querying by choosing the most appropriate model for the task at hand. This is obviously very difficult to do manually, so we want the system to be able to adapt itself---in a process called \term{self-adaptation}---to the current workload and data characteristics. For further details on the vision, see \paperRef{vldb_2024}.
 
 \subsection{Level of Automation}
+\label{sec:vision_automation}
 
-\citep{ideas2022vision}
+More precisely, all of the above-described capabilities can be achieved with a different amount of automation. More automation is generally better, as it reduces the amount of manual work and expertise required of users. It also allows the system to find solutions that might not be obvious to users, or that would be too time-consuming to do manually. The price for this is increased complexity of the system and potentially reduced control over the process. Therefore, we automate the capabilities gradually following three distinct levels~\citep{ideas2022vision}. In this chapter, we focus only on the \emph{source of a change}, not on the \emph{way it is propagated}, as the latter is covered in the next chapter.
+
+\begin{itemize}
+    \item \term{User-specified changes} -- E.g., the user adds an attribute \texttt{deletedAt} to an entity \texttt{Order}, allowing us to track when orders are deleted. Or, the user decides to transform the data from a relational model to a graph model, as the latter is more suitable for the current workload.
+    \item \term{Data-driven changes} -- The system detects that the data has changed its structure, e.g., by observing that a new attribute \texttt{deletedAt} has been added to the \texttt{Order} entity, and updates the conceptual schema. Or, it finds out that labels (matching existing tables in a relational database) are now present in a graph database, and creates the corresponding mappings.
+    \item \term{Self-adaptation} -- The system proactively analyzes the workload and data characteristics, and decides to transform the data from a relational model to a graph model (similarly how a database expert would do), without any user intervention.
+\end{itemize}
+
+\subsection{Scope}
+
+\todo{
+The described vision is definitely ambitious and, therefore, we need to define the scope of our research. Include this or not?
+}
+
+
