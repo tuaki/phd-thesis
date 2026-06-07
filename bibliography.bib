@@ -1,13 +1,12 @@
 @inproceedings{ideas2022vision,
-    author = {Holubová, Irena and Koupil, Pavel and Lu, Jiaheng},
     title = {Self-Adapting Design and Maintenance of Multi-Model Databases},
+    author = {Holubová, Irena and Koupil, Pavel and Lu, Jiaheng},
     year = {2022},
     isbn = {9781450397094},
     publisher = {Association for Computing Machinery},
     address = {New York, NY, USA},
     url = {https://doi.org/10.1145/3548785.3548810},
     doi = {10.1145/3548785.3548810},
-    abstract = {Multi-model data is organised in various mutually interlinked formats and models, often with contradictory features. In addition, its structure may change over time, and its size can grow to the extremes of Big Data. In terms of research and practical processing, this creates one of the most complex challenges of effective data management. As it is not humanly possible to handle such a complex task manually, in this vision paper, we focus on the area of automatic management of dynamic multi-model Big Data. We envision a framework capable of accepting different levels of user input and different types of data, queries, changes, and propagation strategies and ensuring the preservation of adequate and efficient data access.},
     booktitle = {Proceedings of the 26th International Database Engineered Applications Symposium},
     pages = {9-15},
     numpages = {7},
@@ -16,35 +15,1304 @@
     series = {IDEAS '22}
 }
 
-% vldb_2024
+% #region cikm_2022
 
-@article{b83508c70bef41589b6584556729e51f,
-    title = "Multi-model query languages: taming the variety of big data",
-    keywords = "113 Computer and information sciences, 6121 Languages, Cross-model query, Multi-model data, Query language",
-    author = "Qingsong Guo and Chao Zhang and Shuxun Zhang and Jiaheng Lu",
-    note = "Publisher Copyright: {\textcopyright} 2023, The Author(s).",
-    year = "2023",
-    month = may,
-    day = "31",
-    journal = "Distributed and Parallel Databases",
-    issn = "0926-8782",
-    publisher = "SPRINGER NEW YORK LLC",
+@inproceedings{10.1145/2539150.2539159,
+    title        = {{DaemonX: Design, Adaptation, Evolution, and Management of Native XML (and More Other) Formats}},
+    author       = {Polák, Marek and Nečaský, Martin and Irena Holubová},
+    year         = 2013,
+    booktitle    = {Proc. of IIWAS '13},
+    location     = {Vienna, Austria},
+    publisher    = {Acm},
+    address      = {New York, USA},
+    pages        = {484--493},
+    isbn         = 9781450321136,
+    _publisher   = {ACM},
+    _address     = {New York, NY, USA},
+    _numpages    = 10,
+    keywords     = {data modeling, change propagation, data evolution},
+    _location    = {Vienna, Austria},
+    articleno    = 484,
+    numpages     = 10,
+    acmid        = 2539159
+}
 
+@inproceedings{hillenbrand2019migcast,
+    title        = {{MigCast: Putting a Price Tag on Data Model Evolution in NoSQL Data Stores}},
+    author       = {Hillenbrand, Andrea and Levchenko, Maksym and Störl, Uta and Scherzinger, Stefanie and Klettke, Meike},
+    year         = 2019,
+    booktitle    = {Proc. of SIGMOD '19},
+    location     = {Amsterdam, Netherlands},
+    publisher    = {ACM},
+    address      = {New York, NY, USA},
+    pages        = {1925--1928},
+    isbn         = 9781450356435,
+    numpages     = 4,
+    keywords     = {predictive migration, latency, migration costs, nosql databases, schema evolution, data migration strategies}
 }
 
 @article{CSUR-Jiaheng,
-    title        = {{Multi-model Databases: A New Journey to Handle the Variety of Data}},
-    author       = {Lu, Jiaheng and Holubová, Irena},
+    author = {Lu, Jiaheng and Holubová, Irena},
+    title = {Multi-model Databases: A New Journey to Handle the Variety of Data},
+    year = {2019},
+    issue_date = {May 2020},
+    publisher = {Association for Computing Machinery},
+    address = {New York, NY, USA},
+    volume = {52},
+    number = {3},
+    issn = {0360-0300},
+    url = {https://doi.org/10.1145/3323214},
+    doi = {10.1145/3323214},
+    journal = {ACM Comput. Surv.},
+    month = 6,
+    articleno = {55},
+    numpages = {38},
+    keywords = {multi-model databases, NoSQL database management systems, Big data management}
+}
+
+@inproceedings{mm_infer,
+    title        = {MM-infer: A Tool for Inference of Multi-Model Schemas},
+    author       = {Pavel Koupil and Sebastián Hricko and Irena Holubová},
+    year         = 2022,
+    booktitle    = {Proc. of {EDBT} '22},
+    publisher    = {OpenProceedings.org},
+    pages        = {2:566--2:569},
+}
+
+@inproceedings{darwin-btw17,
+    title        = {{Enabling Efficient Agile Software Development of NoSQL-backed Applications}},
+    author       = {Uta Störl and Daniel Müller and Meike Klettke and Stefanie Scherzinger},
+    year         = 2017,
+    booktitle    = {Proc. of {BTW} '17},
+    note         = {Demo},
+    _series      = {{LNI}},
+    _volume      = {{P-265}},
+    _pages       = {611--614},
+    _publisher   = {{GI}},
+    timestamp    = {Mon, 16 Apr 2018 12:02:07 +0200},
+    biburl       = {https://dblp.org/rec/bib/conf/btw/StorlMKS17},
+    bibsource    = {dblp computer science bibliography, https://dblp.org}
+}
+
+@inproceedings{DBLP:conf/er/ChillonRM21a,
+    title        = {{Towards a Taxonomy of Schema Changes for NoSQL Databases: The Orion Language}},
+    author       = {Alberto Hernández Chillón and Diego Sevilla Ruiz and Jesús García Molina},
+    year         = 2021,
+    booktitle    = {Proc. of {ER} '21, Virtual Event},
+    publisher    = {Springer},
+    series       = {LNCS},
+    volume       = 13011,
+    pages        = {176--185},
+    timestamp    = {Wed, 15 Dec 2021 10:32:58 +0100},
+    biburl       = {https://dblp.org/rec/conf/er/ChillonRM21a.bib},
+    bibsource    = {dblp computer science bibliography, https://dblp.org}
+}
+
+@inproceedings{DBLP:conf/icde/HillenbrandSLNK20,
+    title        = {{Towards Self-Adapting Data Migration in the Context of Schema Evolution in NoSQL Databases}},
+    author       = {Andrea Hillenbrand and Uta Störl and Maksym Levchenko and Shamil Nabiyev and Meike Klettke},
+    year         = 2020,
+    booktitle    = {{ICDE} Workshops '20},
+    publisher    = {{IEEE}},
+    pages        = {133--138},
+    timestamp    = {Tue, 26 May 2020 16:10:02 +0200},
+    biburl       = {https://dblp.org/rec/conf/icde/HillenbrandSLNK20.bib},
+    bibsource    = {dblp computer science bibliography, https://dblp.org}
+}
+
+@inproceedings{DBLP:conf/icde/Storl0TTSKS18,
+    title        = {{Curating Variational Data in Application Development}},
+    author       = {Uta Störl and Daniel Müller and Alexander Tekleab and Stephane Tolale and Julian Stenzel and Meike Klettke and Stefanie Scherzinger},
+    year         = 2018,
+    booktitle    = {Proc. of {ICDE} '18},
+    pages        = {1605--1608}
+}
+
+@inproceedings{DBLP:conf/ideas/HolubovaCS21a,
+    title        = {{Multi-Model Data Modeling and Representation: State of the Art and Research Challenges}},
+    author       = {Irena Holubová and Pavel Contos and Martin Svoboda},
+    year         = 2021,
+    booktitle    = {Proc. of {IDEAS} '21},
+    publisher    = {{ACM}},
+    pages        = {242--251},
+    timestamp    = {Sat, 09 Apr 2022 12:47:37 +0200},
+    biburl       = {https://dblp.org/rec/conf/ideas/HolubovaCS21a.bib},
+    bibsource    = {dblp computer science bibliography, https://dblp.org}
+}
+
+@article{DBLP:journals/corr/abs-2201-04905,
+    title        = {{A Formal Category Theoretical Framework for Multi-model Data Transformations}},
+    author       = {Valter Uotila and Jiaheng Lu},
+    year         = 2022,
+    journal      = {CoRR},
+    volume       = {abs/2201.04905},
+    eprinttype   = {arXiv},
+    eprint       = {2201.04905},
+    timestamp    = {Thu, 20 Jan 2022 14:21:35 +0100},
+    biburl       = {https://dblp.org/rec/journals/corr/abs-2201-04905.bib},
+    bibsource    = {dblp computer science bibliography, https://dblp.org}
+}
+
+@article{DBLP:journals/dke/HolubovaVS21,
+    title        = {{Evolution Management in Multi-Model Databases}},
+    author       = {Irena Holubová and Michal Vavrek and Stefanie Scherzinger},
+    year         = 2021,
+    journal      = {Data Knowl. Eng.},
+    volume       = 136,
+    pages        = 101932,
+    timestamp    = {Sat, 08 Jan 2022 02:22:42 +0100},
+    biburl       = {https://dblp.org/rec/journals/dke/HolubovaVS21.bib},
+    bibsource    = {dblp computer science bibliography, https://dblp.org}
+}
+
+@article{DBLP:journals/is/CandelRM22,
+    title        = {{A Unified Metamodel for NoSQL and Relational Databases}},
+    author       = {Carlos Javier Fernández Candel and Diego Sevilla Ruiz and Jesús Joaquín García Molina},
+    year         = 2022,
+    journal      = {Inf. Syst.},
+    volume       = 104,
+    pages        = 101898,
+    timestamp    = {Wed, 15 Dec 2021 10:28:45 +0100},
+    biburl       = {https://dblp.org/rec/journals/is/CandelRM22.bib},
+    bibsource    = {dblp computer science bibliography, https://dblp.org}
+}
+
+@article{DBLP:journals/jbd/KoupilH22,
+    title        = {A Unified Representation and Transformation of Multi-Model Data using Category Theory},
+    author       = {Pavel Koupil and Irena Holubová},
+    year         = 2022,
+    journal      = {Journal of Big Data},
+    volume       = 9,
+    number       = 1,
+    pages        = 61,
+    biburl       = {https://dblp.org/rec/journals/jbd/KoupilH22.bib},
+    bibsource    = {dblp computer science bibliography, https://dblp.org}
+}
+
+@inproceedings{mm_cat,
+    title        = {{MM-cat: A Tool for Modeling and Transformation of Multi-Model Data using Category Theory}},
+    author       = {Pavel Koupil and Martin Svoboda and Irena Holubová},
+    year         = 2021,
+    booktitle    = {Proc. of MODELS '21},
+    publisher    = {{IEEE}},
+    address      = {New York, NY, USA},
+    pages        = {635--639}
+}
+
+@article{Necasky:2012:ECM:2148237.2148273,
+    title        = {{Evolution and Change Management of XML-based Systems}},
+    author       = {Nečaský, Martin and Klímek, Jakub and Malý, Jakub and Mlýnková, Irena},
+    year         = 2012,
+    month        = 3,
+    journal      = {J. Syst. Softw.},
+    publisher    = {Elsevier Science Inc.},
+    address      = {New York, NY, USA},
+    volume       = 85,
+    number       = 3,
+    pages        = {683--707},
+    issn         = {0164-1212},
+    issue_date   = {March, 2012},
+    numpages     = 25,
+    acmid        = 2148273,
+    keywords     = {Model driven architecture, Propagation of changes, XML data modeling, XML schema evolution}
+}
+
+@article{tuijn1996,
+    title        = {{CGOOD, a Categorical Graph-oriented Object Data Model}},
+    author       = {Tuijn, Chris and Gyssens, Marc},
+    year         = 1996,
+    journal      = {Theoretical Computer Science},
+    publisher    = {Elsevier},
+    volume       = 160,
+    number       = 1,
+    pages        = {217--239},
+    issn         = {0304-3975},
+}
+
+% #endregion
+% #region dke_2026
+
+@inproceedings{AI4DB,
+    title     = {AI Meets Database: AI4DB and DB4AI},
+    author    = {Li, Guoliang and Zhou, Xuanhe and Cao, Lei},
+    booktitle = {Proceedings of the 2021 International Conference on Management of Data},
+    year      = {2021},
+    pages     = {2859--2866},
+    publisher = {Association for Computing Machinery},
+    address   = {New York, NY, USA},
+    doi       = {10.1145/3448016.3457542},
+    isbn      = {9781450383431},
+    keywords  = {AI, machine learning, database, models},
+    location  = {Virtual Event, China},
+    numpages  = {8},
+    series    = {SIGMOD '21},
+    url       = {https://doi.org/10.1145/3448016.3457542}
+}
+
+@misc{Anytime20,
+    title      = {Anytime Algorithm of Database Tuning Advisor for Microsoft SQL Server},
+    author     = {Chaudhuri, Surajit and Narasayya, Vivek},
+    year       = {2020},
+    month      = 6
+}
+
+@inproceedings{AutoAdmin,
+    title     = {An Efficient Cost-Driven Index Selection Tool for Microsoft SQL Server},
+    author    = {Chaudhuri, Surajit and Narasayya, Vivek R.},
+    booktitle = {Proceedings of the 23rd International Conference on Very Large Data Bases},
+    year      = {1997},
+    pages     = {146--155},
+    publisher = {Morgan Kaufmann Publishers Inc.},
+    address   = {San Francisco, CA, USA},
+    isbn      = {1558604707},
+    numpages  = {10},
+    series    = {VLDB '97}
+}
+
+@inproceedings{candidateSelection,
+    author       = {Nicolas Bruno and César A. Galindo{-}Legaria and Milind Joshi},
+    editor       = {Feifei Li and Mirella M. Moro and Shahram Ghandeharizadeh and Jayant R. Haritsa and Gerhard Weikum and Michael J. Carey and Fabio Casati and Edward Y. Chang and Ioana Manolescu and Sharad Mehrotra and Umeshwar Dayal and Vassilis J. Tsotras},
+    title        = {Polynomial heuristics for query optimization},
+    booktitle    = {Proceedings of the 26th International Conference on Data Engineering, {ICDE} 2010, March 1-6, 2010, Long Beach, California, {USA}},
+    pages        = {589--600},
+    publisher    = {{IEEE} Computer Society},
+    year         = {2010},
+    url          = {https://doi.org/10.1109/ICDE.2010.5447916},
+    doi          = {10.1109/ICDE.2010.5447916},
+    timestamp    = {Thu, 23 Mar 2023 23:59:59 +0100},
+    biburl       = {https://dblp.org/rec/conf/icde/BrunoGJ10.bib},
+    bibsource    = {dblp computer science bibliography, https://dblp.org}
+}
+
+@misc{cassandraIndexes,
+    title        = {Cassandra Native Secondary Index Deep Dive},
+    author       = {Duy Hai Doan},
+    year         = {2016},
+    howpublished = {\url{https://www.datastax.com/blog/cassandra-native-secondary-index-deep-dive}},
+    note         = {Accessed: April 22, 2023}
+}
+
+@misc{cassandraIndexOfficial,
+    title        = {Secondary Indexes},
+    author       = {Apache Cassandra},
+    year         = {2021},
+    howpublished = {\url{https://cassandra.apache.org/doc/latest/cassandra/cql/indexes.html}},
+    note         = {Accessed: April 24, 2023}
+}
+
+@misc{cassandraLSMT,
+    title        = {Cassandra Documentation},
+    author       = {Cassandra},
+    year         = {2022},
+    howpublished = {\url{https://cassandra.apache.org/doc/4.1/cassandra/architecture/dynamo.html}},
+    note         = {Accessed: April 22, 2023}
+}
+
+@article{CoPhy11,
+    title   = {CoPhy: A Scalable, Portable, and Interactive Index Advisor for Large Workloads},
+    author  = {D. Dash, N. Polyzotis, A. Ailamaki},
+    journal = {Proceedings of the VLDB Endowment},
+    year    = {2011},
+    volume  = {4},
+    pages   = {362--372}
+}
+
+@misc{couchbaseIndexes,
+    title        = {Indexes},
+    author       = {{Couchbase}},
+    year         = {2023},
+    howpublished = {\url{https://docs.couchbase.com/server/current/learn/services-and-indexes/indexes/indexing-and-query-perf.html}},
+    note         = {Accessed: May 2, 2023}
+}
+
+@misc{datastaxCQL,
+    title        = {Using Multiple Secondary Indexes},
+    author       = {DataStax},
+    year         = {2015},
+    howpublished = {\url{https://docs.datastax.com/en/archived/cql/3.3/cql/cql_using/useMultIndexes.html}},
+    note         = {Accessed: April 24, 2023}
+}
+
+@misc{DBEngines,
+    title        = {DB-Engines Ranking -- popularity ranking of database management systems},
+    howpublished = {\url{https://db-engines.com/en/ranking}},
+    note         = {Accessed: October 8, 2024},
+    year = {2024}
+}
+
+@inproceedings{DBLP:conf/er/ContosS20,
+    title     = {{JSON} Schema Inference Approaches},
+    author    = {Pavel Contos and Martin Svoboda},
+    booktitle = {Advances in Conceptual Modeling -- {ER} 2020 Workshops CMAI, CMLS, CMOMM4FAIR, CoMoNoS, EmpER, Vienna, Austria, November 3--6, 2020, Proceedings},
+    year      = {2020},
+    volume    = {12584},
+    pages     = {173--183},
+    publisher = {Springer},
+    editor    = {Georg Grossmann and Sudha Ram},
+    bibsource = {dblp computer science bibliography, https://dblp.org},
+    biburl    = {https://dblp.org/rec/conf/er/ContosS20.bib},
+    doi       = {10.1007/978-3-030-65847-2\_16},
+    series    = {Lecture Notes in Computer Science},
+    timestamp = {Sat, 09 Jan 2021 14:14:41 +0100},
+    url       = {https://doi.org/10.1007/978-3-030-65847-2\_16}
+}
+
+@inproceedings{DBLP:conf/sigmod/WangYGJXLWGLXYY21,
+    author       = {Jianguo Wang and Xiaomeng Yi and Rentong Guo and Hai Jin and Peng Xu and Shengjun Li and Xiangyu Wang and Xiangzhou Guo and Chengming Li and Xiaohai Xu and Kun Yu and Yuxing Yuan and Yinghao Zou and Jiquan Long and Yudong Cai and Zhenxiang Li and Zhifeng Zhang and Yihua Mo and Jun Gu and Ruiyi Jiang and Yi Wei and Charles Xie},
+    editor       = {Guoliang Li and Zhanhuai Li and Stratos Idreos and Divesh Srivastava},
+    title        = {Milvus: {A} Purpose-Built Vector Data Management System},
+    booktitle    = {{SIGMOD} '21: International Conference on Management of Data, Virtual Event, China, June 20-25, 2021},
+    pages        = {2614--2627},
+    publisher    = {{ACM}},
+    year         = {2021},
+    url          = {https://doi.org/10.1145/3448016.3457550},
+    doi          = {10.1145/3448016.3457550},
+    timestamp    = {Wed, 22 Mar 2023 15:55:04 +0100},
+    biburl       = {https://dblp.org/rec/conf/sigmod/WangYGJXLWGLXYY21.bib},
+    bibsource    = {dblp computer science bibliography, https://dblp.org}
+}
+
+@article{DBLP:journals/corr/WangSSJ14,
+    author       = {Jingdong Wang and Heng Tao Shen and Jingkuan Song and Jianqiu Ji},
+    title        = {Hashing for Similarity Search: {A} Survey},
+    journal      = {CoRR},
+    volume       = {abs/1408.2927},
+    year         = {2014},
+    url          = {http://arxiv.org/abs/1408.2927},
+    eprinttype    = {arXiv},
+    eprint       = {1408.2927},
+    timestamp    = {Thu, 25 Mar 2021 13:19:45 +0100},
+    biburl       = {https://dblp.org/rec/journals/corr/WangSSJ14.bib},
+    bibsource    = {dblp computer science bibliography, https://dblp.org}
+}
+
+@article{DBLP:journals/corr/WangY0W016,
+    author       = {Kaiye Wang and Qiyue Yin and Wei Wang and Shu Wu and Liang Wang},
+    title        = {A Comprehensive Survey on Cross-modal Retrieval},
+    journal      = {CoRR},
+    volume       = {abs/1607.06215},
+    year         = {2016},
+    url          = {http://arxiv.org/abs/1607.06215},
+    eprinttype    = {arXiv},
+    eprint       = {1607.06215},
+    timestamp    = {Wed, 19 Dec 2018 13:58:56 +0100},
+    biburl       = {https://dblp.org/rec/journals/corr/WangY0W016.bib},
+    bibsource    = {dblp computer science bibliography, https://dblp.org}
+}
+
+@article{DBLP:journals/ijautcomp/LinGGZZL23,
+    author       = {Yi{-}Ming Lin and Yuan Gao and Maoguo Gong and Sijia Zhang and Yuan{-}Qiao Zhang and Zhi{-}Yuan Li},
+    title        = {Federated Learning on Multimodal Data: {A} Comprehensive Survey},
+    journal      = {Mach. Intell. Res.},
+    volume       = {20},
+    number       = {4},
+    pages        = {539--553},
+    year         = {2023},
+    url          = {https://doi.org/10.1007/s11633-022-1398-0},
+    doi          = {10.1007/S11633-022-1398-0},
+    timestamp    = {Wed, 31 Jul 2024 21:35:21 +0200},
+    biburl       = {https://dblp.org/rec/journals/ijautcomp/LinGGZZL23.bib},
+    bibsource    = {dblp computer science bibliography, https://dblp.org}
+}
+
+@article{koupil2022mminfer,
+    title     = {A universal approach for multi-model schema inference},
+    author    = {Pavel Koupil and Sebastián Hricko and Irena Holubová},
+    journal   = {J. Big Data},
+    year      = {2022},
+    volume    = {9},
+    number    = {1},
+    pages     = {97},
+    bibsource = {dblp computer science bibliography, https://dblp.org},
+    biburl    = {https://dblp.org/rec/journals/jbd/KoupilHH22.bib},
+    doi       = {10.1186/s40537-022-00645-9},
+    timestamp = {Wed, 07 Dec 2022 23:03:17 +0100},
+    url       = {https://doi.org/10.1186/s40537-022-00645-9}
+}
+
+@misc{DRL,
+    title     = {The Case for Automatic Database Administration using Deep Reinforcement Learning},
+    author    = {Sharma, Ankur and Schuhknecht, Felix Martin and Dittrich, Jens},
+    year      = {2018},
+    publisher = {arXiv},
+    copyright = {arXiv.org perpetual, non-exclusive license},
+    doi       = {10.48550/ARXIV.1801.05643},
+    keywords  = {Databases (cs.DB), Artificial Intelligence (cs.AI), FOS: Computer and information sciences, FOS: Computer and information sciences},
+    url       = {https://arxiv.org/abs/1801.05643}
+}
+
+@inproceedings{Drop,
+    title     = {Index Selection in Relational Databases},
+    author    = {Whang, Kyu-Young},
+    booktitle = {Proc. Int'l Conf. on Foundations of Data Organization},
+    year      = {1985},
+    pages     = {369--378},
+    address   = {Kyoto, Japan},
+    month     = 5
+}
+
+@inproceedings{Extend,
+    title     = {Efficient Scalable Multi-attribute Index Selection Using Recursive Strategies},
+    author    = {Schlosser, Rainer and Kossmann, Jan and Boissier, Martin},
+    booktitle = {2019 IEEE 35th International Conference on Data Engineering (ICDE)},
+    year      = {2019},
+    volume    = {},
+    number    = {},
+    pages     = {1238-1249},
+    doi       = {10.1109/ICDE.2019.00113}
+}
+
+@article{GUFLP96,
+    title   = {A Branch-and-Cut Algorithm for a Generalization of the Uncapacitated Facility Location Problem},
+    author  = {Caprara, Alberto and Salazar González, Juan José},
+    journal = {Top},
+    year    = {1996},
+    volume  = {4},
+    pages   = {135-163},
+    doi     = {10.1007/BF02568608},
+    month   = 6
+}
+
+@article{ILP07,
+    title   = {An Integer Linear Programming Approach to Database Design},
+    author  = {Ailamaki, Anastasia and Papadomanolakis, Stratos},
+    journal = {Proceedings of the 2nd International Workshop on  Self-Managing Database Systems (SMDB 2007)},
+    year    = {2007},
+    url     = {http://infoscience.epfl.ch/record/210694}
+}
+
+@article{IndexInteraction,
+    title      = {Index Interactions in Physical Design Tuning: Modeling, Analysis, and Applications},
+    author     = {Schnaitter, Karl and Polyzotis, Neoklis and Getoor, Lise},
+    journal    = {Proc. VLDB Endow.},
+    year       = {2009},
+    volume     = {2},
+    number     = {1},
+    pages      = {1234--1245},
+    publisher  = {VLDB Endowment},
+    doi        = {10.14778/1687627.1687766},
+    issn       = {2150-8097},
+    issue_date = {August 2009},
+    month      = 8,
+    numpages   = {12},
+    url        = {https://doi.org/10.14778/1687627.1687766}
+}
+
+@article{IndexSurvey20,
+    title      = {Magic Mirror in My Hand, Which is the Best in the Land? An Experimental Evaluation of Index Selection Algorithms},
+    author     = {Kossmann, Jan and Halfpap, Stefan and Jankrift, Marcel and Schlosser, Rainer},
+    journal    = {Proc. VLDB Endow.},
+    year       = {2020},
+    volume     = {13},
+    number     = {12},
+    pages      = {2382--2395},
+    publisher  = {VLDB Endowment},
+    doi        = {10.14778/3407790.3407832},
+    issn       = {2150-8097},
+    issue_date = {August 2020},
+    month      = 7,
+    numpages   = {14},
+    url        = {https://doi.org/10.14778/3407790.3407832}
+}
+
+@misc{JSON,
+    title     = {{JavaScript Object Notation (JSON)}},
+    author    = {Ecma International},
+    key       = {JSON},
+    year      = 2013,
+    publisher = {Ecma International},
+    note      = {\url{http://www.JSON.org/}}
+}
+
+@article{LSMT,
+    title      = {The Log-Structured Merge-Tree (LSM-Tree)},
+    author     = {O'Neil, Patrick and Cheng, Edward and Gawlick, Dieter and O'Neil, Elizabeth},
+    journal    = {Acta Inf.},
+    year       = {1996},
+    volume     = {33},
+    number     = {4},
+    pages      = {351--385},
+    publisher  = {Springer-Verlag},
+    address    = {Berlin, Heidelberg},
+    doi        = {10.1007/s002360050048},
+    issn       = {0001-5903},
+    issue_date = {Jun 1996},
+    keywords   = {Memory Buffer, Access Rate, Leaf Node, Disk Component, Leaf Level},
+    month      = 6,
+    numpages   = {35},
+    url        = {https://doi.org/10.1007/s002360050048}
+}
+
+@inproceedings{MCTS,
+    title     = {Budget-Aware Index Tuning with Reinforcement Learning},
+    author    = {Wu, Wentao and Wang, Chi and Siddiqui, Tarique and Wang, Junxiong and Narasayya, Vivek and Chaudhuri, Surajit and Bernstein, Philip A.},
+    booktitle = {Proceedings of the 2022 International Conference on Management of Data},
+    year      = {2022},
+    pages     = {1528--1541},
+    publisher = {Association for Computing Machinery},
+    address   = {New York, NY, USA},
+    doi       = {10.1145/3514221.3526128},
+    isbn      = {9781450392495},
+    keywords  = {index tuning, reinforcement learning, budget allocation},
+    location  = {Philadelphia, PA, USA},
+    numpages  = {14},
+    series    = {SIGMOD '22},
+    url       = {https://doi.org/10.1145/3514221.3526128}
+}
+
+@phdthesis{mihal2023,
+    title         = {{An application of AI methods for refining the storage strategy in multi-model database systems: A survey}},
+    author        = {Miháľ, Filip},
+    year          = 2023,
+    address       = {Czech Republic},
+    school        = {Charles University in Prague},
+    type          = {Bachelor Thesis}
+}
+
+@article{MLCost,
+    title   = {Learned Index Benefits: Machine Learning Based Index Performance Estimation},
+    author  = {Shi, Jiachen and Cong, Gao and li, Xiaoli},
+    journal = {Proceedings of the VLDB Endowment},
+    year    = {2023},
+    volume  = {15},
+    pages   = {3950-3962},
+    doi     = {10.14778/3565838.3565848},
+    month   = 1
+}
+
+@misc{mongodbIndexes,
+    title        = {MongoDB Manual: Indexes},
+    author       = {{MongoDB}},
+    year         = {2021},
+    howpublished = {\url{https://www.postgresql.org/docs/current/indexes-types.html}},
+    note         = {Accessed: October 8, 2024},
+    organization = {MongoDB, Inc.}
+}
+
+@misc{MongoDBSharding,
+    title        = {MongoDB Sharding},
+    author       = {MongoDB},
+    howpublished = {\url{https://www.mongodb.com/docs/manual/sharding/}},
+    note         = {Accessed: April 15, 2023},
+    year = {2024}
+}
+
+@inproceedings{MultiSQL,
+    title     = {Multi-SQL: An Automatic Multi-model Data Management System},
+    author    = {Yan, Yu and Wang, Hongzhi and Wang, Yutong and Qi, Zhixin and Ma, Jian and Liu, Chang and Gao, Meng and Yan, Hao and Zhang, Haoran and Shen, Ziming},
+    booktitle = {Web and Big Data},
+    year      = {2023},
+    pages     = {451--455},
+    publisher = {Springer Nature Switzerland},
+    address   = {Cham},
+    editor    = {Li, Bohan and Yue, Lin and Tao, Chuanqi and Han, Xuming and Calvanese, Diego and Amagasa, Toshiyuki},
+    isbn      = {978-3-031-25201-3}
+}
+
+@misc{neo4jExecutionPlans,
+    title        = {Query Execution plan},
+    author       = {Neo4j},
+    year         = {2021},
+    howpublished = {\url{https://neo4j.com/docs/cypher-manual/current/execution-plans/}},
+    note         = {Accessed: April 25, 2023}
+}
+
+@misc{neo4jQueryTuning,
+    title        = {Query Tuning with Indexes},
+    author       = {Neo4j},
+    year         = {2021},
+    howpublished = {\url{https://neo4j.com/docs/cypher-manual/current/query-tuning/indexes/}},
+    note         = {Accessed: April 25, 2024}
+}
+
+@article{NewAutoAdmin,
+    title        = {AutoAdmin: Self-Tuning Database SystemsTechnology},
+    author       = {Sanjay Agrawal and Nicolas Bruno and Surajit Chaudhuri and Vivek R. Narasayya},
+    journal      = {{IEEE} Data Eng. Bull.},
+    volume       = {29},
+    number       = {3},
+    pages        = {7--15},
+    year         = {2006},
+    url          = {http://sites.computer.org/debull/A06sept/deb1.ps},
+    timestamp    = {Wed, 19 Aug 2020 17:48:59 +0200},
+    biburl       = {https://dblp.org/rec/journals/debu/AgrawalBCN06.bib},
+    bibsource    = {dblp computer science bibliography, https://dblp.org}
+}
+
+@article{NP-complete,
+    title      = {The Optimal Selection of Secondary Indices is NP-Complete},
+    author     = {Piatetsky-Shapiro, Gregory},
+    journal    = {SIGMOD Rec.},
+    year       = {1983},
+    volume     = {13},
+    number     = {2},
+    pages      = {72--75},
+    publisher  = {Association for Computing Machinery},
+    address    = {New York, NY, USA},
+    doi        = {10.1145/984523.984530},
+    issn       = {0163-5808},
+    issue_date = {January 1983},
+    month      = 1,
+    numpages   = {4},
+    url        = {https://doi.org/10.1145/984523.984530}
+}
+
+@article{NPHardApproximation,
+    title   = {Index selection for databases: a hardness study and a principled heuristic solution},
+    author  = {Chaudhuri, S. and Datar, M. and Narasayya, V.},
+    journal = {IEEE Transactions on Knowledge and Data Engineering},
+    year    = {2004},
+    volume  = {16},
+    number  = {11},
+    pages   = {1313-1323},
+    doi     = {10.1109/TKDE.2004.75}
+}
+
+@book{pokorny1998databazove,
+    title     = {Databázové systémy},
+    author    = {Pokorný, Jaroslav and Halaška, Ivan},
+    year      = {1998},
+    publisher = {ČVUT}
+}
+
+@book{PolyglotPersistance,
+    title     = {NoSQL Distilled: A Brief Guide to the Emerging World of Polyglot Persistence},
+    author    = {Sadalage, Pramod J. and Fowler, Martin},
+    year      = {2012},
+    publisher = {Addison-Wesley Professional},
+    edition   = {1st},
+    isbn      = {0321826620}
+}
+
+@misc{postgresqlIndexTypes,
+    title        = {PostgreSQL: Documentation: 14: Index Types},
+    author       = {{PostgreSQL Development Team}},
+    year         = {2021},
+    howpublished = {\url{https://www.postgresql.org/docs/current/indexes-types.html}},
+    note         = {Accessed: May 3, 2023}
+}
+
+@inproceedings{QueryOptimizerEfficientUse,
+    title     = {Efficient Use of the Query Optimizer for Automated Physical Design},
+    author    = {Papadomanolakis, Stratos and Dash, Debabrata and Ailamaki, Anastasia},
+    booktitle = {Proceedings of the 33rd International Conference on Very Large Data Bases},
+    year      = {2007},
+    pages     = {1093--1104},
+    publisher = {VLDB Endowment},
+    isbn      = {9781595936493},
+    location  = {Vienna, Austria},
+    numpages  = {12},
+    series    = {VLDB '07}
+}
+
+@misc{RedisIndexes,
+    title        = {Indexes},
+    author       = {Redis},
+    year         = {2021},
+    howpublished = {\url{https://redis.io/docs/manual/patterns/indexes/}},
+    note         = {Accessed: April 30, 2023}
+}
+
+@misc{XML,
+    title  = {{Extensible Markup Language (XML) 1.0 (Fifth Edition)}},
+    author = {W3C},
+    year   = 2008,
+    month  = 11,
+    day    = 26,
+}
+
+% #endregion
+% #region edbt_2024
+
+@article{10.1007/s00778-021-00676-3,
+    title = {Data Dependencies for Query Optimization: A Survey},
+    author = {Kossmann, Jan and Papenbrock, Thorsten and Naumann, Felix},
+    year = {2021},
+    issue_date = {Jan 2022},
+    publisher = {Springer-Verlag},
+    address = {Berlin, Heidelberg},
+    volume = {31},
+    number = {1},
+    issn = {1066-8888},
+    month = 6,
+    pages = {1--22},
+    numpages = {22},
+    keywords = {Order dependencies, Functional dependencies, Unique column combinations, Query execution, SQL, Inclusion dependencies, Data dependencies, Query optimization, Relational data, Data profiling}
+}
+
+@article{10.14778/1921071.1921078,
+    title = {Update Rewriting and Integrity Constraint Maintenance in a Schema Evolution Support System: PRISM++},
+    author = {Curino, Carlo A. and Moon, Hyun Jin and Deutsch, Alin and Zaniolo, Carlo},
+    year = {2010},
+    issue_date = {November 2010},
+    publisher = {VLDB Endowment},
+    volume = {4},
+    number = {2},
+    issn = {2150-8097},
+    journal = {Proc. VLDB Endow.},
+    month = 11,
+    pages = {117--128},
+    numpages = {12}
+}
+
+@article{10.5555/1331939.1331940,
+    title = {Adaptive Query Processing},
+    author = {Deshpande, Amol and Ives, Zachary and Raman, Vijayshankar},
+    year = {2007},
+    issue_date = {January 2007},
+    publisher = {Now Publishers Inc.},
+    address = {Hanover, MA, USA},
+    volume = {1},
+    number = {1},
+    issn = {1931-7883},
+    journal = {Found. Trends Databases},
+    month = 1,
+    pages = {1--140},
+    numpages = {140}
+}
+
+@inproceedings{9252014,
+    title        = {{Adapting Queries to Database Schema Changes in Hybrid Polystores}},
+    author       = {Jérôme Fink and Maxime Gobert and Anthony Cleve},
+    year         = 2020,
+    booktitle    = {Proc. of SCAM '20},
+    publisher    = {{IEEE}},
+    pages        = {127--131},
+    timestamp    = {Mon, 03 Jan 2022 22:33:58 +0100}
+}
+
+@inproceedings{DBLP:conf/er/MollerKHS19,
+    title        = {{Query Rewriting for Continuously Evolving NoSQL Databases}},
+    author       = {Mark Lukas Möller and Meike Klettke and Andrea Hillenbrand and Uta Störl},
     year         = 2019,
-    journal      = {ACM Comput. Surv.},
+    booktitle    = {Proc.\ ER 2019},
+    series       = {LNCS},
+    volume       = 11788,
+    pages        = {213--221},
+    _publisher   = {Springer},
+    timestamp    = {Fri, 27 Mar 2020 08:55:16 +0100},
+}
+
+@article{koupil2023universal,
+    title        = {{A universal Approach for Simplified Redundancy-Aware Cross-Model Querying}},
+    author       = {Pavel Koupil and Daniel Crha and Irena Holubová},
+    year         = 2025,
+    journal      = {Information Systems},
+    volume       = 127,
+    issn         = {0306-4379},
+    keywords     = {Multi-model data, Cross-model querying, Cross-model redundancy, Alternative query plans, Category theory}
+}
+
+@inproceedings{mm_evocat,
+    title        = {{MM-evocat: A Tool for Modelling and Evolution Management of Multi-Model Data}},
+    author       = {Koupil, Pavel and Bártík, Jáchym and Holubová, Irena},
+    year         = 2022,
+    booktitle    = {Proc. of CIKM '22},
+    location     = {Atlanta, GA, USA},
+    publisher    = {{ACM}},
+    address      = {New York, NY, USA},
+    series       = {CIKM '22},
+    pages        = {4892--4896},
+    isbn         = 9781450392365,
+    numpages     = 5,
+    keywords     = {multi-model data, change propagation, evolution management}
+}
+
+@inproceedings{mm_quecat,
+    title        = {{MM-quecat: A Tool for Unified Querying of Multi-Model Data}},
+    author       = {Pavel Koupil and Daniel Crha and Irena Holubová},
+    year         = 2023,
+    booktitle    = {Proc. of {EDBT} '23},
+    publisher    = {OpenProceedings.org},
+    pages        = {831--834},
+    timestamp    = {Thu, 07 Apr 2022 16:20:55 +0200},
+}
+
+@article{spivak_cql,
+    title        = {{Categorical data integration for computational science}},
+    author       = {Brown, Kristopher and Spivak, David and Wisnesky, Ryan},
+    year         = 2019,
+    journal      = {Computational Materials Science},
+    volume       = 164,
+    pages        = {127--132},
+}
+
+@inproceedings{spivak2015relational,
+    title        = {{Relational Foundations for Functorial Data Migration}},
+    author       = {Spivak, David I and Wisnesky, Ryan},
+    year         = 2015,
+    booktitle    = {Proc. of DBPL '15},
     publisher    = {ACM},
     address      = {New York, NY, USA},
-    volume       = 52,
-    number       = 3,
-    issn         = {0360-0300},
-    numpages     = 38,
-    articleno    = 55
+    pages        = {21--28},
+    isbn         = 9781450339025
 }
+
+@inproceedings{storl2022darwin,
+    title        = {{Darwin: A Data Platform for NoSQL Schema Evolution Management and Data Migration}},
+    author       = {Uta Störl and Meike Klettke},
+    _editor      = {Maya Ramanath and Themis Palpanas},
+    booktitle    = {Proceedings of the Workshops of the {EDBT/ICDT} 2022 Joint Conference, Edinburgh, UK, March 29, 2022},
+    series       = {{CEUR} Workshop Proceedings},
+    volume       = {3135},
+    publisher    = {CEUR-WS.org},
+    year         = {2022},
+    _url         = {https://ceur-ws.org/Vol-3135/dataplat\_short3.pdf},
+    _timestamp   = {Fri, 10 Mar 2023 16:23:45 +0100},
+    _biburl      = {https://dblp.org/rec/conf/edbt/StorlK22.bib},
+    _bibsource   = {dblp computer science bibliography, https://dblp.org}
+}
+
+
+% #endregion
+% #region edbt_2025
+
+@inproceedings{unibench,
+    title        = {{UniBench: A Benchmark for Multi-model Database Management Systems}},
+    author       = {Zhang, Chao and Lu, Jiaheng and Xu, Pengfei and Chen, Yuxing},
+    year         = 2019,
+    booktitle    = {TPCTC 2018},
+    publisher    = {Springer International Publishing},
+    address      = {Cham},
+    pages        = {7--23},
+    isbn         = {978-3-030-11404-6}
+}
+
+@inproceedings{10.1145/2463676.2463712,
+    title        = {{BigBench: towards an industry standard benchmark for big data analytics}},
+    author       = {Ghazal, Ahmad and Rabl, Tilmann and Hu, Minqing and Raab, Francois and Poess, Meikel and Crolotte, Alain and Jacobsen, Hans-Arno},
+    year         = 2013,
+    booktitle    = {Proceedings of the 2013 ACM SIGMOD International Conference on Management of Data},
+    location     = {New York, New York, USA},
+    publisher    = {Association for Computing Machinery},
+    address      = {New York, NY, USA},
+    series       = {SIGMOD '13},
+    pages        = {1197--1208},
+    isbn         = 9781450320375,
+    numpages     = 12,
+    keywords     = {map reduce, big data, benchmarking}
+}
+
+@article{10.1145/3379445,
+    title        = {{Graph Generators: State of the Art and Open Challenges}},
+    author       = {Bonifati, Angela and Holubová, Irena and Prat-Pérez, Arnau and Sakr, Sherif},
+    year         = 2020,
+    month        = 4,
+    journal      = {ACM Comput. Surv.},
+    publisher    = {Association for Computing Machinery},
+    address      = {New York, NY, USA},
+    volume       = 53,
+    number       = 2,
+    issn         = {0360-0300},
+    issue_date   = {March 2021},
+    articleno    = 36,
+    numpages     = 30,
+    keywords     = {Big data management, benchmarks, generators, graph data, synthetic data}
+}
+
+@article{10.14778/3574245.3574259,
+    title        = {{M2Bench: A Database Benchmark for Multi-Model Analytic Workloads}},
+    author       = {Kim, Bogyeong and Koo, Kyoseung and Enkhbat, Undraa and Kim, Sohyun and Kim, Juhun and Moon, Bongki},
+    year         = 2022,
+    month        = 12,
+    journal      = {Proc. VLDB Endow.},
+    publisher    = {VLDB Endowment},
+    volume       = 16,
+    number       = 4,
+    pages        = {747--759},
+    issn         = {2150-8097},
+    issue_date   = {December 2022},
+    numpages     = 13
+}
+
+@inproceedings{10.5555/1287369.1287455,
+    title        = {{XMark: a benchmark for XML data management}},
+    author       = {Schmidt, Albrecht and Waas, Florian and Kersten, Martin and Carey, Michael J. and Manolescu, Ioana and Busse, Ralph},
+    year         = 2002,
+    booktitle    = {VLDB '02},
+    location     = {Hong Kong, China},
+    publisher    = {VLDB Endowment},
+    series       = {VLDB '02},
+    pages        = {974--985},
+    numpages     = 12
+}
+
+@article{Jiaheng2023Survey,
+    title        = {{Multi-model query languages: taming the variety of big data}},
+    author       = {Qingsong Guo and Chao Zhang and Shuxun Zhang and Jiaheng Lu},
+    year         = 2023,
+    month        = 5,
+    day          = 31,
+    journal      = {Distributed and Parallel Databases},
+    publisher    = {SPRINGER NEW YORK LLC},
+    issn         = {0926-8782},
+    keywords     = {113 Computer and information sciences, 6121 Languages, Cross-model query, Multi-model data, Query language},
+    language     = {English}
+}
+
+@misc{Gartner2015,
+    title        = {{Gartner Magic Quadrant for Operational Database Management Systems, 12 October 2015}},
+    author       = {Donald Feinberg and Merv Adrian and Nick Heudecker and Adam M. Ronthal and Terilyn Palanca},
+    year         = 2015,
+    month        = 10,
+    day          = 12,
+}
+
+% #endregion
+% #region edbt_2026
+
+@article{10.1007/s10844-022-00762-0,
+    title        = {{Parameters tuning of multi-model database based on deep reinforcement learning}},
+    author       = {Ye, Feng and Li, Yang and Wang, Xiwen and Nedjah, Nadia and Zhang, Peng and Shi, Hong},
+    year         = 2022,
+    month        = 11,
+    journal      = {J. Intell. Inf. Syst.},
+    publisher    = {Kluwer Academic Publishers},
+    address      = {USA},
+    volume       = 61,
+    number       = 1,
+    pages        = {167--190},
+    issn         = {0925-9902},
+    issue_date   = {Aug 2023},
+    numpages     = 24,
+    keywords     = {Multi-model database, Tuning, Deep reinforcement learning, TD3}
+}
+
+@article{10.1155/2023/8835111,
+    title        = {{Workload-Aware Performance Tuning for Multimodel Databases Based on Deep Reinforcement Learning}},
+    author       = {Sun, Jun and Ye, Feng and Nedjah, Nadia and Zhang, Ming and Xu, Dong and Tan, Yu-an},
+    year         = 2023,
+    month        = 1,
+    journal      = {Int. J. Intell. Syst.},
+    publisher    = {John Wiley and Sons Ltd.},
+    address      = {GBR},
+    volume       = 2023,
+    issn         = {0884-8173},
+    issue_date   = 2023,
+    numpages     = 17
+}
+
+@article{10.1109/TKDE.2024.3362273,
+    title        = {{A Generic Schema Evolution Approach for NoSQL and Relational Databases}},
+    author       = {Chillón, Alberto Hernández and Klettke, Meike and Ruiz, Diego Sevilla and Molina, Jesús García},
+    year         = 2024,
+    month        = 7,
+    journal      = {IEEE Trans. on Knowl. and Data Eng.},
+    publisher    = {IEEE Educational Activities Department},
+    address      = {USA},
+    volume       = 36,
+    number       = 7,
+    pages        = {2774--2789},
+    issn         = {1041-4347},
+    issue_date   = {July 2024},
+    numpages     = 16
+}
+
+@inproceedings{10.1145/3183713.3199671,
+    title        = {{The Data Calculator: Data Structure Design and Cost Synthesis from First Principles and Learned Cost Models}},
+    author       = {Idreos, Stratos and Zoumpatianos, Kostas and Hentschel, Brian and Kester, Michael S. and Guo, Demi},
+    year         = 2018,
+    booktitle    = {Proc. of SIGMOD '18},
+    publisher    = {ACM},
+    address      = {New York, NY, USA},
+    pages        = {535--550},
+    isbn         = 9781450347037,
+    numpages     = 16,
+    keywords     = {data structure synthesis, learned cost models}
+}
+
+@article{10.14778/3342263.3342646,
+    title        = {{Plan-Sructured Deep Neural Network Models for Query Performance Prediction}},
+    author       = {Marcus, Ryan and Papaemmanouil, Olga},
+    year         = 2019,
+    month        = 7,
+    journal      = {Proc. VLDB Endow.},
+    publisher    = {VLDB Endowment},
+    volume       = 12,
+    number       = 11,
+    pages        = {1733--1746},
+    issn         = {2150-8097},
+    issue_date   = {July 2019},
+    numpages     = 14
+}
+
+@article{chillon2022taxonomy,
+    title        = {{A Taxonomy of Schema Changes for NoSQL Databases}},
+    author       = {Chillón, Alberto Hernández and Klettke, Meike and Ruiz, Diego Sevilla and Molina, Jesús García},
+    year         = 2022,
+    journal      = {CoRR},
+    volume       = {abs/2205.11660}
+}
+
+@inproceedings{DBLP:conf/cig/ChildsBK08,
+    title        = {{Transpositions and Move Groups in Monte Carlo Tree Search}},
+    author       = {Benjamin E. Childs and James H. Brodeur and Levente Kocsis},
+    year         = 2008,
+    booktitle    = {Proc. of IEEE CIG '09, Perth, Australia, 15-18 December, 2008},
+    publisher    = {{IEEE}},
+    pages        = {389--395}
+}
+
+@inproceedings{DBLP:conf/rcis/KoupilBH25,
+    title        = {Model-Agnostic Evolution Management},
+    author       = {Pavel Koupil and Jáchym Bártík and Irena Holubová},
+    _editor      = {Janis Grabis and Tanja E. J. Vos and María José Escalona and Oscar Pastor},
+    booktitle    = {Research Challenges in Information Science - 19th International Conference, {RCIS} 2025, Seville, Spain, May 20-23, 2025, Proceedings, Part {I}},
+    series       = {LNCS},
+    volume       = {547},
+    pages        = {245--261},
+    publisher    = {Springer},
+    year         = {2025},
+    _url         = {https://doi.org/10.1007/978-3-031-92474-3\_15},
+    _doi         = {10.1007/978-3-031-92474-3\_15},
+    _timestamp   = {Wed, 04 Jun 2025 16:46:34 +0200},
+    _biburl      = {https://dblp.org/rec/conf/rcis/KoupilBH25.bib},
+    _bibsource   = {dblp computer science bibliography, https://dblp.org}
+}
+
+@incollection{gillet2025categorical,
+    title        = {A Categorical Representation of Multi-model Data to Prevent Data Migration Mismatch},
+    author       = {Gillet, Annabelle and Leclercq, éric},
+    booktitle    = {Transactions on Large-Scale Data-and Knowledge-Centered Systems LIX: Special Issue on Data Management-Principles, Technologies, and Applications},
+    pages        = {61--93},
+    year         = {2025},
+    publisher    = {Springer}
+}
+
+@inproceedings{stoerl2020nosqlsurvey,
+    title        = {{NoSQL Schema Evolution and Data Migration: State-of-the-Art and Opportunities (Tutorial)}},
+    author       = {Störl, Uta and Klettke, Meike and Scherzinger, Stefanie},
+    booktitle    = {Proc. of EDBT '20},
+    pages        = {655--658},
+    publisher    = {OpenProceedings.org},
+    year         = {2020}
+}
+
+% #endregion
+% #region enase_2025
+
+@inproceedings{10.1145/2463676.2465296,
+    title        = {{LinkBench: a database benchmark based on the Facebook social graph}},
+    author       = {Armstrong, Timothy G. and Ponnekanti, Vamsi and Borthakur, Dhruba and Callaghan, Mark},
+    year         = 2013,
+    booktitle    = {Proceedings of the 2013 ACM SIGMOD International Conference on Management of Data},
+    location     = {New York, New York, USA},
+    publisher    = {Association for Computing Machinery},
+    address      = {New York, NY, USA},
+    series       = {SIGMOD '13},
+    pages        = {1185--1196},
+    isbn         = 9781450320375,
+    numpages     = 12,
+    keywords     = {social networks, mysql, hbase, database workload analysis, database benchmarks}
+}
+
+@inproceedings{10.1145/2588555.2595633,
+    title        = {{GenBase: a complex analytics genomics benchmark}},
+    author       = {Taft, Rebecca and Vartak, Manasi and Satish, Nadathur Rajagopalan and Sundaram, Narayanan and Madden, Samuel and Stonebraker, Michael},
+    year         = 2014,
+    booktitle    = {Proceedings of the 2014 ACM SIGMOD International Conference on Management of Data},
+    location     = {Snowbird, Utah, USA},
+    publisher    = {Association for Computing Machinery},
+    address      = {New York, NY, USA},
+    series       = {SIGMOD '14},
+    pages        = {177--188},
+    isbn         = 9781450323765,
+    numpages     = 12,
+    keywords     = {scientific dbms, benchmarking, array dbms}
+}
+
+@inproceedings{10.1145/2723372.2742786,
+    title        = {{The LDBC Social Network Benchmark: Interactive Workload}},
+    author       = {Erling, Orri and Averbuch, Alex and Larriba-Pey, Josep and Chafi, Hassan and Gubichev, Andrey and Prat, Arnau and Pham, Minh-Duc and Boncz, Peter},
+    year         = 2015,
+    booktitle    = {Proceedings of the 2015 ACM SIGMOD International Conference on Management of Data},
+    location     = {Melbourne, Victoria, Australia},
+    publisher    = {Association for Computing Machinery},
+    address      = {New York, NY, USA},
+    series       = {SIGMOD '15},
+    pages        = {619--630},
+    isbn         = 9781450327589,
+    numpages     = 12,
+    keywords     = {benchmarking, graph databases, rdf databases}
+}
+
+@inproceedings{10.1145/3531348.3532176,
+    title        = {{DeepBench: Benchmarking JSON Document Stores}},
+    author       = {Belloni, Stefano and Ritter, Daniel and Schröder, Marco and Rörup, Nils},
+    year         = 2022,
+    booktitle    = {Proceedings of the 2022 Workshop on 9th International Workshop of Testing Database Systems},
+    location     = {Philadelphia, PA, USA},
+    publisher    = {Association for Computing Machinery},
+    address      = {New York, NY, USA},
+    series       = {DBTest '22},
+    pages        = {1--9},
+    isbn         = 9781450393539,
+    numpages     = 9,
+    keywords     = {Testing Database Systems, JSON, Performance, Document Stores, Data Generation, Benchmarking}
+}
+
+@inproceedings{conf/bigdataconf/TanCGM17,
+    title        = {{Enabling query processing across heterogeneous data models: A survey}},
+    author       = {Ran Tan and Rada Chirkova and Vijay Gadepally and Timothy G. Mattson},
+    year         = 2017,
+    booktitle    = {Proc. of BigData 2017},
+    publisher    = {{IEEE}},
+    pages        = {3211--3220},
+}
+
+@inproceedings{conf/cikm/LuHC18,
+    title        = {{Multi-model Databases and Tightly Integrated Polystores: Current Practices, Comparisons, and Open Challenges}},
+    author       = {Jiaheng Lu and Irena Holubová and Bogdan Cautis},
+    year         = 2018,
+    booktitle    = {Proc. of {CIKM} 2018},
+    publisher    = {ACM},
+    address      = {Torino, Italy},
+    pages        = {2301--2302}
+}
+
+@article{DBLP:journals/ijcc/BondiombouyV16,
+    title        = {{Query processing in multistore systems: an overview}},
+    author       = {Carlyna Bondiombouy and Patrick Valduriez},
+    year         = 2016,
+    journal      = {Int. J. Cloud Comput.},
+    volume       = 5,
+    number       = 4,
+    pages        = {309--346}
+}
+
+@inproceedings{mm_evoque,
+    title        = {{MM-evoque: Query Synchronisation in Multi-Model Databases}},
+    author       = {Pavel Koupil and Jáchym Bártík and Irena Holubová},
+    year         = 2024,
+    booktitle    = {Proc. of {EDBT} '24},
+    publisher    = {OpenProceedings.org},
+    pages        = {818--821}
+}
+
+@book{sparql,
+    title        = {{SPARQL Query Language for RDF}},
+    author       = {Prud'hommeaux, Eric and Seaborne, Andy},
+    year         = 2008,
+    month        = 1,
+    day          = 15,
+    publisher    = {W3C},
+    note         = {\url{http://www.w3.org/TR/rdf-sparql-query/}},
+    citeulike-article-id = 2620569,
+    howpublished = {W3C Recommendation},
+    institution  = {World Wide Web Consortium},
+    posted-at    = {2008-04-01 17:47:43},
+    priority     = 2,
+    added-at     = {2015-03-16T13:26:02.000+0100},
+    interhash    = {dc198da0f907f0129249cab866bbe3d4},
+    intrahash    = {c026a93cda06c2dfa18655bf87e8f2ad}
+}
+
+@misc{SQLJSON,
+    title        = {{ISO/IEC TR 19075-6:2017 Information technology — Database languages — SQL — Part 6: SQL support for JavaScript Object Notation (JSON)}},
+    author       = {ISO},
+    year         = 2017
+}
+
+@misc{SQLXML,
+    title        = {{ISO/IEC 9075-14:2011 Information technology -- Database languages -- SQL -- Part 14: XML-Related Specifications (SQL/XML)}},
+    author       = {ISO},
+    year         = 2011
+}
+
+% #endregion
+% #region rcis_2025
+
+@article{10.1145/2903726,
+    title        = {{Synchronization of Queries and Views Upon Schema Evolutions: A Survey}},
+    author       = {Caruccio, Loredana and Polese, Giuseppe and Tortora, Genoveffa},
+    year         = 2016,
+    month        = 5,
+    journal      = {ACM Trans. Database Syst.},
+    publisher    = {Association for Computing Machinery},
+    address      = {New York, NY, USA},
+    volume       = 41,
+    number       = 2,
+    issn         = {0362-5915},
+    issue_date   = {June 2016},
+    articleno    = 9,
+    numpages     = 41,
+    keywords     = {view synchronization, query synchronization, DB schema evolution}
+}
+
+@inproceedings{DBLP:conf/er/CaruccioPT18,
+    title        = {{Dependency-Based Query/View Synchronization upon Schema Evolutions}},
+    author       = {Loredana Caruccio and Giuseppe Polese and Genoveffa Tortora},
+    year         = 2018,
+    booktitle    = {Proc. of {ER} '18 Workshops},
+    publisher    = {Springer},
+    series       = {LNCS},
+    volume       = 11158,
+    pages        = {91--105},
+}
+
+@inproceedings{DBLP:conf/foiks/Ravve16,
+    title        = {{Maintenance of Queries Under Database Changes: {A} Unified Logic Based Approach}},
+    author       = {Elena V. Ravve},
+    year         = 2016,
+    booktitle    = {Proc. of FoIKS '16},
+    publisher    = {Springer},
+    series       = {LNCS},
+    volume       = 9616,
+    pages        = {191--208},
+}
+
+@inproceedings{DBLP:conf/krdb/RundensteinerLN97,
+    title        = {{On Preserving Views in Evolving Environments}},
+    author       = {Elke A. Rundensteiner and Amy J. Lee and Anisoara Nica},
+    year         = 1997,
+    booktitle    = {Proc. of Workshop KRDB '97},
+    publisher    = {CEUR-WS.org},
+    series       = {{CEUR} Workshop Proceedings},
+    volume       = 8,
+    pages        = {13.1--13.11},
+}
+
+@inproceedings{DBLP:conf/sigmod/RundensteinerKZWLLN99,
+    title        = {{Evolvable View Environment {(EVE):} Non-Equivalent View Maintenance under Schema Changes}},
+    author       = {Elke A. Rundensteiner and Andreas Koeller and Xin Zhang and Amber van Wyk and Yong Li and Amy J. Lee and Anisoara Nica},
+    year         = 1999,
+    booktitle    = {Proc. of {SIGMOD} '99},
+    publisher    = {{ACM} Press},
+    pages        = {553--555},
+}
+
+@article{DBLP:journals/corr/abs-2403-09060,
+    title        = {{Query Rewriting via Large Language Models}},
+    author       = {Jie Liu and Barzan Mozafari},
+    year         = 2024,
+    journal      = {CoRR},
+    volume       = {abs/2403.09060},
+    eprinttype   = {arXiv},
+    eprint       = {2403.09060},
+}
+
+@article{DBLP:journals/kais/KoellerR05,
+    title        = {{A history-driven approach at evolving views under meta data changes}},
+    author       = {Andreas Koeller and Elke A. Rundensteiner},
+    year         = 2005,
+    journal      = {Knowl. Inf. Syst.},
+    volume       = 8,
+    number       = 1,
+    pages        = {34--67},
+}
+
+@article{DBLP:journals/siamcomp/Hull86,
+    title        = {{Relative Information Capacity of Simple Relational Database Schemata}},
+    author       = {Richard Hull},
+    year         = 1986,
+    journal      = {{SIAM} J. Comput.},
+    volume       = 15,
+    number       = 3,
+    pages        = {856--886},
+}
+
+% #endregion
+% #region vldb_2024
 
 @inproceedings{DBLP:conf/cidr/IdreosDQAHRLJGL19,
     title        = {{Design Continuums and the Path Toward Self-Designing Key-Value Stores that Know and Learn}},
@@ -65,15 +1333,6 @@
     booktitle    = {Proc. of SoCC '17},
     publisher    = {{ACM}},
     pages        = {338--350},
-}
-
-@inproceedings{DBLP:conf/sigmod/0001ZC21,
-    title        = {{AI Meets Database: AI4DB and DB4AI}},
-    author       = {Guoliang Li and Xuanhe Zhou and Lei Cao},
-    year         = 2021,
-    booktitle    = {Proc. of {SIGMOD} '21},
-    publisher    = {{ACM}},
-    pages        = {2859--2866},
 }
 
 @inproceedings{DBLP:conf/sigmod/DingMYWDLZCGKLK20,
@@ -113,16 +1372,6 @@
     
 }
 
-@article{DBLP:journals/jbd/KoupilH22,
-    title        = {{A Unified Representation and Transformation of Multi-Model Data using Category Theory}},
-    author       = {Pavel Koupil and Irena Holubová},
-    year         = 2022,
-    journal      = {J. Big Data},
-    volume       = 9,
-    number       = 1,
-    pages        = 61
-}
-
 @article{DBLP:journals/pvldb/0001ZSYHJLWL21,
     title        = {{openGauss: An Autonomous Database System}},
     author       = {Guoliang Li and Xuanhe Zhou and Ji Sun and Xiang Yu and others},
@@ -134,20 +1383,6 @@
     url          = {http://www.vldb.org/pvldb/vol14/p3028-li.pdf},
     timestamp    = {Fri, 27 Aug 2021 17:02:27 +0200},
     biburl       = {https://dblp.org/rec/journals/pvldb/0001ZSYHJLWL21.bib},
-    bibsource    = {dblp computer science bibliography, https://dblp.org}
-}
-
-@article{DBLP:journals/pvldb/KossmannHJS20,
-    title        = {{Magic Mirror in My Hand, Which Is the Best in the Land? An Experimental Evaluation of Index Selection Algorithms}},
-    author       = {Jan Kossmann and Stefan Halfpap and Marcel Jankrift and Rainer Schlosser},
-    year         = 2020,
-    journal      = {Proc. of {VLDB} Endow.},
-    volume       = 13,
-    number       = 11,
-    pages        = {2382--2395},
-    url          = {http://www.vldb.org/pvldb/vol13/p2382-kossmann.pdf},
-    timestamp    = {Mon, 17 Aug 2020 18:32:39 +0200},
-    biburl       = {https://dblp.org/rec/journals/pvldb/KossmannHJS20.bib},
     bibsource    = {dblp computer science bibliography, https://dblp.org}
 }
 
@@ -172,52 +1407,6 @@
     pages        = {959--987},
 }
 
-@inproceedings{mm_infer,
-    title        = {{MM-infer: A Tool for Inference of Multi-Model Schemas}},
-    author       = {Pavel Koupil and Sebastián Hricko and Irena Holubová},
-    year         = 2022,
-    booktitle    = {Proc. of {EDBT} '22},
-    publisher    = {OpenProceedings.org},
-    pages        = {2:566--2:569},
-    timestamp    = {Thu, 07 Apr 2022 16:20:55 +0200}
-}
-
-@inproceedings{mm_quecat,
-    author       = {Pavel Koupil and Daniel Crha and Irena Holubová},
-    title        = {{MM-quecat: {A} Tool for Unified Querying of Multi-Model Data}},
-    booktitle    = {Proc. of EDBT `23},
-    pages        = {831--834},
-    publisher    = {OpenProceedings.org},
-    year         = {2023},
-}
-
-@inproceedings{MM-cat,
-    title        = {{MM-cat: A Tool for Modeling and Transformation of Multi-Model Data using Category Theory}},
-    author       = {Pavel Koupil and Martin Svoboda and Irena Holubová},
-    year         = 2021,
-    booktitle    = {Proc. of MODELS '21},
-    publisher    = {{IEEE}},
-    address      = {New York, NY, USA},
-    pages        = {635--639}
-}
-
-@inproceedings{MM-evocat,
-    title        = {{\emph{MM-evocat:} A Tool for Modelling and Evolution Management of Multi-Model Data}},
-    author       = {Pavel Koupil and Jáchym Bártík and Irena Holubová},
-    year         = 2022,
-    booktitle    = {Proc. of CIKM 2022, Atlanta, GA, USA},
-    publisher    = {{ACM}},
-    pages        = {4892--4896},
-    timestamp    = {Wed, 19 Oct 2022 17:09:02 +0200}
-}
-
-@inproceedings{MM-evoque,
-    title        = {\emph{MM-evoque}: Query Synchronisation in Multi-Model Databases},
-    author       = {Jáchym Bártík and Pavel Koupil and Irena Holubová},
-    year         = 2024,
-    booktitle    = {Submitted, under review}
-}
-
 @book{Pavlo-blog,
     title        = {{What is a Self-Driving Database Management System?}},
     author       = {Andy Pavlo},
@@ -227,21 +1416,359 @@
 }
 
 @inproceedings{sac24,
-    author       = {Jáchym Bártík and Pavel Koupil and Irena Holubová},
     title        = {Modelling and Evolution Management of Multi-Model Data},
+    author       = {Jáchym Bártík and Pavel Koupil and Irena Holubová},
     booktitle    = {{SAC} '24: The 39th {ACM/SIGAPP} Symposium on Applied Computing (accepted)},
     publisher    = {{ACM}},
     year         = {2024}
 }
 
-@misc{SQLJSON,
-    title        = {{ISO/IEC TR 19075-6:2017 Information technology — Database languages — SQL — Part 6: SQL support for JavaScript Object Notation (JSON)}},
-    author       = {ISO},
-    year         = 2017
+% #endregion
+% #region vldb_2025-dortdb
+
+@article{AWSDataLake,
+    title = {What is a Data Lake? - Introduction to Data Lakes and Analytics},
+    author = {{Amazon Web Services}},
+    journal = {AWS},
+    year = {2023},
+    url = {https://aws.amazon.com/what-is/data-lake/}
 }
 
-@misc{SQLXML,
-    title        = {{ISO/IEC 9075-14:2011 Information technology -- Database languages -- SQL -- Part 14: XML-Related Specifications (SQL/XML)}},
-    author       = {ISO},
-    year         = 2011
+@inproceedings{conf/cidr/WangBBHHHHJMMMM17,
+    title        = {{The Myria Big Data Management and Analytics System and Cloud Services}},
+    author       = {{Jingjing Wang et al.}},
+    year         = 2017,
+    booktitle    = {Proc. of {CIDR} 2017},
+    publisher    = {www.cidrdb.org}
 }
+
+@inproceedings{DBLP:conf/edbt/AnglesBGV25,
+    title        = {Path-based Algebraic Foundations of Graph Query Languages},
+    author       = {Renzo Angles and Angela Bonifati and Roberto García and Domagoj Vrgoc},
+    _editor       = {Alkis Simitsis and Bettina Kemme and Anna Queralt and Oscar Romero and Petar Jovanovic},
+    booktitle    = {Proc. of {EDBT} 2025},
+    pages        = {783--795},
+    publisher    = {OpenProceedings.org},
+    year         = {2025},
+    _url          = {https://doi.org/10.48786/edbt.2025.63},
+    _doi          = {10.48786/EDBT.2025.63},
+    _timestamp    = {Mon, 10 Mar 2025 16:32:46 +0100},
+    _biburl       = {https://dblp.org/rec/conf/edbt/AnglesBGV25.bib},
+    _bibsource    = {dblp computer science bibliography, https://dblp.org}
+}
+
+@inproceedings{DBLP:conf/icde/ReSF06,
+    title        = {A Complete and Efficient Algebraic Compiler for XQuery},
+    author       = {Christopher Ré and Jérôme Siméon and Mary F. Fernández},
+    _editor       = {Ling Liu and Andreas Reuter and Kyu{-}Young Whang and Jianjun Zhang},
+    booktitle    = {Proc. of ICDE 2006},
+    pages        = {14},
+    publisher    = {{IEEE}},
+    year         = {2006},
+    _url          = {https://doi.org/10.1109/ICDE.2006.6},
+    _doi          = {10.1109/ICDE.2006.6},
+    _timestamp    = {Fri, 24 Mar 2023 00:00:00 +0100},
+    _biburl       = {https://dblp.org/rec/conf/icde/ReSF06.bib},
+    _bibsource    = {dblp computer science bibliography, https://dblp.org}
+}
+
+@inproceedings{DBLP:conf/sigmod/HolschGS16,
+    title        = {Optimization of Nested Queries using the {NF2} Algebra},
+    author       = {Jürgen Hölsch and Michael Grossniklaus and Marc H. Scholl},
+    _editor       = {Fatma Özcan and Georgia Koutrika and Sam Madden},
+    booktitle    = {Proc. of SIGMOD 2016},
+    _pages        = {1765--1780},
+    publisher    = {{ACM}},
+    year         = {2016},
+    _url          = {https://doi.org/10.1145/2882903.2915241},
+    _doi          = {10.1145/2882903.2915241},
+    _timestamp    = {Mon, 04 Nov 2024 22:25:43 +0100},
+    _biburl       = {https://dblp.org/rec/conf/sigmod/HolschGS16.bib},
+    _bibsource    = {dblp computer science bibliography, https://dblp.org}
+}
+
+@misc{doc/arangodb,
+    title        = {{Three major NoSQL data models in one open-source database}},
+    author       = {ArangoDB},
+    year         = 2016,
+    publisher    = {ArangoDB},
+    howpublished = {https://www.arangodb.com/}
+}
+
+@misc{doc/orientdb/sbtree,
+    title        = {{SB-Tree Index Algorithm in OrientDB}},
+    author       = {OrientDB},
+    year         = 2015,
+    howpublished = {https://goo.gl/dYZeOB}
+}
+
+@misc{github:apacheage,
+    title        = {{Graph database optimized for fast analysis and real-time data processing}},
+    year         = 2024,
+    journal      = {GitHub repository},
+    publisher    = {GitHub},
+    note         = {[Online; Accessed 18-March-2024]},
+    howpublished = {\url{https://github.com/apache/age/}}
+}
+
+@article{Hausenblas2013ApacheDI,
+    title        = {{Apache Drill: Interactive Ad-Hoc Analysis at Scale}},
+    author       = {Michael Hausenblas and Jacques Nadeau},
+    journal      = {J. of Big Data},
+    year         = {2013},
+    volume       = {1},
+    number       = {2},
+    pages        = {100--104},
+    year         = {2013},
+}
+
+@article{journals/sigmod/DugganESBHKMMMZ15,
+    title = {The BigDAWG Polystore System},
+    author = {Duggan, Jennie and Elmore, Aaron J. and Stonebraker, Michael and Balazinska, Magda and Howe, Bill and Kepner, Jeremy and Madden, Sam and Maier, David and Mattson, Tim and Zdonik, Stan},
+    year = {2015},
+    issue_date = {June 2015},
+    publisher = {Association for Computing Machinery},
+    address = {New York, NY, USA},
+    volume = {44},
+    number = {2},
+    issn = {0163-5808},
+    url = {https://doi.org/10.1145/2814710.2814713},
+    doi = {10.1145/2814710.2814713},
+    journal = {SIGMOD Rec.},
+    month = 8,
+    pages = {11--16},
+    numpages = {6}
+}
+
+@article{Kolev2016TheCM,
+    title={The CloudMdsQL Multistore System},
+    author={Boyan Kolev and Carlyna Bondiombouy and Patrick Valduriez and Ricardo Jiménez-Peris and Raquel Pau and José Pereira},
+    journal={Proc. of SIGMOD 2016},
+    year={2016},
+    pages        = {2113--2116},
+    publisher    = {{ACM}},
+    _url={https://api.semanticscholar.org/CorpusID:2847984}
+}
+
+@online{redis-online,
+    title = {{Redis}},
+    author = {S. Sanfilippo and P. Noordhuis},
+    year = 2009,
+    url = {http://web.archive.org/web/20080207010024/http://www.808multimedia.com/winnt/kernel.htm},
+    urldate = {2025-03-15}
+}
+
+@misc{SQLPGQ,
+    title        = {{ISO/IEC TR 9075-16:2023 Information technology — Database languages — SQL — Part 16: Property Graph Queries (SQL/PGQ)}},
+    author       = {ISO},
+    year         = 2023
+}
+
+@online{web:apacheage,
+    title        = {{Apache AGE}},
+    author       = {Apache.org},
+    year         = 2024,
+    url          = {https://age.apache.org/overview/},
+    urldate      = {2025-03-10}
+}
+
+% #endregion
+% #region vldb_2025-fdephunter
+
+@inproceedings{DBLP:conf/edbt/LopesPL00,
+    title        = {Efficient Discovery of Functional Dependencies and Armstrong Relations},
+    author       = {Stéphane Lopes and Jean{-}Marc Petit and Lotfi Lakhal},
+    booktitle    = {Proc. EDBT},
+    series       = {LNCS},
+    volume       = {1777},
+    pages        = {350--364},
+    _publisher    = {Springer},
+    year         = {2000}
+}
+
+@article{DBLP:journals/pvldb/Berti-EquilleHN18,
+    title        = {Discovery of Genuine Functional Dependencies from Relational Data with Missing Values},
+    author       = {Laure Berti{-}équille and Hazar Harmouch and Felix Naumann and Noël Novelli and Saravanan Thirumuruganathan},
+    journal      = {In Proc. {VLDB}},
+    pages        = {880--892},
+    volume       = {11},
+    number       = {8},
+    year         = {2018}
+}
+
+@article{DBLP:journals/pvldb/SongZC015,
+    title        = {Enriching Data Imputation with Extensive Similarity Neighbors},
+    author       = {Shaoxu Song and Aoqian Zhang and Lei Chen and Jianmin Wang},
+    journal      = {In Proc. {VLDB}},
+    volume       = {8},
+    number       = {11},
+    year         = {2015}
+}
+
+@article{DBLP:journals/pvldb/PapenbrockEMNRZ15,
+    title        = {Functional Dependency Discovery: An Experimental Evaluation of Seven Algorithms},
+    author       = {Thorsten Papenbrock and Jens Ehrlich and Jannik Marten and Tommy Neubert and Jan{-}Peer Rudolph and Martin Schönberg and Jakob Zwiener and Felix Naumann},
+    _author       = {Thorsten Papenbrock and Jens Ehrlich and Jannik Marten and Tommy Neubert and  others},
+    journal      = {In Proc. {VLDB}},
+    pages        = {1082--1093},
+    volume       = {8},
+    number       = {10},
+    year         = {2015}
+}
+
+@inproceedings{DBLP:conf/sigmod/PapenbrockN16,
+    title        = {A Hybrid Approach to Functional Dependency Discovery},
+    author       = {Thorsten Papenbrock and Felix Naumann},
+    _editor       = {Fatma Özcan and Georgia Koutrika and Sam Madden},
+    booktitle    = {Proc. {SIGMOD}},
+    pages        = {821--833},
+    _publisher    = {{ACM}},
+    year         = {2016},
+    _url          = {https://doi.org/10.1145/2882903.2915203},
+    _doi          = {10.1145/2882903.2915203},
+    timestamp    = {Mon, 04 Nov 2024 22:25:43 +0100},
+    biburl       = {https://dblp.org/rec/conf/sigmod/PapenbrockN16.bib},
+    bibsource    = {dblp computer science bibliography, https://dblp.org}
+}
+
+@inproceedings{DBLP:conf/sigmod/BergmanMNT15,
+    title        = {Query-Oriented Data Cleaning with Oracles},
+    author       = {Moria Bergman and Tova Milo and Slava Novgorodov and Wang Chiew Tan},
+    booktitle    = {Proc. {SIGMOD}},
+    _publisher    = {{ACM}},
+    year         = {2015}
+}
+
+@article{DBLP:journals/jsyml/Gold65,
+    title        = {Limiting Recursion},
+    author       = {E. Mark Gold},
+    journal      = {J. Symb. Log.},
+    volume       = {30},
+    number       = {1},
+    pages        = {28--48},
+    year         = {1965}
+}
+
+@inproceedings{DBLP:conf/foiks/HartmannKLT12,
+    title        = {Armstrong Databases and Reasoning for Functional Dependencies and Cardinality Constraints over Partial Bags},
+    author       = {Sven Hartmann and Henning Köhler and Sebastian Link and Bernhard Thalheim},
+    booktitle    = {Proc. FoIKS},
+    series       = {LNCS},
+    pages        = {164--183},
+    volume       = {7153},
+    _publisher    = {Springer},
+    year         = {2012}
+}
+
+@article{DBLP:journals/pvldb/ChuIP13,
+    title        = {Discovering Denial Constraints},
+    author       = {Xu Chu and Ihab F. Ilyas and Paolo Papotti},
+    journal      = {In Proc. {VLDB}},
+    pages        = {1498--1509},
+    volume       = {6},
+    number       = {13},
+    year         = {2013}
+}
+
+@inproceedings{DBLP:conf/sigmod/AndritsosMT04,
+    title        = {Information-Theoretic Tools for Mining Database Structure from Large Data Sets},
+    author       = {Periklis Andritsos and Renée J. Miller and Panayiotis Tsaparas},
+    booktitle    = {Proc. {SIGMOD}},
+    _publisher    = {{ACM}},
+    pages        = {731--742},
+    year         = {2004}
+}
+
+@article{DBLP:journals/pvldb/ChiangM08,
+    title        = {Discovering data quality rules},
+    author       = {Fei Chiang and Renée J. Miller},
+    journal      = {In Proc. {VLDB}},
+    pages        = {1166--1177},
+    volume       = {1},
+    number       = {1},
+    year         = {2008}
+}
+
+@article{DBLP:journals/is/WeiL23,
+    title        = {Towards the efficient discovery of meaningful functional dependencies},
+    author       = {Ziheng Wei and Sebastian Link},
+    journal      = {Inf. Syst.},
+    volume       = {116},
+    articleno    = {102224},
+    year         = {2023}
+}
+
+@article{DBLP:persons/Codd71a,
+    title        = {Further Normalization of the Data Base Relational Model},
+    author       = {Edgar F. Codd},
+    journal      = {IBM Research Report, San Jose, California},
+    volume       = {{RJ909}},
+    year         = {1971},
+    timestamp    = {Fri, 21 Feb 2020 15:01:41 +0100},
+    biburl       = {https://dblp.org/rec/persons/Codd71a.bib},
+    bibsource    = {dblp computer science bibliography, https://dblp.org}
+}
+
+@misc{hpi_fds,
+    title        = {Repeatability},
+    author       = {Felix Naumann},
+    howpublished = {\url{https://hpi.de/naumann/projects/repeatability/data-profiling/fds.html}},
+    note         = {Online resource. Accessed July 2025},
+    year         = {2025}
+}
+
+@article{DBLP:journals/jiis/JiangN20,
+    title        = {Holistic primary key and foreign key detection},
+    author       = {Lan Jiang and Felix Naumann},
+    journal      = {Intell. Inf. Syst.},
+    volume       = {54},
+    number       = {3},
+    pages        = {439--461},
+    year         = {2020},
+    _url          = {https://doi.org/10.1007/s10844-019-00562-z},
+    _doi          = {10.1007/S10844-019-00562-Z},
+    timestamp    = {Sun, 19 Jan 2025 14:42:07 +0100},
+    biburl       = {https://dblp.org/rec/journals/jiis/JiangN20.bib},
+    bibsource    = {dblp computer science bibliography, https://dblp.org}
+}
+
+@inproceedings{DBLP:conf/adbt/SilvaM79,
+    title        = {A Method for Helping Discover the Dependencies of a Relation},
+    author       = {Antonio M. Silva and Michel A. Melkanoff},
+    _editor       = {Hervé Gallaire and Jean{-}Marie Nicolas and Jack Minker},
+    booktitle       = {Advances in Data Base Theory},
+    pages        = {115--133},
+    _publisher    = {Plemum Press},
+    _address      = {New York},
+    volume        = {1},
+    year         = {1979},
+    timestamp    = {Thu, 29 Mar 2018 16:54:19 +0200},
+    biburl       = {https://dblp.org/rec/conf/adbt/SilvaM79.bib},
+    bibsource    = {dblp computer science bibliography, https://dblp.org}
+}
+
+@article{DBLP:journals/is/LangeveldtL10,
+    title        = {Empirical evidence for the usefulness of Armstrong relations in the acquisition of meaningful functional dependencies},
+    author       = {Warren{-}Dean Langeveldt and Sebastian Link},
+    journal      = {Inf. Syst.},
+    volume       = {35},
+    number       = {3},
+    pages        = {352--374},
+    year         = {2010},
+    _url          = {https://doi.org/10.1016/j.is.2009.11.002},
+    _doi          = {10.1016/J.IS.2009.11.002},
+    timestamp    = {Tue, 06 Jun 2017 22:22:01 +0200},
+    biburl       = {https://dblp.org/rec/journals/is/LangeveldtL10.bib},
+    bibsource    = {dblp computer science bibliography, https://dblp.org}
+}
+
+@book{DBLP:books/aw/AbiteboulHV95,
+    title     = {Foundations of Databases},
+    author    = {Serge Abiteboul and Richard Hull and Victor Vianu},
+    publisher = {Addison-Wesley},
+    year      = {1995},
+    isbn      = {0-201-53771-0},
+    bibsource = {DBLP, http://dblp.uni-trier.de}
+}
+
+% #endregion

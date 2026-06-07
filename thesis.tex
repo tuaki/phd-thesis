@@ -80,6 +80,14 @@
                 % of contents
 \usepackage{xcolor}         % typesetting in color
 \usepackage[toc,acronym]{glossaries}
+\usepackage{subcaption}
+\usepackage{tcolorbox}
+\usepackage{multirow}
+\usepackage{afterpage}
+\usepackage{pdflscape}
+\usepackage[para,online,flushleft]{threeparttable}
+\usepackage{makecell}
+\usepackage{framed}         % Required for framed environments
 
 % The hyperref package for clickable links in PDF and also for storing
 % metadata to PDF (including the table of contents).
@@ -94,10 +102,13 @@
 }
 
 % Packages for computer science theses
-\usepackage{algpseudocode}  % part of algorithmicx package
-\usepackage{algorithm}
+% These two are incompatible with algorithm2e (which is already used in some papers, and looks better), so we will not use it.
+% \usepackage{algpseudocode}  % part of algorithmicx package
+% \usepackage{algorithm}
+\usepackage[linesnumbered,lined,boxed,commentsnumbered,ruled]{algorithm2e}
 \usepackage{fancyvrb}       % improved verbatim environment
 \usepackage{listings}       % pretty-printer of source code
+\usepackage{lstautogobble}
 
 % You might want to use cleveref for references
 \usepackage{cleveref}
@@ -105,6 +116,18 @@
 % Prefix figures with the chapter number + reset figure numbering in each chapter.
 \usepackage{chngcntr}
 \counterwithin{figure}{chapter}
+
+% This fixes the inconsistent line spacing in the listings. Basically, "frame = l" would result in dashed line, while frame = single would be fine.
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd{\lst@frameInit}
+    {\vrule\@width\lst@framerulewidth}
+    {\smash{\vrule\@width\lst@framerulewidth\@height1.2\ht\strutbox\@depth1.2\dp\strutbox}}
+    {}{}
+\makeatother
+
+% Remove the padding around the framed image, so that the frame is tight to the image.
+\setlength{\fboxsep}{0pt}
 
 % Set up formatting of bibliography (references to literature)
 % Details can be adjusted in macros.tex.
@@ -131,9 +154,9 @@
 % Load the file with bibliography entries
 \addbibresource{bibliography.bib}
 
-\input{tex/macros.tex}
+\input{tex/macros}
 
-\input{glossary.tex}
+\input{glossary}
 
 \begin{document}
 
@@ -148,16 +171,16 @@
 \include{chapters/4-self-adaptation}
 \include{chapters/5-related-concepts}
 
-\include{papers/cikm_2022}
-\include{papers/dke_2026}
-\include{papers/edbt_2024}
-\include{papers/edbt_2025}
-\include{papers/edbt_2026}
-\include{papers/enase_2025}
-\include{papers/rcis_2025}
-\include{papers/vldb_2024/index.tex}
-\include{papers/vldb_2025-dortdb}
-\include{papers/vldb_2025-fdephunter}
+\include{papers/cikm_2022/index}
+\include{papers/dke_2026/index}
+\include{papers/edbt_2024/index}
+\include{papers/edbt_2025/index}
+\include{papers/edbt_2026/index}
+\include{papers/enase_2025/index}
+\include{papers/rcis_2025/index}
+\include{papers/vldb_2024/index}
+\include{papers/vldb_2025-dortdb/index}
+\include{papers/vldb_2025-fdephunter/index}
 
 \include{chapters/conclusion}
 

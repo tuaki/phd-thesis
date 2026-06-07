@@ -1,0 +1,336 @@
+% \documentclass[sigconf]{acmart}
+
+% \usepackage{booktabs} % For formal tables
+% \usepackage{blindtext}
+% \usepackage{booktabs}
+% \usepackage{todonotes}
+% \usepackage{hyperref}
+% \usepackage{footmisc}
+% \usepackage{graphicx}
+% \usepackage{array}
+% \usepackage{url}
+% \usepackage{todonotes}
+% \usepackage{hyperref}
+% \usepackage{fancyvrb}
+% \usepackage{float}\restylefloat{figure}
+% \usepackage{subfig} %subfloat	
+% \usepackage{graphicx}
+% \usepackage[export]{adjustbox}
+
+
+%\settopmatter{printacmref=false, printccs=false, printfolios=false}
+
+% \newcommand{\QUE}[1]{{\color{blue}{\textbf{Q: {#1}}\xspace}}}
+
+% \copyrightyear{2022}
+% \acmYear{2022}
+% \setcopyright{acmcopyright}\acmConference[CIKM '22]{Proceedings of the 31st ACM International Conference on Information and Knowledge Management}{October 17--21, 2022}{Atlanta, GA, USA}
+% \acmBooktitle{Proceedings of the 31st ACM International Conference on Information and Knowledge Management (CIKM '22), October 17--21, 2022, Atlanta, GA, USA}
+% \acmPrice{15.00}
+% \acmDOI{10.1145/3511808.3557180}
+% \acmISBN{978-1-4503-9236-5/22/10}
+
+% \begin{document}
+% \title{\textit{MM-evocat}: A Tool for Modelling and Evolution Management of Multi-Model Data}
+
+% \author{Pavel Koupil}
+% \affiliation{
+% \institution{Department of Software Engineering, Charles University}
+%        \city{Prague}
+%        \country{Czech Republic}
+%        }
+%  \email{pavel.koupil@matfyz.cuni.cz}
+ 
+% \author{Jáchym Bártík}
+% \affiliation{
+% \institution{Department of Software Engineering, Charles University}
+%        \city{Prague}
+%        \country{Czech Republic}
+%        }
+%  \email{jachym.bartik@matfyz.cuni.cz}
+ 
+% \author{Irena Holubov\'a}
+% \affiliation{
+% \institution{Department of Software Engineering, Charles University}
+%        \city{Prague}
+%        \country{Czech Republic}
+%        }
+%  \email{irena.holubova@matfyz.cuni.cz} 
+
+
+% The default list of authors is too long for headers}
+% \renewcommand{\shortauthors}{B. Trovato et al.}
+% \renewcommand{\shortauthors}{Pavel Koupil, Jáchym Bártík, \& Irena Holubová.}
+
+
+% \begin{abstract}
+\section*{Abstract}
+
+In this paper, we focus on the problem of evolution management of multi-model data. With the changing user requirements, the schema and the data need to be adapted to preserve the expected functionality of a multi-model application. We introduce a tool \textit{MM-evocat} based on utilising the category theory. We  show that the core of the tool, i.e., the categorical representation of multi-model data, enables us to grasp all the specifics of the individual models and their possible combinations. Its simple but powerful formal basis enables unique and robust support for evolution management. 
+% \end{abstract}
+
+% \begin{CCSXML}
+% <ccs2012>
+% <concept>
+% <concept_id>10003752.10010070.10010111.10010112</concept_id>
+% <concept_desc>Theory of computation~Data modeling</concept_desc>
+% <concept_significance>500</concept_significance>
+% </concept>
+% </ccs2012>
+% \end{CCSXML}
+
+% \ccsdesc[500]{Theory of computation~Data modeling}
+
+% \keywords{multi-model data, evolution management, change propagation}
+
+% \maketitle
+
+% 4 pages + references
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Introduction}
+
+Currently, there exist 388 database management systems (DBMSs)\footnote{\url{https://db-engines.com/en/ranking}}. 
+Considering the 50 most popular representatives, we get $60~\%$ systems that can be denoted as \textit{multi-model}.
+
+\begin{example}
+\small
+Consider an example of a multi-model scenario as shown in Figure~\pRef{fig:data}. The relational data (purple) represents customers and their addresses, whereas the document data (green) is redundant to the relational data. Relationships between customers are captured in the graph (blue).
+\end{example}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.8]{papers/cikm_2022/figures/data-models.pdf}
+    \caption{An example of multi-model data}
+    \pLabel{fig:data}
+\end{figure}
+
+According to our extensive survey~\citep{CSUR-Jiaheng}, the features of existing multi-model databases vary significantly. This status is given by the fact that (1) they are based on the distinct original core single model as well as distinct target application domains, (2) there is no acknowledged standard on how to support a combination of models, cross-model querying, multi-model indices, etc., and (3)~the combined models have distinct, often contradictory features. 
+
+The described variety of multi-model DBMSs lacking standards and the general complexity of multi-model applications bring many new challenges to data management. 
+One of them, our aim in this paper, is \textit{evolution management} of multi-model data. As user requirements or the environment change, the data structures evolve, and the whole system must be adapted to preserve the same functionality (and efficiency). We can rely on a skilled database administrator in simpler applications, but it is a complicated and error-prone task in complex cases where multi-model data undoubtedly belong. 
+
+\begin{example}
+\small
+Consider again Figure~\pRef{fig:data}. We may want to merge customers with their addresses into a single table in the relational model to speed up respective queries. %Or, we may want to group the properties \textit{street}, \textit{city}, \textit{postCode} into a single property \textit{address} in the document model.
+\end{example}
+
+To address the indicated problems, we extend our previous research results in evolution management~\citep{Necasky:2012:ECM:2148237.2148273,DBLP:journals/dke/HolubovaVS21} and categorical representation of multi-model data~\citep{DBLP:journals/jbd/KoupilH22}. We introduce a tool called \textit{MM-evocat}\footnote{\url{https://www.ksi.mff.cuni.cz/~koupil/mm-evocat/}}, which enables to perform user-specified changes over an abstract multi-model schema and propagates them across all affected sub-models to the logical schemas as well as data instances. 
+The main contributions can be summarised as follows:
+
+\begin{itemize}
+    \item The unifying categorical representation enables us to represent all popular data models (relational,  key/value, document, column, and graph) and all types of their combination (embedding, references, and redundancy).
+    \item The representation enables a full decomposition of the data structures to a categorical graph. Hence, it does not impose any initial aggregation of more complex structures, making evolution management robust and efficient.
+    \item Apart from the standard core \textit{schema modification operations} (SMOs), we introduce operations with integrity constraints (ICs), cardinalities, and groups of properties.
+    \item Besides the most natural propagation from the conceptual to the logical level (so-called \textit{heavy operations}), we also introduce \textit{light operations} which change only the conceptual level and its mapping to the logical level.
+    \item We present a proof-of-concept implementation \textit{MM-evocat}. Using real-world data, we demonstrate its features and show how much manual and error-prone work the approach saves.
+\end{itemize}
+
+
+\paragraph{Paper Outline} In Section~2, we review related work. Section~3 introduces the categorical representation of multi-model data. Section~4 describes the evolution management approach and its implementation. In Section~5, we outline its demonstration.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Related Work}
+The exists a few multi-model approaches with various limitations.
+
+\textit{DaemonX}~\citep{10.1145/2539150.2539159} assumes the design of a platform-independent model (PIM) and then mapping its selected parts to the respective single-model platform-specific models (PSMs) involving XML, relational, business-process, and REST models. The authors focus on the correct and complete propagation of changes. The idea of the framework is general and extensible. However, they do not consider proper multi-model data because neither cross-model references nor mutual embedding of models is supported. 
+
+%--------------------------------
+
+\emph{Darwin}~\citep{DBLP:conf/icde/Storl0TTSKS18,darwin-btw17}  supports only aggregate-oriented NoSQL data stores (namely \textit{MongoDB}, \textit{Couchbase}, \textit{Cassandra}, and \textit{ArangoDB}). 
+Beyond extracting a schema summary from a NoSQL data instance, users can derive the historical series of schema versions and semi-automatically declare the changes between two consecutive schemas. \emph{MigCast}~\citep{hillenbrand2019migcast,DBLP:conf/icde/HillenbrandSLNK20} extends \emph{Darwin} with 
+an adviser for evaluating different data migration strategies w.r.t.\ their costs (such as monetary costs for operating in the cloud).
+
+%---------------------------
+\textit{MM-evolver}~\citep{DBLP:journals/dke/HolubovaVS21} supports evolution management of aggregate-oriented and aggregate-ignorant models, including references (in a limited way). However, the level of abstraction of the multi-model data is insufficient, and its further extensions are complicated. 
+
+%--------------------------------
+
+The \textit{ORION language}~\citep{DBLP:conf/er/ChillonRM21a} was designed for evolution management of \textit{U-Schemas}~\citep{DBLP:journals/is/CandelRM22}, a  representation of multi-model data. Although the authors try to ensure unification, they involve special constructs covering model-specific features. Also, the models are handled relatively separately, not as one unit. Consequently, the schema modification language is complex, as it must consider all the constructs and their specifics. As in the previous case, further approach extensions will not be straightforward.
+
+%---------------------------
+
+% category theory
+The idea to exploit category theory for this purpose is not new. However, the existing approaches are still limited too. 
+Paper~\citep{tuijn1996} utilises category theory to represent (object-)relational data and considers only basic operation (adding and deletion).
+The authors of paper~\citep{DBLP:journals/corr/abs-2201-04905} utilise category theory to represent multi-model data (in particular relational, JSON document, and graph) and to express the data migration process between the models formally.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Categorical Conceptual Model}
+Let us first remind the basic notions of the category theory.
+A \textit{category} $\mathbf{C} = (\mathcal{O}, \mathcal{M}, \circ)$ consists of a set of objects $\mathcal{O}$, set of morphisms $\mathcal{M}$, and a composition operation $\circ$ over the morphisms. Each morphism is modeled as an arrow $f : A \rightarrow B$, where $A, B \in \mathcal{O}$. We must also ensure \textit{transitivity} ($g \circ f \in \mathcal{M}$ for any $f, g \in \mathcal{M}$, $f : A \rightarrow B$, $g : B \rightarrow C$), \textit{associativity} (requiring $h \circ (g \circ f) = (h \circ g) \circ f$ for any suitable $f, g, h \in \mathcal{M}$), as well as introduce an \textit{identity} morphism $1_A$ for each object $A$ such that $f \circ 1_A = f = 1_B \circ f$ for any $f : A \rightarrow B$. A category can be visualised as a multigraph, where objects act as vertices and morphisms as directed edges.
+
+
+\paragraph{Schema Category}
+The core of conceptual modelling of multi-model data in \textit{MM-evocat} forms so-called \textit{schema category}.\footnote{The \textit{instance category}~\citep{DBLP:journals/jbd/KoupilH22} was also introduced for  unified representation of data.}
+To simplify the understanding, we will explain it using the terms known from the ER model\footnote{An ER model can be automatically transformed to a schema category.~\citep{DBLP:conf/ideas/HolubovaCS21a}}, though we do not need to distinguish them, as they are all treated in the same way.
+
+Schema category $\mathbf{S}$ is defined as a tuple  $(\mathcal{O}_\mathbf{S}, \mathcal{M}_\mathbf{S}, \circ_\mathbf{S})$. Objects in $\mathcal{O}_\mathbf{S}$ correspond to entity types, attributes, and relationship types. Attribute/relationship/hierarchy morphisms in $\mathcal{M}_\mathbf{S}$ connect appropriate pairs of objects. The explicitly defined morphisms are denoted as \textit{base}, those obtained via the composition $\circ$ as \textit{composite}.
+
+
+Each object $o \in \mathcal{O}_\mathbf{S}$ is internally modelled as a tuple $(key$, $label$, $superid$, $ids)$, where $key \in \mathbb{O} \subseteq \mathbb{N}$ is an automatically assigned internal identity, $label$ is an optional user-defined name (e.g., name of the corresponding entity type) or $\bot$ when missing, $superid \ne \emptyset$ is a set of attributes  forming the actual data contents of a given object, and $ids \subseteq \mathcal{P}(superid)$, $ids \ne \emptyset$ is a set of particular identifiers (each modelled as a set of attributes) allowing us to uniquely distinguish individual data instances. It holds that $\bigcup_{id \in ids} id \subseteq superid$ (equality for entity or attribute objects).
+
+% \def\myConcat{\!\cdot\!}
+
+Each morphism $m \in \mathcal{M}_\mathbf{S}$ is a tuple $(signature$, $dom$, $cod$, $min$, $max)$. $signature \in \mathbb{M}^{*}$ enables us to distinguish all morphisms except the identity ones. $\mathbb{M}^{*}$ is the set of all possible sequences of symbols from $\mathbb{M}$ connected using \uv{$\cdot$}, $signature \in \mathbb{M}$ is used for the base morphisms, $signature \in \mathbb{M}^{*} \setminus (\mathbb{M} \cup \{\varepsilon\})$ is used for the composite morphisms allowing their decomposition to base morphisms, $signature = \varepsilon$ is used for identity. %$\mathbb{M}^{*}$ is a set of all the possible strings over the alphabet $\mathbb{M}$, i.e., all possible sequences of symbols from $\mathbb{M}$ connected using the $\cdot$ operation (e.g., $15$, $3 . 7 . 5$, or $\varepsilon$ being a meta symbol representing an empty string). $signature \in \mathbb{M}$ is used for the base morphisms. $signature \in \mathbb{M}^{*} \setminus (\mathbb{M} \cup \{\varepsilon\})$ is used for the composite morphisms allowing their decomposition to base morphisms, which is directly related to the definition of the $\circ$ operation itself. $signature = \varepsilon$ is used for identity.
+$dom$ and $cod$ represent the domain and codomain of the morphism. Cardinalities $min \in \{\mathtt{0}, \mathtt{1}\}$ and $max \in \{\mathtt{1}, \mathtt{*}\}$, $min < max$, allow us to express constraints on min/maximal numbers of occurrences.
+Identity morphism for $o \in \mathcal{O}_\mathbf{S}$ is defined as $1_o = (\varepsilon$, $o$, $o$, $\mathtt{1}$, $\mathtt{1})$. 
+
+For non-identity morphisms $m_1 = (signature_1$, $dom_1$, $cod_1$, $min_1$, $max_1)$ and $m_2 = (signature_2$, $dom_2$, $cod_2$, $min_2$, $max_2) \in \mathcal{M}_\mathbf{S}$, their composition $m_2 \circ_\mathbf{S} m_1$ $=$ $(signature_2$ $\!\cdot\!$  $signature_1$, $dom_1$, $cod_2$, \\$\min(min_1,$ $min_2)$, $\max(max_1,$ $max_2))$.
+
+%Finally, for technical reasons, whenever $m : X \rightarrow Y$ is a non-identity morphism between two particular objects, there must also exist its \textit{dual} morphism $m^{-1} : Y \rightarrow X$. Its purpose is to restrain the opposite direction of the same relationship between a given pair of objects since morphisms are always directed. Therefore, both directions need to be treated separately.
+
+
+\begin{example}
+\small
+Figure~\pRef{fig:schema-er} depicts the ER (a) and categorical (b) conceptual model of sample data from Figure~\pRef{fig:data}.
+\end{example}
+
+
+\begin{figure}[h]
+    \centering
+    \subfloat[]{\includegraphics[scale=0.8]{papers/cikm_2022/figures/schema-er.pdf}}
+    \hspace{1em}
+    \subfloat[]{\includegraphics[scale=0.8]{papers/cikm_2022/figures/schema-categorical.pdf}}
+    \caption{ER (a) and categorical (b) schema of sample data}
+    \pLabel{fig:schema-er}
+\end{figure}
+
+
+\paragraph{Mapping}
+To \uv{glue} the categorical conceptual schema with the respective logical schemas in the underlying DBMSs, the schema category is decomposed and mapped to particular model-specific data structures. Since the terminology within the particular popular models differs, in~\citep{mm_cat} we provide the unification of respective model-specific terms. A \textit{kind} corresponds to a class of items represented in each model, e.g., a relational table or a collection of JSON documents. A \textit{record} corresponds to one item of a kind, e.g., a table row or a JSON document. Depending on a particular model, a record consists of simple or complex \textit{properties} having their \textit{domains}.  
+
+At the logical level, a transition between two distinct models can be expressed either via (1) \textit{inter-model references} or by (2) \textit{embedding} one model into another (e.g., columns of type JSON in tables of the relational model of \textit{PostgreSQL}\footnote{\url{https://www.postgresql.org/}}). Another possible combination of models is via (3) \textit{multi-model redundancy}, i.e., storing the same data fragment in two or more distinct models.
+
+
+The decomposition of a schema category $\mathbf{S}$ (depicted in Figure~\pRef{fig:schema-er}~(b) using colours), eventually partial or overlapping, is defined via a set of \textit{mappings}, as also formally defined in~\citep{DBLP:journals/jbd/KoupilH22} (and omitted for paper length). Each mapping describes where and how data instances of a subgraph of $\mathbf{S}$ (following particular conditions) are stored in a kind of a particular DBMS. For each kind, the mapping specifies the respective DBMS, its name, its root object in $\mathbf{S}$, and an \textit{access path} which recursively (i.e., in the same way) describes the structure of a kind, i.e., its (simple or complex) properties, relatively to the root object. The description is rich enough to cover various specifics of the underlying models and their combinations, such as properties with user-defined, anonymous, or dynamically-derived names; properties \textit{inlined} from more distant parts of the categorical graph (via composite morphisms); auxiliary properties used, e.g., for logical grouping of a set of properties; order-preserving/order-ignoring sets of subproperties etc. We also introduce a  JSON-like representation of an access path for easier understanding. 
+
+
+\begin{example}
+\small
+In Figure~\pRef{fig:mapping}, the mapping is depicted for kinds (tables) \textit{Address} and \textit{Customer} using the dashed arrows. 
+\end{example}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.8]{papers/cikm_2022/figures/mapping.pdf}
+    \caption{Relational-to-conceptual mapping}
+    \pLabel{fig:mapping}
+\end{figure}
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Evolution Manager \textit{MM-evocat}}
+
+\textit{MM-evocat} is an extensible modular framework whose core forms the introduced categorical conceptual model. It enables the creation of a categorical model, its decomposition and mapping to any combination of the supported models, and the application of user-specified modifications.
+The architecture of \textit{MM-evocat} is depicted in Figure~\pRef{fig:arch}. At the lowest, platform-specific (green) level, there are the particular DBMSs, each with respective wrappers ensuring the unified communication with the DBMS and unifying representation of the multi-model data. Currently it supports the following models and DBMSs: \textit{PostgreSQL} (relational and document, i.e., multi-model), \textit{Neo4j}\footnote{\url{https://neo4j.com/}} (graph), and \textit{MongoDB}\footnote{\url{https://www.mongodb.com/}} (NoSQL document). 
+The blue logical-to-conceptual mapping represents the \uv{glue} between the logical schemas and the conceptual schema at the (red) platform-independent level. Over the conceptual schema, the user can specify evolution/migration operations or conceptual queries. (We also proposed an approach for inference of the categorical conceptual schema~\citep{mm_infer} from the sample data.)
+
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.8]{papers/cikm_2022/figures/mm-evocat-architecture.pdf}
+    \caption{Architecture of \textit{MM-evocat}}
+    \pLabel{fig:arch}
+\end{figure}
+
+In Figure~\pRef{fig:screen} we provide a screenshot of \textit{MM-evocat} with the same categorical model as in Figure~\pRef{fig:schema-er}~(b).%\footnote{Note that the layout and colours do not correspond to Figure~\pRef{fig:schema-er}~(b) since the tool assigns them using specific algorithms.}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth]{papers/cikm_2022/figures/01-demo.png}
+    \caption{A screenshot of \textit{MM-evocat}}
+    \pLabel{fig:screen}
+\end{figure}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Schema Modification Operations}
+For specification of user-required changes, we have defined the \textit{Multi-Model Schema Evolution Language} (MMSEL), i.e., a set of \textit{Schema Modification Operations} (SMOs) that enable to create and delete any allowed schema. Figure~\pRef{fig:ebnf_syntax}  shows its EBNF grammar. 
+
+
+\begin{figure}[h]
+\begin{Verbatim}[frame=single,fontsize=\footnotesize]
+MMSEL := ADD | DELETE | RENAME | COPY | MOVE | GROUP | UNGROUP | UNION | 
+         SPLIT | ADD_ID | DROP_ID | ADD_REF | DROP_REF | CHANGE_CARDINALITY
+
+ADD      := "add"     PROP [("to" PROP) | ("=" {val} "to" PROP) [SELECTION]]
+DELETE   := "delete"  PROP [SELECTION]
+RENAME   := "rename"  PROP "to" {name} [SELECTION]
+COPY     := "copy"    PROP "to" PROP [SELECTION]
+MOVE     := "move"    PROP "to" PROP [SELECTION]
+GROUP    := "group"   PROP[","PROP]* "to" PROP [SELECTION]
+UNGROUP  := "ungroup" PROP [SELECTION]
+UNION    := "union"   PROP[","PROP]* "to" PROP "separator" {sep} [SELECTION]
+SPLIT    := "split"   PROP TO PROP[","PROP]* "separator" {sep} [SELECTION]
+ADD_ID   := "addId"   PROP[","PROP]* "to" PROP
+DROP_ID  := "dropId"  PROP[","PROP]* "from" PROP
+ADD_REF  := "addRef"  PROP[","PROP]* "from" PROP "to" PROP
+DROP_REF := "dropRef" PROP[","PROP]* "from" PROP "to" PROP
+CHANGE_CARDINALITY := "changeCardinality" 
+   (PROP1->PROP2        "to" PROP1<-PROP3->PROP2) |
+   (PROP1<-PROP3->PROP2 "to" PROP1->PROP2) ["separator" {sep}] [SELECTION]
+             
+SELECTION := "where" COND ["and" | "or" COND]*
+COND      := PROP "=" {val}
+PROP, PROP1, PROP2, PROP3 := [{schemaId}]"."{label} | [{schemaId}]"."{key}
+<-, ->    := [{schemaId}]"."{signature}
+\end{Verbatim}
+\caption{EBNF syntax of MMSEL (Non-terminals are capitalised. Terminals are in quotation marks. Variables are in curly brackets.) %Square brackets represent optionality, | is logical or, * is repeatability.
+}
+\pLabel{fig:ebnf_syntax}
+\end{figure}
+
+As we can see, we naturally involve core operations to \textit{add}, \textit{delete}, or \textit{rename} a property and  common operations to \textit{copy} or \textit{move} a property to another property. We also support the creation of a new property from a set of properties, either creating a complex parent property (\textit{group}) or a simple property containing their values using a specified separator (\textit{union}), including their inverse operations (\textit{ungroup}/\textit{split}). In addition, we enable to work with identifiers (\textit{addId}/\textit{dropId}) and references (\textit{addRef}/\textit{dropRef}). Finally (and also  uniquely), we enable the modification of cardinalities in both directions (also covering the change between a simple type and an array), i.e., from more to less restricted and vice versa (\textit{changeCardinality}).%\footnote{Both directions change the structure of the schema category, similar to the situation of an additional table in case of an M:N relationship.} 
+% simpleType -> array
+% 1:1 -> M:N
+
+
+
+Regarding the propagation, the operations can be further divided into heavy and light, depending on user requirements. A \textit{heavy operation} is an SMO propagated from the conceptual level to the mapping, logical level, and data instances. Conversely, a \textit{light operation} only triggers a propagation to the mapping. Each SMO can be heavy. Operations \textit{add}, \textit{rename}, \textit{group}, \textit{addId}, and \textit{addRef} can be also light. 
+(Note that this behaviour is different from the \textit{eager} and \textit{lazy} migration considered in~\citep{hillenbrand2019migcast,DBLP:conf/icde/HillenbrandSLNK20}. These classes reflect whether the operation is propagated immediately or the propagation can be delayed until the change is needed.)
+
+A sample heavy operation is provided in Figure~\pRef{fig:example_heavy}. We apply operation \texttt{ungroup Address} to extract subproperties \textit{Street}, \textit{City}, and \textit{PostCode} from kind \textit{Address} and to store them directly to kind \textit{Customer}. This part of the schema is stored redundantly in both relational (purple) and document (green) models. In the relational model the respective kinds (tables \textit{Address} and \textit{Customer}) are merged into one kind (table) \textit{Customer}. Conversely, we only remove one level from the hierarchical JSON data in the document model.
+%
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.7]{papers/cikm_2022/figures/heavy-operation.pdf}
+    \caption{Heavy operation \texttt{ungroup Address}}
+    \pLabel{fig:example_heavy}
+\end{figure}
+
+A sample light operation is provided in Figure~\pRef{fig:example_light}. Operation \texttt{group Name, Surname to Personal} creates a new complex property \textit{Personal} consisting of existing properties \textit{Name} and \textit{Surname}. The change in the categorical schema is propagated to the mapping; however, the logical level remains unchanged. We also provide an example of a conceptual query over the schema category, which reflects the change at the conceptual level. Conversely, the graph query over the graph (logical) model remains unchanged.   
+%
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.7]{papers/cikm_2022/figures/light-operation.pdf}
+    \caption{Light operation \texttt{group name, surname to Personal}}
+    \pLabel{fig:example_light}
+\end{figure}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Demonstration Outline}
+
+Our demonstration will be based on three collections of the \textit{Yelp Academic Dataset}\footnote{\url{https://www.kaggle.com/datasets/yelp-dataset/yelp-dataset}} of JSON documents -- \textit{Review}, \textit{Tip}, and \textit{User} -- transformed into the three supported data models, i.e., graph, JSON document, and relational. Using the data, we will gradually modify the datasets to demonstrate:
+
+\begin{enumerate}
+    \item the advantages of the categorical representation (decomposition, unifying representation, cross-model transitions etc.),
+    \item the rich set of SMOs, i.e., the new operations as well as the difference and applicability of light and heavy operations, 
+    \item the number of affected kinds/properties and consequently the amount of saved manual and error-prone work,
+    and
+    \item the extensibility for future work, i.e., the efficient propagation to queries or the utilisation of AI for self-adaptability.
+\end{enumerate}
+
+% \section*{Acknowledgement}
+% The work was supported by the GA\v{C}R project no. 20-22276S and the GAUK project no. 16222.
+
+% \bibliographystyle{ACM-Reference-Format}
+% \bibliography{references} 
+
+% \end{document}

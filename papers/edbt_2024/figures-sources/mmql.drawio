@@ -1,0 +1,13 @@
+<mxfile host="Electron" modified="2023-11-30T11:52:38.594Z" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/22.1.2 Chrome/114.0.5735.289 Electron/25.9.4 Safari/537.36" etag="iwbGJKPo-waHcdtcV52W" version="22.1.2" type="device">
+  <diagram name="Stránka-1" id="qiMnMmnAYc6QhN57i59R">
+    <mxGraphModel dx="-596" dy="-491" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="Xwl7p_79VTCpn0Tqihr5-1" value="&lt;font face=&quot;Verdana&quot;&gt;&lt;font style=&quot;border-color: var(--border-color);&quot;&gt;&lt;b&gt;SELECT&lt;/b&gt; {&lt;br style=&quot;border-color: var(--border-color);&quot;&gt;&amp;nbsp;&amp;nbsp;&lt;b&gt;SUM&lt;/b&gt;(?price) &lt;b&gt;AS&lt;/b&gt; ?totalPrice&lt;br style=&quot;border-color: var(--border-color);&quot;&gt;} &lt;b&gt;WHERE&lt;/b&gt; {&lt;br style=&quot;border-color: var(--border-color);&quot;&gt;&amp;nbsp; ?orders&lt;span style=&quot;white-space: pre;&quot;&gt;&#x9;&lt;/span&gt;-18/12 ?customer ;&lt;br style=&quot;border-color: var(--border-color);&quot;&gt;&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &lt;span style=&quot;white-space: pre;&quot;&gt;&#x9;&lt;/span&gt;-17/10 ?price .&lt;br style=&quot;border-color: var(--border-color);&quot;&gt;&amp;nbsp; ?customer 2 &quot;Anna&quot; .&lt;br style=&quot;border-color: var(--border-color);&quot;&gt;}&lt;br&gt;&lt;b&gt;ORDER BY&lt;/b&gt; (?totalPrice)&amp;nbsp;&lt;/font&gt;&lt;b&gt;DESC&lt;br&gt;&lt;/b&gt;&lt;b&gt;LIMIT&lt;/b&gt; 1&lt;/font&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=top;whiteSpace=wrap;rounded=0;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="890" y="1338" width="210" height="160" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

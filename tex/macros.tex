@@ -100,7 +100,8 @@
 
 %%% An environment for typesetting of program code and input/output
 %%% of programs.
-\DefineVerbatimEnvironment{code}{Verbatim}{fontsize=\small, frame=single}
+% This would also define the `\code` command so fuck it.
+% \DefineVerbatimEnvironment{code}{Verbatim}{fontsize=\small, frame=single}
 
 % Settings for lstlisting -- program listing with syntax highlighting
 \ifcsname lstset\endcsname
@@ -183,6 +184,7 @@
 
 \newcommand{\uv}[1]{``#1''}
 \newcommand{\term}[1]{\textbf{#1}}
+\newcommand{\code}[1]{{\normalfont{\texttt{#1}}}}
 
 \makeatletter
 \newcounter{Paper}
@@ -218,7 +220,6 @@
 \vfill
 \hspace{0pt}
 \end{center}
-\newpage
 }
 
 \newcommand{\paperRef}[1]{Paper~\hyperref[#1]{\ref{#1@display}}}
@@ -255,8 +256,37 @@
 
 \newcommand{\footnotei}[2]{%
 \mbox{%
-\setbox0\hbox{#1}%
+\setbox0\hbox{#2}%
 \copy0%
 \hspace{-\wd0}}%
-\footnote{#2}%
+\footnote{#1}%
 }
+
+% Width to use for a figure in a fbox to make it fit the page without overflowing. Measured experimentally to a sufficient precision.
+\def\framedWidth{0.999275\textwidth}
+
+% Decides whether to include the papers.
+% Overrides labels and refs for papers.
+\def\true{true}
+\newcommand{\paperInput}[2]{%
+\ifx\includePapers\true
+\newpage
+\begingroup
+  \def\inputPrefix{#1}%
+
+  % This approach doesn't work for \label, because it's being redefined by someone (probably at sections or sth). Yup, macros at its finest.
+  % So, we have to use the \pLabel macro below.
+  % \let\oldlabel\label
+  % \renewcommand{\label}[1]{\oldlabel{\inputPrefix##1}}
+
+  % So, this doesn't work either ... gues what, if \ref is used in a caption, it's written expdanded to \oldRef in the .aux file, which is, ofc, undefined when used in LOF.
+  % \let\oldRef\ref
+  % \renewcommand{\ref}[1]{\oldRef{\inputPrefix##1}}
+
+  \input{#2}
+\endgroup
+\fi
+}
+
+\newcommand{\pLabel}[1]{\label{\inputPrefix#1}}
+\newcommand{\pRef}[1]{\ref{\inputPrefix#1}}

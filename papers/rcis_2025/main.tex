@@ -1,0 +1,762 @@
+% \documentclass[runningheads]{llncs}
+% \usepackage[T1]{fontenc}
+% \usepackage{graphicx}
+% \usepackage[utf8]{inputenc}
+% \usepackage{booktabs}
+% \usepackage{fancyvrb}
+% \usepackage{url}
+% \usepackage{array}
+% \usepackage{subcaption}
+% \usepackage{amsfonts}
+% \usepackage{amstext}
+% \usepackage{amsmath}
+% \usepackage{pdflscape}
+% \usepackage[export]{adjustbox}
+% \usepackage{multicol}
+% \usepackage{multirow}
+% \usepackage{algorithm2e}
+% \usepackage{afterpage}
+% \usepackage[para,online,flushleft]{threeparttable}
+
+% \newcommand{\val}[1]{\texttt{#1}}
+% \newcommand{\monospace}[1]{\texttt{#1}}
+% \newcommand{\term}[1]{\textit{#1}}
+% \newcommand{\termref}[2]{\hyperref[{#1}]{\textit{#2}}}
+% \newcommand{\mathcard}{\leftrightarrow}
+% \newcommand{\card}[2]{(\val{#1}~$\mathcard$~\val{#2})}
+% \newcommand{\transition}[2]{$\mathrm{\mathbf{#1}}^{\boldsymbol{#2}}$}
+% \newcommand{\arrayof}[1]{#1\ast}
+% \newcommand{\optional}[1]{#1?}
+% \newcommand{\dual}[1]{\overline{#1}}
+% \newcommand{\mmcat}{MM-cat}
+% \newcommand{\mmevocat}{MM-evocat}
+% \newcommand{\mmcatdbDemo}{\url{https://demo.mmcatdb.com}}
+% \newcommand{\mminfer}{MM-infer}
+% \newcommand{\mmevolver}{MM-evolver}
+% \newcommand{\mmql}{MMQL}
+% \newcommand{\mmquecat}{MM-quecat}
+
+% \def\myConcat{\!\cdot\!}
+
+% 16 pages !!!!!!
+
+% \begin{document}
+% \title{Model-Agnostic Evolution Management\thanks{Supported by the GAČR grant no. 23-07781S and GAUK grant no. 292323.}}
+
+% \author{Pavel Koupil \and
+% Jáchym Bártík \and
+% Irena Holubov\'a}
+% \authorrunning{P. Koupil et al.}
+% \institute{Department of Software Engineering, Charles University, Prague, Czech Republic\\
+% \email{\{pavel.koupil,jachym.bartik,irena.holubova\}@matfyz.cuni.cz}}
+
+% \maketitle
+
+
+% \begin{abstract}
+\section*{Abstract}
+
+This paper tackles a critical challenge in data management: adapting to evolving user requirements, a concept we term \textit{evolution management}. Our approach specifically addresses the evolution management of multi-model data. By leveraging category theory, we provide an abstract representation of the combined models. We extend this categorical framework by introducing schema-modification operations of varying types and complexities. And, we propose corresponding propagation strategies to adapt queries, with a particular focus on mitigating the impact of \textit{decreasing information capacity}. Through experimental verification, we demonstrate significant reductions in effort across different strategies and their effects on querying.
+
+% \keywords{Evolution \and Multi-Model Data \and Query Synchronization}
+% \end{abstract}
+
+\section{Introduction}
+\pLabel{sec:intro}
+
+More than two-thirds of the 50 most widely used database management systems (DBMSs)\footnote{\url{https://db-engines.com/en/ranking}} fall into the category of \textit{multi-model}, i.e., supporting multiple models as first-class citizens.
+However, due to the absence of established standards governing which models should be combined and how or how to query the multi-model data, the features of existing multi-model databases exhibit significant variations in the supported models, the way they are combined, the multi-model query languages, etc.~\citep{CSUR-Jiaheng}. In addition, combining different models, such as aggregate-oriented and aggregate-ignorant, flat and structured, or schema-full and schema-less, naturally introduces conflicting features requiring specific handling.
+
+This situation presents numerous challenges across all aspects of data management. In this paper, we focus on the situation when user requirements change, resulting in the need to adapt the data structures, so-called \textit{evolution management}, i.e., propagation of the user-required changes in the schema to all affected parts of the system while preserving its integrity and efficiency.
+%Since multi-model applications are naturally complex, evolution management is highly complicated and error-prone. 
+%We must ensure that the change is propagated fully and correctly across multiple models. 
+We must also consider the cross-model redundancy and the contradictory features of the combined models/DBMSs. Our approach is based on our unifying abstract categorical representation of multi-model data~\citep{DBLP:journals/jbd/KoupilH22}, which covers all popular data models and their combinations, including cross-model redundancy. In addition, its natural graph representation shields the user from the technical details of the underlying models and DBMSs.
+
+The key and, to the best of our knowledge, genuine contributions of this paper to the evolution management of multi-model data are as follows:
+\begin{itemize} 
+    \item For the categorical model of multi-model data, we formally define three types of schema-modification operations (SMOs) -- \textit{basic}, \textit{composite}, and \textit{complex} -- enabling natural and user-friendly model modifications. In addition, our set is among the most comprehensive among related solutions, while model abstraction eliminates redundant operations for analogous concepts across underlying logical models, ensuring both expressiveness and conciseness.
+    \item We extend our multi-model evolution-management approach by synchronizing multi-model queries, i.e., ensuring that the queries provide the same results after applying SMOs. We primarily focus on the challenging aspect of \textit{decreasing information capacity}, i.e., the possible loss of information. We utilize several approaches to the multi-model context to solve the problem.
+    \item Through a proof-of-concept implementation, we demonstrate how our approach reduces manual, error-prone work. And, we experimentally evaluate the efficiency of the distinct synchronization strategies.  
+\end{itemize}
+
+\paragraph{Outline} Section~\pRef{sec:category} introduces the categorical representation of multi-model data. Section~\pRef{sec:approach} describes the evolution management strategy, the SMOs, and their propagation. Their implementation and experiments are described in Section~\pRef{sec:implementation}. 
+Section~\pRef{sec:related} overviews related work, and Section~\pRef{sec:conclusion} concludes.
+
+\section{Categorical Representation of Multi-Model Data}
+\pLabel{sec:category}
+First, let us introduce our categorical representation of multi-model data. To unify the terminology of distinct models, we use the following terms: A \textit{kind} corresponds to a class of items (e.g., a relational table or a collection of documents). A \textit{record} corresponds to an item of a kind (e.g., a table row or a document). A record consists of simple/complex \textit{properties} having \textit{domains}.
+
+Let us also remember the basic notions of category theory.
+A \textit{category} $\mathbf{C} = (\mathcal{O}, \mathcal{M}, \circ)$ consists of a set of objects $\mathcal{O}$, set of morphisms $\mathcal{M}$, and a composition operation $\circ$ over the morphisms ensuring transitivity and associativity. Each morphism is modeled as an arrow $f : A \rightarrow B$, where $A, B \in \mathcal{O}$, $A = dom(f), B = cod(f)$. And there is an \textit{identity} morphism $1_A \in \mathcal{M}$ for each object $A$. Apparently, a category can be visualized as a multigraph, with objects represented as vertices and morphisms as directed edges.
+
+The core and the integration point of all our solutions is an abstract representation of multi-model data called \textit{schema category}~\citep{DBLP:journals/jbd/KoupilH22}. It is defined as a tuple $\mathbf{S} = (\mathcal{O}_\mathbf{S}, \mathcal{M}_\mathbf{S}, \circ_\mathbf{S})$. Objects in $\mathcal{O}_\mathbf{S}$ correspond to the domains of the ER model's entity types, attributes, and relationship types. Morphisms in $\mathcal{M}_\mathbf{S}$ (of semantics \uv{has a property}, \uv{has an identifier}, \uv{has a role}, or \uv{is a} and respectively labels) connect appropriate pairs of objects. %The explicitly defined morphisms are denoted as \textit{base}, obtained via the composition $\circ$ as \textit{composite}.
+
+
+The decomposition of a schema category $\mathbf{S}$, eventually partial or overlapping, is defined via a set of \textit{mappings}. For each kind, the mapping specifies where and how its records are stored in a selected single-/multi-model DBMS utilizing a concept of \textit{functor}, which mutually maps corresponding objects of logical and conceptual schemas and preserves the hierarchical structure of a kind.% using a so-called \textit{access path}, which recursively describes the structure of a kind.
+
+\begin{example}
+\small
+Consider a part of the sample multi-model scenario in Figure~\pRef{fig:example_workflow_running_example}(c). %which covers a part of the \emph{Yelp Academic Dataset}\footnote{\url{https://www.kaggle.com/datasets/yelp-dataset/yelp-dataset/data}} which we use as the running example and also for experimental purposes (see Section~\pRef{sec:experiments}). It involves a relational table (purple) \emph{User} describing users whose friends are captured in another relational table \emph{Friends}. The document (green) model, i.e., collection \emph{Business}, is used to represent information about businesses, whereas the blue (graph) model provides the mapping of users to their businesses. A schema category modelling such data is shown in Figure~\pRef{fig:example_workflow_running_example}c. The colors correspond to the particular logical models.
+In the categorical schema, kinds \emph{User} and \emph{Business} (whose root objects are highlighted with colors) are mapped to the respective relational table (purple) and document collection (green). The kind \emph{User} has only simple properties, e.g., \emph{name} or \emph{fans} (we omit the most common morphism label \emph{\texttt{\#property}} for morphisms of semantics \uv{has a property}). In the curly braces, we can see the identifiers of the kinds, e.g., \emph{user\_id} for kind \emph{User}. The kind \emph{Business} also has a complex property \emph{address} consisting of several simple properties (e.g., \emph{city} and \emph{street}). There is also kind \emph{Tip}, which represents the relationship of kinds denoted using the respective morphisms with label \emph{\texttt{\#role}}, of semantics \uv{has a role} (i.e., \emph{User} and \emph{Business}). %It is mapped to the respective graph pattern. 
+Kind \emph{Friends} represents an array of pairs of objects denoted using morphisms with label \emph{\texttt{\#role}}, whose position is given by the simple property \emph{\_INDEX}. Last but not least, complex property \emph{attributes} of kind \emph{Business} represents a map of \emph{(key, value)} pairs associated with kind \emph{Business}.\qed
+\end{example}
+
+% \begin{figure}[h]
+%     \centering
+%     \subfloat[]{\includegraphics[width=0.49\textwidth]{data-models.pdf}}
+%     \hfill
+%     \subfloat[]{\includegraphics[width=0.49\textwidth]{schema-cat.pdf}}
+%     \caption{Example multi-model data (a) and corresponding categorical (b) including their mapping to the logical level denoted using colors}
+%     \pLabel{figure:schema_and_datadata}
+% \end{figure}
+
+\subsection{Conceptual Querying of Multi-Model Data}
+
+The categorical representation can be viewed as a graph. Thus, it can be queried using a graph query language. For this purpose, we introduced the \textit{Multi-Model Query Language} (MMQL)~\citep{koupil2023universal} utilizing the well-known SPARQL notation.
+
+An MMQL expression consists of a projection (\texttt{SELECT}) that defines the structure of the result and a selection (\texttt{WHERE}), where graph patterns can be defined along with filter conditions (\texttt{FILTER}). We also support result modifiers such as \texttt{ORDER BY}, \texttt{LIMIT}, or aggregation functions. Graph patterns are expressed using triples $p : s \rightarrow o$, where $o$, $s$ (e.g., variables or constants) correspond to objects from $\mathcal{O}_\mathbf{S}$ and $p$ maps to morphisms in $\mathcal{M}_\mathbf{S}$. %For query $q$, patterns in selection form a \textit{selection category} $\mathbf{S}_q^{\sigma}$ (a subcategory of $\mathbf{S}$) and patterns in projection form a \textit{projection category} $\mathbf{S}_{q}^{\pi}$ (a  subcategory of $\mathbf{S}_q^{\sigma}$). 
+In other words, instead of RDF graph data, we query the schema category $\mathbf{S}$.%, so, e.g., we do not use IRIs.
+(Sample MMQL queries are provided in Figure~\pRef{fig:strategy:fdep}(a) and explained in Example~\pRef{ex:query}.)
+
+\begin{figure}[!htp]
+    \centering
+    \subfloat[Version 1: Semi-automatically inferred unnatural schema.]{\includegraphics[width=\textwidth]{papers/rcis_2025/figures/evolution-workflow-a.drawio.pdf}}
+    \vspace{1em}
+    \subfloat[Version 2: More realistic schema: Attributes forming an \textit{address} are grouped together. A~large varying set of \textit{attributes} is transformed into a map.]{\includegraphics[width=\textwidth]{papers/rcis_2025/figures/evolution-workflow-b.drawio.pdf}}
+    \vspace{1em}
+    \subfloat[Version 3: The transformation of the single-model schema and data to multi-model.]{\includegraphics[width=\textwidth]{papers/rcis_2025/figures/evolution-workflow-c.drawio.pdf}}
+    \caption{Schema evolution and its propagation to data}
+    \pLabel{fig:example_workflow_running_example}
+\end{figure}
+
+\section{Evolution Management Approach}
+\pLabel{sec:approach}
+
+A schema category $\mathbf{S}$ represents the conceptual model of a given multi-model use case, abstracting from the technical details of underlying logical models. In addition to their specific features, the logical schemas can overlap, i.e., parts of the data can be represented redundantly using distinct logical models. Users interact with $\mathbf{S}$ represented as a graph while mapping to logical schemas ensures information preservation. This mapping can be inferred from sample data instances~\citep{koupil2022mminfer} or created manually for selected parts of $\mathbf{S}$ using the operations \textit{createMapping()}, \textit{editMapping()}, and \textit{deleteMapping()}.
+
+\begin{table}[!b]
+\centering
+\caption{Basic SMOs}
+\pLabel{tab:basicSMOs}\scriptsize
+\def\arraystretch{1.40}
+\begin{tabular}{    
+    l
+    >{\raggedright\arraybackslash}p{55mm}
+    >{\raggedright\arraybackslash}p{40mm}
+    }
+\toprule
+\textbf{SMO}  & \textbf{Behavior}  & \textbf{Prerequisite} \\
+\midrule
+$create() \rightarrow O$ & Creates object $O$ with a unique identifier and default settings. & -- \\
+%\hline
+$create(D, C) \rightarrow m$ &  Creates morphism $m: D \rightarrow C$ with a unique signature and default settings. & $D,C \in \mathcal{O}_{\mathbf{S}}$ \\
+%\hline
+$delete(O)$   & Deletes object $O$.    & $O \in \mathcal{O}_{\mathbf{S}}$; $O$ can participate only in $1_O \in \mathcal{M}_{\mathbf{S}}$.  \\
+%\hline
+$delete(m)$   & Deletes morphism $m$.    & $m \in \mathcal{M}_{\mathbf{S}}$  \\
+%\hline
+$rename(O, n)$   &  Changes the name of object $O$ to $n$.   & $O \in \mathcal{O}_{\mathbf{S}}$  \\
+%\hline
+$relabel(\mathcal{M}, l)$   &  Changes the label of morphisms in $\mathcal{M}$ to $l$.   & $\mathcal{M} \subseteq \mathcal{M}_{\mathbf{S}}$; If $l$ = \texttt{\#role}, then $|\mathcal{M}| > 1$ and $m \in \mathcal{M}$ share $dom$.    \\
+%\hline
+$move(m, p)$   &  Sets $m.dom$ to  $p[last].cod$, i.e. to the end of a path $p$.  & $m \in \mathcal{M}_{\mathbf{S}}$; $p[first].dom = m.dom$  \\
+%\hline
+$copy(O) \rightarrow O'$   &  Creates a copy $O'$ of object $O$ (with a new unique identifier).  &  $O \in \mathcal{O}_{\mathbf{S}}$ \\
+%\hline
+$copy(m, D, C)\rightarrow m'$   &  Creates a copy $m' : D \rightarrow C$ of morphism $m$ (with a new unique signature). & $D,C \in \mathcal{O}_{\mathbf{S}}$; $D = copy(m.dom)$; $C = copy(m.cod)$  \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+
+\begin{table}[htp!]
+\centering
+\caption{Composite SMOs}
+\pLabel{tab:composite}
+\scriptsize
+\def\arraystretch{1.47}
+\begin{tabular}{
+    >{\raggedright\arraybackslash}p{35mm}%{30mm}    
+    >{\raggedright\arraybackslash}p{84mm}%{49mm}
+    %>{\raggedright\arraybackslash}p{40mm}
+    }
+\toprule
+\textbf{SMO}  
+    & \textbf{Behavior}  
+    %& \textbf{Prerequisitity} 
+\\
+\midrule
+
+$createProperty(l, P) \rightarrow (O)$  
+    & Creates object $O$ and morphism $m: P \rightarrow O$ with label \texttt{\#property}.
+    %& $P \in \mathcal{O}_{\mathbf{S}}$  
+    \\
+    %\hline
+$deleteProperty(O)$  
+    & Removes property $O$, i.e., deletes object $O$ and all incoming morphisms. If $O$ is part of an identifier of an object $P$, it is removed from the respective set $P.ids$.
+    %& $O$ is a simple property object, i.e., it has no outgoing morphisms and all incoming morphisms have label \texttt{\#property} or \texttt{\#ident}.
+    \\
+    %\hline
+    
+$deleteComplex\-Property(O)$  
+    & (1) Deletes all nested properties without path from another complex property. Otherwise, it deletes the respective morphism. \newline (2) Deletes all incoming morphisms. \newline (3) If $O$ participates in a relationship which would be broken, the relationship is deleted too. \newline(4) Deletes $O$. 
+    %&  $O \in \mathcal{O}_{\mathbf{S}}$ is a complex property. 
+    \\
+%\hline    
+$createIdent$\newline $(O, \{I_1,$ $...,$ $I_n\}) \rightarrow T$ 
+    & Creates an identifier $T$ from properties $I_1, ..., I_n$ of a complex property $O$.
+    %& $I_1, ..., I_n \in \mathcal{O}_{\mathbf{S}}$ are properties of $O \in \mathcal{O}_{\mathbf{S}}$ and none of their subsets is an identifier of $O$. 
+    \\
+    %\hline
+$deleteIdent(T)$ 
+    & Removes identifier $T$ of an object $O \in \mathcal{O}_\mathbf{S}$.  
+    %& $T \in O.ids$
+    \\
+    %\hline
+$createRelationship$ \newline $(l,$ $\{O_1,$ $\dots,$ $O_n\}) \rightarrow R$  
+    &  (1) Creates object $R$ representing a \textit{relationship} object  with label $l$.
+    \newline (2) For each $O_i$ creates morphism $m_i : R \rightarrow O_i$ with label \texttt{\#role}.    
+    %& $O_1, ..., O_n \in \mathcal{O}_{\mathbf{S}}; n > 1$
+    \\
+    %\hline
+$deleteRelationship(R)$ 
+    & (1) Deletes all outgoing morphisms. \newline (2) Deletes $R$. 
+    %& $R \in \mathcal{O}_{\mathbf{S}}$ is a \textit{relationship} object, i.e., an object with only outgoing morphisms with label \texttt{\#role}.
+    \\
+    %\hline
+$createArray(P, l) \rightarrow A$ 
+    & For object $P$, creates an \textit{array} complex property $A$ with label $l$ and properties index $I$ and element $E$.
+    %& $P \in \mathcal{O}_{\mathbf{S}}$
+    \\
+    %\hline
+$deleteArray(A)$
+    & (1) Deletes all outgoing morphisms. \newline (2) Deletes $A$.
+    %& $A \in \mathcal{O}_{\mathbf{S}}$ is an \textit{array} object, i.e., an object representing a relationship between $parent$ $P \in \mathcal{O}_{\mathbf{S}}$ of the array, $element$ $E \in \mathcal{O}_{\mathbf{S}}$ of the array, and its $index$ $I \in \mathcal{O}_{\mathbf{S}}$. 
+    \\
+    %\hline
+$createSet(P, l) \rightarrow S$  
+    &  
+    For object $P$, creates a \textit{set} complex property $S$ with label $l$ and a property $E$.    
+    %& $P \in \mathcal{O}_{\mathbf{S}}$  
+    \\
+    %\hline
+$deleteSet(S)$  
+    & (1) Deletes all outgoing morphisms. \newline (2) Deletes $S$.
+    %& $S \in \mathcal{O}_{\mathbf{S}}$ is a \textit{set} object, i.e., an object representing a relationship between $parent$ $P \in \mathcal{O}_{\mathbf{S}}$ of the set and $element$ $E \in \mathcal{O}_{\mathbf{S}}$ of the set.  
+    \\
+    %\hline
+$createMap(P, l) \rightarrow M$ 
+    &  
+    For object $P$, creates a \textit{map} complex property $M$ with label $l$ and properties key $K$ and value $V$.
+    %& $P \in \mathcal{O}_{\mathbf{S}}$  
+    \\
+    %\hline
+$deleteMap(M)$  
+    & (1) Deletes all outgoing morphisms. \newline (2) Deletes $M$.
+    %& $M \in \mathcal{O}_{\mathbf{S}}$ is a \textit{map} object, i.e., an object representing a relationship between $parent$ $P \in \mathcal{O}_{\mathbf{S}}$ of the map, $value$ $V \in \mathcal{O}_{\mathbf{S}}$ of the map, and its $key$ $K \in \mathcal{O}_{\mathbf{S}}$.  
+    \\
+
+\bottomrule
+\end{tabular}
+\end{table}
+
+
+\begin{table}[htp!]
+\centering
+    \caption{Complex SMOs}
+\pLabel{tab:complex}
+\scriptsize
+\def\arraystretch{1.47}
+\begin{tabular}{
+    >{\raggedright\arraybackslash}p{35mm}%{30mm}    
+    >{\raggedright\arraybackslash}p{84mm}%{50mm}
+    %>{\raggedright\arraybackslash}p{39mm}
+    }
+\toprule
+\textbf{SMO}  & \textbf{Behaviour}  %& \textbf{Prerequisitity} 
+\\
+\midrule
+
+$group(l, \{O_1, \dots, O_n\}) \rightarrow G$ 
+    & (1) Creates object $G$ representing a \textit{group} with label $l$. \newline (2) For each $O_i$ creates morphism $g_i : G \rightarrow O_i$. \newline (3) For $P \in \mathcal{O}_\mathbf{S}$, a parent of objects $O_i$, creates $g : P \rightarrow G$.
+    %& $O_i \in \mathcal{O}_\mathbf{S}$; There exists $P \in \mathcal{O}_\mathbf{S}$ such that for each $O_i$ there exists $p_i : P \rightarrow O_i$  with label \texttt{\#property}. 
+    \\
+%\hline
+$ungroup(\{O_1, \dots, O_n\})$ 
+    & Inverse operation to group. 
+    %& $O_i \in \mathcal{O}_\mathbf{S}$; There exists $G, P \in \mathcal{O}_\mathbf{S}$ such that for each $O_i$ there exists $g_i : G \rightarrow O_i$ and there exists $g : P \rightarrow G$, all with label \texttt{\#property}. 
+    \\
+%\hline
+$join(\{O_1, \dots, O_n\}, \Phi) \rightarrow O'$ 
+    &
+    (1) Creates object $O'$ such that its active domain is formed of results of transformation function $\Phi$ applied to values from the active domains of $O_1, \dots, O_n$. \newline
+    (2) For $P \in \mathcal{O}_\mathbf{S}$, a parent of objects $O_i$, creates morphism $m : P \rightarrow O'$. \newline 
+    (3) Deletes morphisms $m_i: P \rightarrow O_i$. 
+    %& $P, O_i \in \mathcal{O}_\mathbf{S}$; For each $O_i$ there exists $m_i : P \rightarrow O_i$ with label \texttt{\#property}. 
+    \\
+%\hline
+$split(O', \Phi') \rightarrow \{O_1, \dots, O_n\}$ 
+    & Inverse operation to join.
+    %& $P, O' \in \mathcal{O}_\mathbf{S}$; There exists $m : P \rightarrow O'$ with label \texttt{\#property}. 
+    \\
+%\hline
+$asArray(P)$ 
+    & Converts a complex property $P$ to an \textit{array}. 
+    %& $P \in \mathcal{O}_\mathbf{S}$ represents a \textit{map} or a binary relationship.
+    \\
+%\hline
+$asArray(P, \Psi)$ 
+    & Converts a simple property $P$ to an \textit{array} so that the values of the active domain of $P$ are separated using separator $\psi$ and become the values of the active domain of the array.
+    %& $P \in \mathcal{O}_\mathbf{S}$ is a simple property 
+    \\
+%\hline
+$asMap(P)$ 
+    & Converts a complex property $P$ to a \textit{map}.     
+    %& $P \in \mathcal{O}_\mathbf{S}$ represents an \textit{array} or a complex property 
+    \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Schema Modification Operations}
+\pLabel{sec:operations}
+For the specification of user-required changes, we define the \textit{Multi-Model Schema Evolution Language}, % (MMSEL), 
+i.e., a set of schema modification operations (SMOs) that enables creating and deleting any allowed categorical conceptual schema.
+
+We divide the SMOs for the conceptual layer into three groups: \textit{Basic} SMOs (see Table~\pRef{tab:basicSMOs}) are atomic and low-level, working with a single object or morphism. They may, however, affect multiple objects or morphisms (and even use other basic operations). To guarantee correct propagation, basic SMOs must satisfy the prerequisites (as indicated in Table~\pRef{tab:basicSMOs}). % The system can automatically determine all the affected entities. 
+The \textit{composite} SMOs (see Table~\pRef{tab:composite}) and the \textit{complex} SMOs (see Table~\pRef{tab:complex}) involve multiple objects or morphisms and usually require more parameters than the basic ones. For example, the operations \textit{split()/join()} require a custom user input, which none of the basic SMOs can provide.
+Composite SMOs enable working with the categorical model using higher-level constructs, i.e., creating/deleting common structures, such as simple/complex properties, relationships, arrays, sets, or maps. %, that can be found in existing data models. 
+As such, these operations correspond to the composition of basic SMOs. %and are not necessarily atomic.
+Complex SMOs aim to mediate transformations on existing parts of the schema category $\mathbf{S}$.
+
+
+\begin{example}
+\small
+Consider the examples from Figure~\pRef{fig:example_workflow_running_example} illustrating categorical schema automatically inferred~\citep{koupil2022mminfer} from the \textit{Yelp Academic Dataset}\footnote{\url{https://www.yelp.com/dataset}}, subsequently modified using SMOs and changes propagated to data. %Colors again represent data models: green for document and violet for relational. 
+SMO-targeted areas are highlighted in yellow.
+
+\textbf{Version 1} in Figure~\pRef{fig:example_workflow_running_example}(a) maps the inferred schema solely to the input document (green) model. There are kinds \emph{User}, \emph{Tip}, \emph{Business}, \emph{Checkin}, and \emph{Review}. % are highlighted in green and contain their identifiers. 
+Relationship objects \emph{Review} and \emph{Tip} include morphisms labeled \texttt{\#role} indicating participants, while \emph{Checkin} is a weak-entity-like kind identified by \emph{business\_id} of kind \emph{Business}.
+
+As we can see, the automatic schema inference led to unnatural structures. For instance, kind \emph{Business} includes a complex property \emph{attributes}, comprising 39 optional properties, each found in 19 to 119,765 source documents. Hence, we transformed property \emph{attributes} into a map (using SMO \emph{asMap()}). Also, kind \emph{Business} contains several properties forming an address (e.g., \emph{state}, \emph{city}, etc.). So, we renamed \emph{address} to \emph{street} (using SMO \emph{rename()}) and grouped related properties into a complex property \emph{address} (using SMO \emph{group()}). Furthermore, we converted properties \emph{friend} and \emph{date} into arrays (using SMO \emph{asArray()}), resulting in \textbf{Version 2} in Figure~\pRef{fig:example_workflow_running_example}(b).
+
+Subsequently, we applied SMOs \emph{deleteMapping()} and \emph{createMapping()} to change the logical representation of the data, i.e., we restructured kinds \emph{User} and \emph{Friends} into separate relational tables (violet). Finally, we embedded kind \emph{Checkin} into kind \emph{Business} via \emph{updateMapping()} and deleted the original kind \emph{Checkin}. These SMOs resulted in the categorical schema \textbf{Version 3} in Figure~\pRef{fig:example_workflow_running_example}(c).%, as shown in Figure~\pRef{fig:example_workflow_running_example}.
+\qed
+\end{example}
+
+\subsection{Propagation to Data}
+\pLabel{sec:propagation}
+Regarding propagation to data, introduced in~\citep{mm_evocat}, the SMOs can be further divided into heavy and light. A \textit{heavy operation} is an SMO propagated from the conceptual level to the mapping, the logical level, and the data instances. Conversely, a \textit{light operation} only triggers propagation to the mapping. Each SMO can be heavy. Operations that do not consist of \textit{delete(O)} or \textit{delete(m)} can be also light, e.g., SMOs \textit{createProperty()}, \textit{asArray()}, or \textit{asMap()}.
+
+% % TODO comment this out if we don't have enough space
+There are multiple strategies for heavy SMO propagation, namely \textit{eager}, \textit{lazy}, and \textit{hybrid}. In the first case, we update all the data instances at once. In the second case, we update them one by one only when we need them. The last option is a combination of the first two \citep{DBLP:journals/jbd/KoupilH22,storl2022darwin}. Our approach~\citep{mm_evocat} is compatible with all of them; however, we focus only on the eager strategy at the moment.
+
+\subsection{Propagation to Queries}
+\pLabel{sec:propagation:queries}
+The propagation of changes to queries depends on how we handle the schema and data changes. The first option involves versioning the schema and the data, allowing the original queries to continue working with the original schema version.  For new queries and applications, we use the most recent schema version. The second option we focus on involves propagating changes to both the data~\citep{mm_evocat} and queries~\citep{mm_evoque} and maintaining only the latest version. Generally, the propagation strategies follow the SMOs and the respective mappings when possible. However, the core problem is resolving cases that cannot be propagated straightforwardly.
+
+More formally, let $I$ be a database instance consisting of data $D$ structurally corresponding to categorical schema $\mathbf{S}$
+(represented as a functor $I : D \rightarrow \mathbf{S}$). The impact of SMO  $O: \mathbf{S} \rightarrow \mathbf{S'}$ propagated to instances as $P_O : Inst(S) \rightarrow Inst(S')$ can be characterized using the concept \textit{information capacity}~\citep{DBLP:journals/siamcomp/Hull86,10.1145/2903726}: 
+
+\begin{itemize}
+    \item If $I'$ is structurally equivalent to $I$, then it is \textit{information capacity-preserving} operation. An example is SMO \textit{rename()}.
+    \item If for each $I \in Inst(S)$ there is at most one instance $I' \in Inst(S')$, i.e., the functor $P_O$ is surjective on objects, the operation is \textit{decreasing information capacity}. An example is SMO \textit{deleteProperty()}.
+    \item If for each $I \in Inst(S)$ there is at least one instance $I' \in Inst(S')$, i.e., the functor $P_O$ is injective on objects, the operation is \textit{increasing information capacity}. An example is SMO \textit{createProperty()}.
+\end{itemize}
+
+%\paragraph{Features of Propagation}
+In this paper, we primarily focus on applying strategies for synchronizing queries in the context of information capacity-decreasing SMOs. These operations are the most critical as they cause information loss, fundamentally altering the query. When reconstructing a query, several strategies~\citep{DBLP:conf/er/CaruccioPT18,DBLP:conf/foiks/Ravve16,DBLP:journals/corr/abs-2403-09060} can be employed. Strategy-selection criteria include:
+
+\begin{enumerate}
+    \item Whether the query can be reconstructed using the remaining data.
+    \item The increased complexity of the new version of the query, including the expression complexity and the time/memory complexity of its evaluation.
+    \item The metadata we maintain about the data (e.g., a \textit{catalog}) and dependencies, including the size and memory intensity of this metadata and how efficiently it can be extracted, maintained, and updated as data changes.
+    \item The fidelity of the new query version, or how much the new query results differ from the original, such as returning different, fewer, or more records.
+\end{enumerate}
+
+Additionally, changes to integrity constraints can impact query performance. For example, modifying the primary or secondary key (i.e., corresponding indices) impacts queries using the old index (e.g., within a join/filtering). %These operations are part of schema evolution, and propagating them is essential to maintain query performance. 
+Without optimal propagation, query performance deteriorates.
+
+\begin{example}
+\pLabel{ex:query}
+\small
+Let us introduce an example of the impact of capacity-decreasing SMOs on representative queries. Figure~\pRef{fig:strategy:fdep}(a) illustrates a fragment of the Version 3 schema from Figure~\pRef{fig:example_workflow_running_example}(c), where modifications are performed using the SMOs \emph{deleteProperty()}, \emph{createProperty()}, and \emph{rename()}. Additionally, Figure~\pRef{fig:strategy:fdep}(a) presents three specific queries: \textbf{$Q_1$:} \uv{Retrieve the \textit{text} and \textit{stars} from \textit{Reviews} where \textit{review\_id} exceeds 100}, \textbf{$Q_2$:} \uv{Retrieve pairs of (\textit{state, countOfBusinesses}) representing the number of businesses in each state}, and \textbf{$Q_3$:} \uv{Retrieve all \textit{Reviews} ordered by \textit{review\_id}}.
+
+The capacity-decreasing SMO \emph{deleteProperty(review\_id)} affects queries $Q_1$ and $Q_3$, while SMO \emph{deleteProperty(state)} impacts $Q_2$.\qed
+\end{example}
+
+%Several strategies can be used to solve the query rewriting issues:
+%\paragraph{Impact Catalogue}
+A common basic strategy is to utilize an \textit{impact catalog} for each column, recording the impact of its removal on queries and allowing users to assess column importance. Such information can be variously complex. For example, paper~\citep{DBLP:conf/krdb/RundensteinerLN97} classifies attributes as \textit{replaceable} or \textit{dispensable} upon removal, based on metadata annotations specifying whether an attribute, condition, or relation can be replaced in specific query contexts (e.g., selection predicates, projection lists, join conditions). These metadata elements, represented as Boolean values, indicate replacement feasibility and associated constraints. The subsequent EVE project~\citep{DBLP:conf/sigmod/RundensteinerKZWLLN99},which serves as an inspiration for our work, employs an extended metadata for query synchronization. When a column or table is deleted, the system identifies affected queries and views, determines their dependencies, and selects the best replacement strategy using recorded metadata (e.g., to preserve query result, minimize query complexity and execution time). The impact catalog further characterizes columns using factors such as distinct values, value ranges, default values, functional dependencies, containment relationships, and integrity constraints. These attributes inform replacement selection to maintain query correctness. Metadata can be manually specified by database administrators or inferred from schema constraints and query patterns.
+
+Generally, such metadata facilitates the selection of appropriate replacement methods. We introduce and utilize several representatives:
+
+\paragraph{A. Phantom Strategy}
+The first propagation option involves replacing the removed column with a \textit{phantom}, wherein the original column values are substituted with those from the minimal domain (smallest number of values and memory size) to preserve query functionality. This process entails analyzing queries, utilizing metadata, and substituting original values with new ones.
+
+The representation of phantom values varies based on the query $Q$ where property $p$ is removed. If $p$ appears only in filtering conditions, the phantom can be a bitmap indicating whether each row was part of the original result by modifying the filter condition to $p = \texttt{True}$. For clauses such as \texttt{DISTINCT}, aggregation functions, and \texttt{JOIN}, the original values are replaced with enumerated values from a less memory-intensive domain (e.g., replacing strings with integers). For the \texttt{ORDER BY} clause, the order is maintained using ordered unsigned integers while retaining original values for projection. A minimal memory \textit{footprint} is sought since the phantom size matches the number of original records. For each query, a phantom of the deleted column can be created (e.g., using multiple bitmaps for greater memory efficiency). For some queries, phantoms can be consolidated into fewer representations. % using appropriate methods.
+
+\begin{example}
+\small
+Consider capacity-decreasing operations from Figure~\pRef{fig:strategy:fdep}(a) that are applied to $review\_id$ in kind \emph{Review} and $state$ in the address of kind $Business$, impacting queries $Q_1$--$Q_3$.
+Let us analyze them to %identify those impacted by the SMO and 
+determine the optimal phantom representation based on query composition.
+
+For example, removing $review\_id$ impacts both selection $reviews > rew\#100$ in $Q_1$ and sorting in $Q_3$. For selection, a binary phantom (True/False) suffices to indicate document inclusion. However, the phantom must also capture sequence for ordering, requiring string substitution with a more memory-efficient type.
+
+Aggregation in $Q_2$ adds additional complexity. If the aggregated value is excluded from the result, replacing strings with primitive enumeration values conserves memory (as a resulting phantom representation, as illustrated in Figure~\pRef{fig:strategy:fdep}(b)). Conversely, if included, the original values must be retained, resulting in phantoms as memory intensive as the original data.
+
+In all cases, the modified queries still yield results identical to their originals. \qed
+\end{example}
+
+\afterpage{
+\begin{landscape}
+\begin{figure}[!p]
+    \centering
+    \subfloat[Original data (version 3)]{\includegraphics[width=0.22\textwidth]{papers/rcis_2025/figures/strategies-a.drawio.pdf}}
+    \hfill
+    \subfloat[Phantom strategy]{\includegraphics[width=0.22\textwidth]{papers/rcis_2025/figures/strategies-b.drawio.pdf}}
+    \hfill
+    \subfloat[FDs strategy]{\includegraphics[width=0.22\textwidth]{papers/rcis_2025/figures/strategies-d.drawio.pdf}}
+    \hfill
+    \subfloat[Relaxed FDs strategy]{\includegraphics[width=0.22\textwidth]{papers/rcis_2025/figures/strategies-c.drawio.pdf}}
+    \caption{An example of application of various strategies to propagate structural changes to the queries}
+    \pLabel{fig:strategy:fdep}
+\end{figure}
+\end{landscape}
+}
+
+\paragraph{B. Functional-Dependency Strategies}
+Let us first recall the basic definition of a functional dependency.
+Consider a schema $R(A_1, A_2, \ldots, A_n) $ with attributes $ A_1, A_2, \ldots, A_n $. A \textit{functional dependency} (FD) $ X \rightarrow Y $, where $ X, Y \subseteq R $, holds in $ R $ if for any tuples $ t_1, t_2 \in R $, $t_1[X] = t_2[X] $ implies $ t_1[Y] = t_2[Y] $, i.e., the attributes in $ X $ uniquely determine those in $ Y $.
+A \textit{relaxed functional dependency} (RFD) generalizes an FD by introducing flexibility through a parameter $\epsilon$, allowing the dependency to hold with some tolerance, as a strict FD may not be applicable across the entire database.
+
+Inspired by the approach in~\citep{DBLP:conf/er/CaruccioPT18}, we can synchronize queries using (relaxed) functional dependencies to maintain the original query semantics. Furthermore, we categorize (R)FDs as surjective or injective. A surjective FD enables the replacement of all values in the deleted column, while an injective FD ensures that the replacement values are unambiguous.
+
+\begin{example}
+\small
+To assess the substitutability of a removed property, valid (relaxed) FDs are utilized (see Figure~\pRef{fig:strategy:fdep}(c) and~\pRef{fig:strategy:fdep}(d)). For example, removing $review\_id$ from kind \textit{Review} is governed by FD $user\_id, business\_id, date \rightarrow review\_id$, allowing the replacement with $(user\_id, business\_id, date)$. This substitution preserves review identification but complicates queries, making filtering operation inefficient (see $Q_1$ in Figure~\pRef{fig:strategy:fdep}(c)) and significantly altering ordering in result (i.e., $Q_3$ cannot be reconstructed). 
+A more efficient alternative uses relaxed FD $date \rightarrow review\_id$, improving filtering (see $Q_1$ in Figure~\pRef{fig:strategy:fdep}(d)) but possibly including additional documents when multiple reviews share the same date and causing slight discrepancies in ordering (see $Q_3$ in Figure~\pRef{fig:strategy:fdep}(d)). 
+
+For aggregation queries, employing FD $city, postalCode \rightarrow state$ changes the aggregation root but permits result recovery through transformation and external knowledge (see $Q_2$ in Figure~\pRef{fig:strategy:fdep}(c)). However, the relaxed FD $city \rightarrow state$ may not accurately reproduce results when cities share names between states (see $Q_2$ in Figure~\pRef{fig:strategy:fdep}(d)).\qed
+\end{example}
+
+
+
+
+\paragraph{Additional Considerations}
+Beyond the outlined strategies, several factors must be addressed. First, different sequences of identical operations can yield varying query propagation effects~\citep{DBLP:conf/krdb/RundensteinerLN97}. For instance, executing \textit{delete(A)} followed by \textit{create(A)} may negate each other, rendering the sequence ineffective.
+
+Additionally, deciding whether to synchronize queries with the initial or the latest version is crucial. As proposed in~\citep{DBLP:journals/kais/KoellerR05}, referencing the first query version requires backtracking a history of queries and changes to restore deleted columns, which is memory-intensive due to storing original-sized column phantoms.
+
+Moreover, information capacity-decreasing operations can be classified as no longer needed (e.g., remove query) or destructive (i.e., requiring replacement). A preliminary what-if analysis, derived from the metadata catalog and visually indicated to the user, can determine the impact of propagating the SMO.
+
+If query synchronization is unfeasible due to capacity-decreasing operations without an efficient replacement, decisions must be made to drop queries or restrict schema evolution~\citep{10.1145/2903726}. Typically, three policies are adopted: propagate (i.e., apply changes and synchronize queries), block (i.e., prohibit schema changes), or prompt (i.e., consult the database administrator). The application of individual strategies may result in:
+\begin{itemize}
+    \item The query is fully reconstructed to return identical results, though it may require more execution time or increased memory due to complex queries or extensive metadata. Nonetheless, the metadata size remains smaller than the original deleted data, reducing the overall memory footprint.
+    \item The query is partially reconstructed to approximate original results, potentially causing time inefficiency with non-injective or non-surjective FDs.
+    \item The query cannot be reconstructed, necessitating a decision to either propagate the SMO and delete the query or block the SMO propagation.
+\end{itemize}
+
+
+\paragraph{Utilization of AI}
+AI-based approaches can be used to select an appropriate strategy, e.g., considering the frequency of execution of that query (for example, frequently executed and important queries will lead to a phantom strategy, even if it is memory intensive) while considering the available system resources. 
+%
+%In other words, it is an optimization problem where we look for the best propagation strategy in the context of already used strategies (historically) concerning the performance of new versions of queries and getting closer to the query result at the lowest possible cost (time and memory).
+%
+% TODO - Navrhuji nahradit to od "in other words" výše.
+In other words, it is an optimization problem where the AI agent operates in a state space defined by the system's current resource availability (e.g., memory, CPU usage, etc.) and the historical performance of previously used strategies. The actions then correspond to selecting specific propagation strategies.
+
+A promising solution is to use reinforcement learning because we do not know which actions to take, but we can easily measure their outcome (e.g., consumption of resources during and after the propagation). Another option is to use simpler methods (e.g., heuristics). The advantages of this approach include a lower need for training data, less training time, and better explainability of the resulting policy. %We plan to try multiple AI methods and then compare the results.
+
+%\vspace{1em}
+%\paragraph{Conclusion}
+%Our evolution management is transparent. 
+
+\section{Implementation and Evaluation}
+\pLabel{sec:implementation}
+
+Our solution maintains versions of a schema category $\mathbf{S}$ and a chain of applied SMOs. %, which can be formally described using category theory. 
+We also maintain the mapping between queries and schemas. So, the propagation is straightforward since each such mapped query targets a subset or a view of the data.
+%
+The benefits of our approach lie in the use of MMQL abstraction and its translation to Domain Specific Languages of the underlying DBMSs. We do not have to deal with propagation to individual languages and their specific constructs. Depending on the queries an SMO affects, we can always use the most appropriate strategy for the given property. 
+%column, e.g., deleting. 
+Currently, we heuristically calculate the price per change and operation of new versions of queries. In the future, we will utilize a suitable statistical model.
+
+The experimental implementation of the described idea is based on a family of tools systematically developed in our research group for managing multi-model data based on the category theory. %to verify and experimentally test the described ideas. 
+Around this representation, we have already built the following tools: 
+\begin{itemize}
+    \item \textit{MM-cat}~\citep{mm_cat} enables multi-model modeling, i.e., the manual creation of a categorical model and its mapping to any combination of the supported logical models. It also supports the respective data transformations between the logical and categorical models.
+    \item \textit{MM-infer}~\citep{koupil2022mminfer} enables automatic inference of the categorical schema from sample multi-model instances. In addition, as the data set can be large, the data is processed in parallel.
+    \item \textit{MM-evocat}~\citep{mm_evocat} extends \textit{MM-cat} with the propagation of changes in the categorical schema to the data, i.e., it extends the SMOs with the respective propagation strategies.
+    \item \textit{MM-quecat}~\citep{mm_quecat} adds support for querying over the categorical schema category $\mathbf{S}$ using MMQL. The queries are then decomposed according to the mapping. The subqueries are evaluated in the underlying DBMSs, and the partial results are combined to produce the final result.
+    \item \textit{MM-evoque}~\citep{mm_evoque} extends \textit{MM-quecat} for propagation of changes in the categorical schema to queries in MMQL.
+\end{itemize}
+
+% We don't have enough space for this ... (and this paper shouldn't be about implementation).
+% The generalized architecture of the toolset is depicted in Figure~\pRef{fig:arch}. At the lowest, platform-specific (green) level, there are the particular DBMSs, each with a wrapper ensuring the communication with the DBMS and unifying representation of the multi-model data. Currently it supports the following models and DBMSs: \textit{PostgreSQL} (relational and document, i.e., multi-model), \textit{Neo4j} %\footnote{\url{https://neo4j.com}}
+% (graph), and \textit{MongoDB} %\footnote{\url{https://www.mongodb.com}} 
+% (NoSQL document). 
+% The blue logical-to-conceptual mapping represents the \uv{glue} between the logical schemas and the conceptual schema at the (red) platform-independent level. Over the categorical conceptual schema (created manually or automatically inferred from data), the user can specify evolution/migration SMOs or categorical conceptual queries.
+
+% \begin{figure}[h]
+%     \centering
+%     \includegraphics[width=0.5\textwidth]{mm-evocat-architecture.pdf}
+%     \caption{Architecture of \textit{MM-evocat}}
+%     \pLabel{fig:arch}
+% \end{figure}
+
+\subsection{Propagation to Data Instances}
+\pLabel{sec:experiments}
+
+The toolset was implemented as a proof of concept to demonstrate that the proposed strategy enables (1) the model-agnostic conceptualization of any multi-model logical schema, (2) mapping to specific data logical schemas, (3) querying using MMQL, and (4) schema evolution based on user requirements (SMOs) with correct and complete propagation of changes to data instances and queries.
+
+Experimental evaluations of various schema-to-data propagation strategies were conducted on a 14" MacBook Pro (2021) featuring an Apple M1 Pro processor (8 cores), 16 GB LPDDR5 memory, and a 512 GB SSD. To mitigate potential biases from resource fluctuations and initial overhead, each experiment configuration was executed 30 times, excluding initial runs and averaging the remaining measurements. The experiments utilized five \textit{Yelp Academic Dataset} collections in \textit{MongoDB}: \textit{Review} (6,990,247 records), \textit{User} (1,987,897 records), \textit{Business} (150,346 records), \textit{Tip} (908,915 records), and \textit{Checkin} (131,930 records) -- for sample data see Figure~\pRef{fig:example_workflow_running_example}(a).
+
+The modifications correspond to the SMOs depicted in Figure~\pRef{fig:example_workflow_running_example}(b) and Figure~\pRef{fig:example_workflow_running_example}(c). Three eager strategies were utilized for substantial SMO propagation:
+\begin{itemize}
+    \item \textit{insertMany}: Drops integrity constraints, deletes records with schema $\mathbf{S}$, performs a bulk insert of records with schema $\mathbf{S}'$, and restores constraints.
+    \item \textit{insertOne}: Similar to \textit{insertMany}, but inserts records individually.
+    \item \textit{update}: Retains integrity constraints and updates affected documents using update or set operations based on the target system.
+\end{itemize}
+
+Moreover, the \textit{insertOne} and \textit{insertMany} strategies are implemented as \textit{standard}, i.e., proactively preventing database driver exceptions such as integrity constraint violations, and \textit{alter}, i.e., disabling integrity constraints before insertion and re-enabling them afterwards.
+
+Table~\pRef{tab:experimentsAll} illustrates the time requirements of the three SMO propagation strategies applied to kinds (\textit{Business}, \textit{CheckIn}, \textit{User}, and \textit{Friends}) during schema evolution from Version 1 to 2 and 2 to 3, as illustrated in Figure~\pRef{fig:example_workflow_running_example}. The times are divided into the \textit{preparation phase} \textit{PreP} (i.e., creating tables/collections or disabling constraints), \textit{transformation phase} \textit{TraP} (i.e., updating data to match the target structure and representation), \textit{propagation phase} \textit{ProP} (i.e., inserting data into the DBMS), and the \textit{alter IC phase} \textit{AltP} (i.e., re-enabling constraints).
+
+\begin{table*}[h]
+\scriptsize
+\centering
+\caption{Time [\textit{s}] needed for propagation of SMOs}
+\pLabel{tab:experimentsAll}
+\begin{tabular}{
+>{\raggedright\arraybackslash}p{17mm}
+>{\raggedright\arraybackslash}p{17mm}
+>{\raggedleft\arraybackslash}p{15.5mm}
+>{\raggedleft\arraybackslash}p{18.5mm}
+>{\raggedleft\arraybackslash}p{15.5mm}
+>{\raggedleft\arraybackslash}p{15.5mm}
+>{\raggedleft\arraybackslash}p{15.5mm}
+}
+\toprule
+\textbf{Change}              & \textbf{Strategy}          & \textbf{PreP} & \textbf{TraP} & \textbf{ProP}                     & \textbf{AltP} & \textbf{Total Time}     \\
+\midrule
+\multirow{ 3}{17mm}{\textit{Business Address} SMOs}
+    & updateOne         & 0.000 & 1.841 & 80.018& -     & 81.858\\
+    & insertOne         & 0.000 & 1.746 & 73.764& -     & 75.511\\
+    & insertMany        & 0.000 & 1.865 & 3.246 & -     & 5.111 \\
+\midrule
+\multirow{ 3}{17mm}{\textit{Checkin Dates} SMOs}
+    & updateOne         & 0.000 & 3.446 & 88.863& -     & 92.310\\
+    & insertOne         & 0.000 & 3.706 & 86.362& -     & 90.068\\
+    & insertMany        & 0.000 & 3.976 & 9.201 & -     & 13.178\\
+\midrule
+\multirow{ 3}{17mm}{\textit{User Friends} SMOs}
+    & updateOne         & 0.001 & 101.064& 1,443.758& - & 1,544.823 \\
+    & insertOne         & 0.004 & 88.367& 1,378.334& -  & 1,466.705 \\
+    & insertMany        & 0.002 & 82.045& 129.150& -    & 211.197\\
+\midrule \midrule
+\multirow{ 3}{17mm}{\textit{Business Checkin} SMOs}
+    & updateOne         & 0.000 & 6.369 & 104.918& -    & 111.286\\
+    & insertOne         & 0.000 & 7.531 & 102.470& -    & 110.001\\
+    & insertMany        & 0.000 & 8.070 & 14.712& -     & 22.782\\
+\midrule
+\multirow{ 3}{17mm}{\textit{User Relational} SMOs}
+    & insertOne         & 0.001 & 75.102& 130.275& -    & 205.378\\
+    & insertOneAlter    & 0.025 & 74.468& 116.480& 2.159& 193.131\\
+    & insertMany        & 0.001 & 54.723& 18.762& -     & 73.486\\
+    & insertManyAlter   & 0.023 & 54.315& 9.466 & 1.942 & 65.745\\
+\midrule
+\multirow{ 3}{17mm}{\textit{Friends Relational} SMOs}
+    & insertOne         & 2.023 & 304.041& 1,605.221& - & 1,911.285 \\
+    & insertOneAlter    & 2.121 & 305.847& 1,355.017& 27.931& 1,690.916 \\
+    & insertMany        & 2.053 & 161.603& 381.701& -   & 545.357   \\
+    & insertManyAlter   & 2.094 & 162.392& 55.954& 28.212& 248.652\\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+As observed, solely updating data is the slowest strategy by an order of magnitude between systems. The fastest approach involves creating a new collection or deleting data and bulk inserting a new version, achieving up to eight times greater performance than individual inserts or updates when propagating SMOs to the entire collection. %Furthermore, if SMOs affect more than one-eighth of the data, re-inserting the entire collection is preferable to updating. 
+Performance is additionally enhanced by disabling integrity constraints before insertion despite the increased effort in the preparation and transformation phases.
+
+\subsection{Propagation to Operations}
+
+Table~\pRef{tab:experiments:strategies} illustrates the effectiveness of phantom and (relaxed) FD strategies %according to the criteria described in Section~\pRef{sec:propagation:queries} 
+on high-impact filtering, aggregation, and ordering queries from Figure~\pRef{fig:strategy:fdep}.  As we can see, in the phantom strategy, queries can be fully reconstructed with minimal alterations to the original MMQL expression, thus preserving execution time and memory usage. However, this strategy effectively substitutes the removed property with a memory-efficient placeholder, which may be seen as a disadvantage. In contrast, the FD and relaxed FD strategies remove properties entirely but often increase the complexity of the  MMQL expression (e.g., the expression contains numerous \texttt{UNION} clauses), potentially hindering performance and resource efficiency. The fidelity of query outcomes in these approaches depends on the properties of the FD, such as injectivity, surjectivity, and degree of relaxation. When a dependency is both injective and surjective, the resulting dataset remains identical to the original query. One notable benefit of these methods is their minimal metadata requirements, relying solely on query synchronization with SMO propagation.
+
+As for data changes, they affect all strategies differently. In the phantom strategy, newly introduced data remain excluded as if the corresponding rows were not part of the original query. Conversely, FD-based approaches may include such data, thereby risking the invalidation of the original functional dependency. Once a property is removed, its validity can no longer be verified.
+
+
+\begin{table*}[h]
+\scriptsize
+\centering
+\caption{An experimental comparison of query synchronization strategies}
+\pLabel{tab:experiments:strategies}
+\begin{threeparttable}
+\begin{tabular}{
+>{\raggedright\arraybackslash}p{12mm}
+>{\raggedright\arraybackslash}p{14mm}
+>{\raggedright\arraybackslash}p{5mm}
+>{\raggedleft\arraybackslash}p{10mm}
+>{\raggedleft\arraybackslash}p{10mm}
+>{\raggedleft\arraybackslash}p{10mm}
+>{\raggedleft\arraybackslash}p{10mm}
+>{\raggedleft\arraybackslash}p{10mm}
+>{\raggedleft\arraybackslash}p{10mm}
+>{\raggedleft\arraybackslash}p{10mm}
+}
+\toprule
+\textbf{Query
+} &
+\textbf{Strategy
+} & \textbf{QR%Query reconstruction
+} & \textbf{QF%Query fidelity
+} & \textbf{SC%State\-ment complexity
+} & \textbf{ET%Exe\-cution time
+} & \textbf{EM%Exe\-cution memory
+} & \textbf{MM%Meta\-data memory
+} & \textbf{ME%Meta\-data extraction
+} & \textbf{MU%Meta\-data updating
+} \\
+\midrule
+\multirow{3}{12mm}{\textbf{$Q_1$}} & Phantom & Yes & Good& Good & Good & Good & Average & Good & Good  \\
+& FD & Yes & Good& Worse & Worse & Worse & Good & Worse & Good  \\
+& Relaxed FD & Yes & Average& Worse & Good & Worse & Good & Worse & Good  \\
+\midrule
+\multirow{3}{12mm}{\textbf{$Q_2$}} &Phantom & Yes & Good& Good & Good & Good & Worse & Good & Good  \\
+& FD & Yes & Good& Worse & Worse & Worse & Good & Worse & Average  \\
+& Relaxed FD & Yes & Average & Average & Good & Good & Good & Worse & Average \\
+\midrule
+\multirow{3}{12mm}{\textbf{$Q_3$}}&Phantom & Yes & Good & Good & Good & Good & Worse & Good & Good \\
+& FD & No & n/a & n/a & n/a & n/a & n/a & n/a & n/a \\
+& Relaxed FD & Yes & Average& Average & Good & Good & Good & Worse & Average  \\
+\midrule
+\midrule
+\multirow{3}{12mm}{\textbf{General case}} &Phantom & Yes & Good& Good & Good & Good & Worse & Good & Good  \\
+& FD & Yes & Good  & Worse & Worse & Worse & Good & Worse & Average \\
+& Relaxed FD & Yes  & Average & Average & Average & Average & Good & Worse & Average\\
+\bottomrule
+\end{tabular}
+    \begin{tablenotes}
+        \item[QR] Query reconstruction
+        \item[QF] Query fidelity
+        \item[SC] Statement complexity
+        \item[ET] Execution time
+        \item[EM] Execution memory
+        \item[MM] Metadata memory
+        \item[ME] Metadata extraction
+        \item[MU] Metadata updating
+    \end{tablenotes}
+\end{threeparttable}
+\end{table*}
+
+\section{Related Work}
+\pLabel{sec:related}
+
+The evolution management is generally challenging, even for single-model data. %However, the relational model has the significant advantage of simplicity and a solid mathematical background of relational algebra and relational calculus. %The other single-model approaches, such as the document model, must cope with more complex data structures and respective operations, indices, etc.
+In a multi-model world, we have to cope with additional problems such as a missing unifying interface for both data and operations, distinct ways of combining the models, contradictory features of the models, different propagation strategies for distinct models, cross-model data migrations, etc.
+%different query optimization strategies across the models, and many more.
+Several evolution management approaches currently consider at least two models~\citep{tuijn1996,spivak2015relational,storl2022darwin,DBLP:journals/dke/HolubovaVS21,chillon2022taxonomy}. However, they have various limitations. Table~\pRef{tab:commentary:evolution:features} summarizes the comparison of our approach with them. 
+
+% %for relational DBMS~\citep{spivak2015relational,10.14778/1921071.1921078}
+% %,10.1145/3448016.3452842
+% or NoSQL systems~\citep{storl2022darwin,chillon2022taxonomy,10.1145/2539150.2539159}
+% %,klimek2015exolutio,10.1016/j.jss.2011.09.038}
+% and the first approaches proposed for multi-model DBMS~\citep{DBLP:journals/dke/HolubovaVS21,9252014} are emerging. 
+The main common limitations of existing approaches are targeting only a small fraction of data models and/or (partially) ignoring integrity constraints and/or queries over the data and other features arising from combining multiple data models. Our approach genuinely supports all popular data models in a multi-model way. The set of SMOs is the richest, and the changes are propagated eagerly to data and ensure query synchronization, even for the capacity-decreasing SMOs. The approaches we adopt and utilize/extend~\citep{DBLP:conf/krdb/RundensteinerLN97,DBLP:conf/er/CaruccioPT18} were originally proposed only for single-model use cases. To our knowledge, no multi-model solution deals with this challenge and offers such a range of strategies.
+%The conceptual schema can even be inferred from data~\citep{koupil2022mminfer}.
+Only system \textit{Darwin}~\citep{storl2022darwin} allows for other data migration strategies, namely lazy and hybrid, and supports optimization using version jumps. However, it focuses only on propagation to data instances.
+
+\begin{table}[t]
+\centering
+\scriptsize
+\caption{A comparison of features of selected evolution management approaches}
+\pLabel{tab:commentary:evolution:features}
+%\vspace{2mm}
+%\def\arraystretch{1.5}
+\begin{tabular}{
+    >{\raggedright\arraybackslash}p{25mm}
+    >{\raggedright\arraybackslash}p{15mm}
+    >{\raggedright\arraybackslash}p{15mm}
+    >{\raggedright\arraybackslash}p{15mm}
+    >{\raggedright\arraybackslash}p{15mm}
+    >{\raggedright\arraybackslash}p{15mm}
+    >{\raggedright\arraybackslash}p{15mm}
+    }
+\toprule
+    & \textbf{\textit{CGOOD}}\newline \citep{tuijn1996}    & \textbf{Spivak et al.} \citep{spivak2015relational}&  \textbf{\textit{Darwin}}\newline \citep{storl2022darwin}   & \textbf{\emph{MM-evolver}}~\citep{DBLP:journals/dke/HolubovaVS21}   & \textbf{\textit{Orion}%Hernández Chillón et al.
+    }\newline\citep{chillon2022taxonomy}  & \textbf{\emph{MM-evocat}}~\citep{mm_evocat} \\
+\midrule
+%                               Tuijn       Spivak             Darwin    MM-evolver          Orion           MM-evocat
+\textbf{Schema modification}    & Yes       & Yes                & Yes       & Yes               & Yes           & Yes           \\
+\textbf{Data models} & Relational, object, object-relational
+                     & Relational, RDF
+                     & Graph, key/value, document, columnar
+                     & Relational, graph, key/value, document, columnar
+                     & Relational, graph, key/value, document, columnar 
+                     & Relational, array, graph, RDF, key/value, document, columnar \\
+\textbf{Multi-model}            & No        & No        & No       & Yes                & No            & Yes           \\
+\textbf{Propagation to IC}      & No        & No               & No   & Partial                & Partial             & Yes           \\
+\textbf{Data migration}         & Eager     & Eager              & Eager, lazy, hybrid     & Eager               & Eager           & Eager           \\
+\textbf{Schema inference}       & No        & No                & Tracked, untracked        & No    & Untracked & Yes (using \textit{MM-infer}{}~\citep{mm_infer})            \\
+\textbf{Version jumps}          & No        & No                 & Yes        & No               & No            & No            \\
+\textbf{Query rewriting}        & No        & No               & Yes        & No               & No            & Yes            \\
+%\textbf{Benchmarking}           & No        & No              & Yes        & No               & No            & No            \\
+%\textbf{Self-adaptation}        & No        & No           & No        & No                & No            & No            \\
+\bottomrule
+\end{tabular}
+\end{table}
+% \begin{table}[t]
+% \centering
+% \scriptsize
+% \centering
+% \caption{Supported SMOs in the selected evolution management approaches}
+% \pLabel{tab:commentary:evolution:smos}
+%\vspace{2mm}
+%\def\arraystretch{1.5}
+% \begin{tabular}{
+%     >{\raggedright\arraybackslash}p{18mm}
+%     >{\raggedright\arraybackslash}p{15mm}
+%     >{\raggedright\arraybackslash}p{15mm}
+%     >{\raggedright\arraybackslash}p{15mm}
+%     >{\raggedright\arraybackslash}p{15mm}
+%     >{\raggedright\arraybackslash}p{15mm}
+%     >{\raggedright\arraybackslash}p{20mm}
+%     }
+% \toprule
+%     & \textit{\textbf{CGOOD}}\newline \citep{tuijn1996}    & \textbf{Spivak et al.}~\citep{spivak2015relational}&  \textit{\textbf{Darwin}}\newline \citep{storl2022darwin}   & \textbf{\emph{MM-evolver}}~\citep{DBLP:journals/dke/HolubovaVS21}   & \textbf{\textit{Orion}%Hernández Chillón et al.
+%                             }~\citep{chillon2022taxonomy}  & \textbf{\emph{MM-evocat}}\newline~\citep{mm_evocat}  \\
+% \midrule
+% %                               Tuijn       Spivak       Darwin     MM-evolver      Orion       MM-evocat
+% \textbf{Model-level}            & -         & -          & -         & -         & -         
+% & createMapping, editMapping, deleteMapping    \\
+
+% \textbf{Kind-level}             & add, delete   & delete, rename, copy, intersection, union & add, delete, rename   & add, delete, rename   & add, delete, extract (copy), rename, split, merge    
+% & createMapping, editMapping, deleteMapping   \\
+
+% \textbf{Property-level}         & add, delete   & delete, rename, copy, intersection, union & add, delete, move, copy, rename   & add, delete, move, copy, rename  & add, delete, move, extract, rename, cast & createProperty, deleteProperty, rename, move, copy, join, split   \\
+
+% \textbf{Complex Property-level}         & -   & - & -  & -  & cast, nest, unnest & createRelation\-ship, deleteRelationship, createArray, deleteArray, createSet, deleteSet, createMap, deleteMap, group, ungroup, asArray, asMap   \\
+
+% \textbf{Identifier-level}       & -         & -         & -         & -         & promote, demote   & createIdent, deleteIdent         \\
+
+% \textbf{Reference-level}        & -         & -         & -         & reference & morph             & (implicit)       \\
+% %\textbf{Cardinality-level}      & -         & -         & -         & -         & mult              & asArray, asMap         \\
+% \textbf{Version-level}          & -         & -         & -         & -         & delvar, adapt, union  & -                     \\
+% \bottomrule
+% \end{tabular}
+% \end{table}
+
+
+\section{Conclusion}
+\pLabel{sec:conclusion}
+Evolution management is one of the core and most complex data management tasks, as most applications need to evolve according to changing user requirements. The situation is much more complex in the context of multi-model data.
+
+This paper presents our strategy based on the idea of capturing multi-model data in a unified, model-agnostic manner using category theory, treating the data naturally as a categorical graph. Having such a representation, we introduce a set of schema modification operations that can modify the categorical graph without dealing with the technical details of the underlying DBMSs and models. These operations are classified based on their complexity, and we define the respective propagation strategies that adapt the data instances and ensure query synchronization. We especially focus on capacity-decreasing SMOs, where the information loss needs to be reflected respectively. Finally, we empirically evaluate and compare the strategies that were introduced.
+
+Even though the main aim of the introduced toolset is to simplify the critical tasks of data management in the world of multi-model data, the user is still required to make complex decisions. Our near future aim is to exploit suitable AI strategies and extend the toolset towards self-adaptability. The system can learn from the given data, given or extracted metadata, operations, change logs, and user decisions and automatically or proactively make these complex decisions.
+
+% \bibliographystyle{splncs04}
+% \bibliography{bibliography}
+
+% \end{document}

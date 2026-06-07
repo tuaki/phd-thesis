@@ -107,42 +107,42 @@ Particularly, it will support the following features:
 Several solutions have already implemented these features, many of which are widely used. However, they all have one thing in common: they are either tightly coupled with the underlying database systems or too limited to fully model multi-model data. For example, the UML and ER models are industry standards. But, they cannot generally model complex properties, maps, or graphs.
 
 \paragraph*{Outline}
-In Section~\ref{section:framework}, we discuss the current functionalities of our framework consisting of a family of tools. %In Section~\ref{section:experiments}, we briefly overview selected experiments depicting (dis)advantages of various evolution management strategies. 
-In Section~\ref{section:future}, we describe our planned steps. In Section~\ref{section:open-problems}, we outline the open problems.
+In Section~\pRef{section:framework}, we discuss the current functionalities of our framework consisting of a family of tools. %In Section~\pRef{section:experiments}, we briefly overview selected experiments depicting (dis)advantages of various evolution management strategies. 
+In Section~\pRef{section:future}, we describe our planned steps. In Section~\pRef{section:open-problems}, we outline the open problems.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{Initial Framework}\label{section:framework}
+\section{Initial Framework}\pLabel{section:framework}
 
 In our research group, we have proposed several solutions to selected aspects of unified and efficient multi-model data management. We have also implemented tools for their experimental verification. This toolset represents the initial framework we currently intend to enhance by exploiting AI to automate data management.
 
 First, we needed a sufficiently abstract approach to handle all the conflicting requirements because we deal with varied data models and database systems. Therefore, we proposed a system-independent representation based on category theory~\citep{DBLP:journals/jbd/KoupilH22}.
 We can view a \emph{category} as a directed multigraph for simplicity. The nodes (called \emph{objects}) represent entities, and the edges (called \emph{morphisms}) represent relationships between them. For example, object $A$ represents a User and object $B$ represents a Name. Then, we can have a morphism $f: A \rightarrow B$, meaning that a User has a Name. We can create structures representing arrays, sets, weak-entity types, etc. In our framework, we call such category a \emph{schema category}.
 
-This unifying representation enables us to ``grasp'' any combination of models and to process it in a system-independent manner. When a particular operation has to be done at this abstract level, it is propagated to the underlying database system.
+This unifying representation enables us to \uv{grasp} any combination of models and to process it in a system-independent manner. When a particular operation has to be done at this abstract level, it is propagated to the underlying database system.
 
 %There are two advantages of this approach. First, we can easily map any database schemas to a single schema category. Second, we can define system-specific categories for each database system and then create a \emph{mapping} between them and the schema category. 
 
 \begin{example}  
 \small
-An example of a schema category can be found in Fig.~\ref{figure:workflow-2}. The schema category is mapped only to the relational database model (denoted using the violet colour). On the other hand, in Fig.~\ref{figure:workflow-3b}, we can see the same schema category after an evolution of the mapping. It is now mapped to relational (violet) and document (green) models.
+An example of a schema category can be found in Fig.~\pRef{figure:workflow-2}. The schema category is mapped only to the relational database model (denoted using the violet colour). On the other hand, in Fig.~\pRef{figure:workflow-3b}, we can see the same schema category after an evolution of the mapping. It is now mapped to relational (violet) and document (green) models.
 \qed\end{example}
 
 \begin{figure}[h]
     \centering
     \includegraphics[width=\linewidth]{papers/vldb_2024/figures/workflow-version-2.drawio.pdf}
     \caption{A sample schema category. Each violet node represents a complex object. In this case, all of them are mapped to respective tables of the relation model, e.g., PostgreSQL.}
-    \label{figure:workflow-2}
+    \pLabel{figure:workflow-2}
 \end{figure}
 
 \begin{figure}[h]
     \centering
     \includegraphics[width=\linewidth]{papers/vldb_2024/figures/workflow-version-3b.drawio.pdf}
-    \caption{The example schema category from Fig.~\ref{figure:workflow-2} after an evolution. The schema category did not change, but the affected tables (\textit{Items} and \textit{Orders}) were replaced by a collection of documents (\textit{Order}), e.g., in MongoDB. The change introduced redundancy to query orders more efficiently.}
-    \label{figure:workflow-3b}
+    \caption{The example schema category from Fig.~\pRef{figure:workflow-2} after an evolution. The schema category did not change, but the affected tables (\textit{Items} and \textit{Orders}) were replaced by a collection of documents (\textit{Order}), e.g., in MongoDB. The change introduced redundancy to query orders more efficiently.}
+    \pLabel{figure:workflow-3b}
 \end{figure}
 
-Our toolset involves two tools that enable the creation of a schema category: \textit{MM-cat}~\citep{MM-cat} enables the modelling of the schema category manually, as well as the creation of its decomposition and mapping of the selected components to particular logical models. \textit{MM-infer}~\citep{mm_infer} enables one to infer a schema category from the given sample multi-model data (semi-)automatically.
+Our toolset involves two tools that enable the creation of a schema category: \textit{MM-cat}~\citep{mm_cat} enables the modelling of the schema category manually, as well as the creation of its decomposition and mapping of the selected components to particular logical models. \textit{MM-infer}~\citep{mm_infer} enables one to infer a schema category from the given sample multi-model data (semi-)automatically.
 
 \subsection{Transformations}
 As indicated in the introduction, not only do we need to be able to model the multi-model data using a unified representation, but we also need to be able to transform them. In particular, we need a support for transforming any combination of the (sub-)models to any other combination of (sub-)models.
@@ -153,18 +153,18 @@ To work with each database system in the same way, we have to create wrappers fo
 This is an important distinction from other approaches. For example, the ETL (\emph{Extract-Transform-Load}) process is usually tightly coupled with the underlying database systems. In our solution, we can use the same algorithm to transform data between any two database systems, even multi-model ones. Another example are \emph{data lakehouses} which can store data in multiple (single-model) formats, but they do not provide a unified way to work with them.
 
 \subsection{Querying}
-Querying the data is an essential feature of any database. However, this is a much more challenging task in multi-model databases as each system has its own set of supported models and their combinations~\citep{CSUR-Jiaheng} and a specific query language~\citep{b83508c70bef41589b6584556729e51f}. There is no general standard for multi-model querying except for the standards SQL/XML~\citep{SQLXML} and SQL/JSON~\citep{SQLJSON} for relational/document models.
+Querying the data is an essential feature of any database. However, this is a much more challenging task in multi-model databases as each system has its own set of supported models and their combinations~\citep{CSUR-Jiaheng} and a specific query language~\citep{Jiaheng2023Survey}. There is no general standard for multi-model querying except for the standards SQL/XML~\citep{SQLXML} and SQL/JSON~\citep{SQLJSON} for relational/document models.
 
 We have proposed the \textit{Multi-Model Query Language} (MMQL), a query language based on the SPARQL syntax that enables one to query over the schema category. Then, within a tool called \textit{MM-quecat}~\citep{mm_quecat}, we developed the query-evaluation algorithm that uses a similar approach as the transformation algorithms: First, the query is parsed and mapped to the schema category. Then, we use the mappings to split it into \emph{query parts} that can be executed in the specific underlying systems. We perform the maximum amount of work in the databases, minimising cross-database joins. Finally, we combine the intermediate results.
 \\
 
-\noindent The global workflow with the indicated functionalities of the initial framework is depicted in Fig.~\ref{figure:mmcat-workflow}. First, the schema category is inferred from sample data or modelled manually. Then, it has to be decomposed into the system-specific sub-models. Finally, the user can specify queries over the schema category. All these actions require user input. On the other hand, all data transformations and query resolutions are automated.
+\noindent The global workflow with the indicated functionalities of the initial framework is depicted in Fig.~\pRef{figure:mmcat-workflow}. First, the schema category is inferred from sample data or modelled manually. Then, it has to be decomposed into the system-specific sub-models. Finally, the user can specify queries over the schema category. All these actions require user input. On the other hand, all data transformations and query resolutions are automated.
 
 \begin{figure}[h]
     \centering
     \includegraphics[width=\linewidth]{papers/vldb_2024/figures/mmcat-workflow.drawio.pdf}
     \caption{Workflow of the initial framework. The full arrows represent the flow of information with the \texttt{U} symbols marking user inputs. The dashed lines represent the flow of data.}
-    \label{figure:mmcat-workflow}
+    \pLabel{figure:mmcat-workflow}
 \end{figure}
 
 \subsection{Evolution Management}
@@ -172,11 +172,11 @@ On the most basic level, evolution means changing a database schema over time. H
 
 The change usually starts with a modification of the schema category. First, we have identified several key \emph{schema modification operations} (SMOs)~\citep{sac24}, e.g., creating a new object or a new morphism. Then, we can build more complex operations from them, such as grouping several objects into a new one or moving objects around the graph. Then, we again leverage the mappings to propagate the changes to the system-specific models and the data. Lastly, the changes are propagated to the queries in two ways. On the one hand, we have to update the queries to reflect the changes in the schema. On the other hand, we use the mappings to decompose and translate the queries into the system-specific languages, which are also affected by the changes.
 
-However, the change might start with the mappings (compare Figs.~\ref{figure:workflow-2} and~\ref{figure:workflow-3b}). For example, we might want to alter the way we store data in a specific database system or add a new system altogether. In that case, we have to update the mappings and then propagate the changes to the queries, though the schema category is unaffected.
+However, the change might start with the mappings (compare Figs.~\pRef{figure:workflow-2} and~\pRef{figure:workflow-3b}). For example, we might want to alter the way we store data in a specific database system or add a new system altogether. In that case, we have to update the mappings and then propagate the changes to the queries, though the schema category is unaffected.
 
 \begin{example}
 \small
-The evolution process is depicted in Fig.~\ref{figure:mmcat-evolution}. The user changes the schema category, the mappings, or both. The changes are then automatically propagated to the rest of the system.
+The evolution process is depicted in Fig.~\pRef{figure:mmcat-evolution}. The user changes the schema category, the mappings, or both. The changes are then automatically propagated to the rest of the system.
 
 The propagation of the changes to the data can be, in some cases, mediated by the querying feature. For example, suppose we want to split an object (e.g., an Address) into two (e.g., a Street and a City) based on a specific rule. In that case, we may first create the new objects and then internally use a query with a \texttt{SPLIT} function to extract the data about the street and the city from the original object.
 \qed
@@ -185,39 +185,39 @@ The propagation of the changes to the data can be, in some cases, mediated by th
 \begin{figure}[h]
     \centering
     \includegraphics[scale=0.6]{papers/vldb_2024/figures/mmcat-evolution.drawio.pdf}
-    \caption{Evolution in the framework.% All symbols have the same meaning as in Fig.~\ref{figure:mmcat-workflow}.
+    \caption{Evolution in the framework.% All symbols have the same meaning as in Fig.~\pRef{figure:mmcat-workflow}.
     }
-    \label{figure:mmcat-evolution}
+    \pLabel{figure:mmcat-evolution}
 \end{figure}
 
-Currently, evolution is managed in the framework by two tools: \textit{MM-evocat}~\citep{MM-evocat} (dealing with propagation of SMOs to logical sche\-mas and data instance) and \textit{MM-evoque}~\citep{MM-evoque} (dealing with propagation of SMOs to MMQL and system-specific query languages).
+Currently, evolution is managed in the framework by two tools: \textit{MM-evocat}~\citep{mm_evocat} (dealing with propagation of SMOs to logical sche\-mas and data instance) and \textit{MM-evoque}~\citep{mm_evoque} (dealing with propagation of SMOs to MMQL and system-specific query languages).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% \section{Experiments}\label{section:experiments}
+% \section{Experiments}\pLabel{section:experiments}
 % A solid theoretical background is crucial, but when it comes to database solutions, it has to be validated in real-world scenarios, which can exhibit specific behaviours different from general expectations. Therefore, we are developing a robust application to both test and demonstrate the capabilities of our framework. All the features mentioned above are implemented within the mentioned proof-of-concept tools, but only in a limited way. For example, we support only selected SMOs, a subset of the MMQL language, and three database systems (although we cover the most used data models, i.e., the relational, document, and graph ones). The target application will integrate and significantly extend the tool mentioned above. The connecting point is the schema category, which can be modelled (using \textit{MM-cat}), inferred (using \textit{MM-infer}), modified (using \textit{MM-evocat} and \textit{MM-evoque}) and queried (using \textit{MM-quecat}).
 
 % This setup allowed us to validate our approach on real-world datasets (e.g., the \textit{Yelp Academic Dataset}\footnote{\url{https://www.kaggle.com/datasets/yelp-dataset/yelp-dataset/data}})~\citep{sac24}. We have also tested the performance of our algorithms. The results are promising, but much work still needs to be done. %Last but not least, we tested the usability of our framework by implementing a simple web application as a UI.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{Future Plans}\label{section:future}
-Currently, we have a solid theoretical background and proof-of-concept tools to integrate and extend to the final robust solution. It may seem that the only work left is to optimize the algorithms and finish the implementation. And that would be the case in the world of single-model databases, where we can rely on a skilled database administrator to manage the whole system. In the case of multi-model data, however, we still have to deal with different database systems, models, optimization strategies, etc. Our framework can shield the users from all databases' complexity and specific (often contradictory) features. But the principal question now becomes: ``\textit{How to optimally distribute data between the particular data models and respective database systems with requirements changing over time?}".
+\section{Future Plans}\pLabel{section:future}
+Currently, we have a solid theoretical background and proof-of-concept tools to integrate and extend to the final robust solution. It may seem that the only work left is to optimize the algorithms and finish the implementation. And that would be the case in the world of single-model databases, where we can rely on a skilled database administrator to manage the whole system. In the case of multi-model data, however, we still have to deal with different database systems, models, optimization strategies, etc. Our framework can shield the users from all databases' complexity and specific (often contradictory) features. But the principal question now becomes: \uv{\textit{How to optimally distribute data between the particular data models and respective database systems with requirements changing over time?}}.
 
 We cannot rely only on human experts for more complex use cases. Therefore, our main future aim is an AI-powered solution. The general idea is that the user would design the system-indepen\-dent schema while the framework would decide how to distribute the data among the available database systems. And over time, the framework will propose modifications to the schema category.
 
-Generally, there are three possible approaches -- \emph{rule-based}, \emph{search-based}, and \emph{model-based}. The first relies on a hard-coded rule set to generate optimal database settings~\citep{Pavlo-blog}. The second one (e.g.,~\citep{DBLP:conf/cloud/ZhuLGBMLSY17}) searches the space of all possible configurations. The last one utilizes novel techniques such as deep reinforcement learning (as discussed in Section~\ref{sec:ai4db}).
+Generally, there are three possible approaches -- \emph{rule-based}, \emph{search-based}, and \emph{model-based}. The first relies on a hard-coded rule set to generate optimal database settings~\citep{Pavlo-blog}. The second one (e.g.,~\citep{DBLP:conf/cloud/ZhuLGBMLSY17}) searches the space of all possible configurations. The last one utilizes novel techniques such as deep reinforcement learning (as discussed in Section~\pRef{sec:ai4db}).
 However, to our knowledge, none of these approaches has been considered for multi-model databases. The rule-based strategy is not very flexible and extensible, so it would not be easy to cover all possible scenarios of the multi-model world. Similarly, the search-based one would be too expensive as the search space grows exponentially with the number of models and database systems. Hence, the model-based one is the most promising because it should be able to adapt to all possible scenarios, although it would require a lot of data to train the model.
 
 \subsection{AI for DB}
-\label{sec:ai4db}
-The cooperation of AI with database systems can be divided into two categories~\citep{DBLP:conf/sigmod/0001ZC21}. The \emph{DB4AI} approaches use databases to improve AI models. For example, the AI-native DBMS openGauss~\citep{DBLP:journals/pvldb/0001ZSYHJLWL21} supports native AI computing engine, model management, AI operators, native AI execution plan, etc.
+\pLabel{sec:ai4db}
+The cooperation of AI with database systems can be divided into two categories~\citep{AI4DB}. The \emph{DB4AI} approaches use databases to improve AI models. For example, the AI-native DBMS openGauss~\citep{DBLP:journals/pvldb/0001ZSYHJLWL21} supports native AI computing engine, model management, AI operators, native AI execution plan, etc.
 
-Conversely, the \textit{AI4DB} techniques leverage AI to improve DBMSs. These approaches include learning-based methods that utilize reinforcement or deep learning to optimize database functionality. Examples include configuration tasks such as index selection~\citep{DBLP:journals/pvldb/KossmannHJS20}, partitioning advisory~\citep{DBLP:conf/sigmod/HilprechtBR20}, and general knob tuning~\citep{DBLP:journals/vldb/ZhangZLLXCX21}. Additionally, AI4DB techniques extend to optimizing query performance~\citep{DBLP:journals/pvldb/SunL19}, join selection~\citep{DBLP:conf/sigmod/MarcusP18}, and influencing database design through learned indexes~\citep{DBLP:conf/sigmod/DingMYWDLZCGKLK20} or key/value design~\citep{DBLP:conf/cidr/IdreosDQAHRLJGL19}. The applications also involve predicting, e.g., query arrival rates~\citep{DBLP:conf/sigmod/MaAHMPG18}.
+Conversely, the \textit{AI4DB} techniques leverage AI to improve DBMSs. These approaches include learning-based methods that utilize reinforcement or deep learning to optimize database functionality. Examples include configuration tasks such as index selection~\citep{IndexSurvey20}, partitioning advisory~\citep{DBLP:conf/sigmod/HilprechtBR20}, and general knob tuning~\citep{DBLP:journals/vldb/ZhangZLLXCX21}. Additionally, AI4DB techniques extend to optimizing query performance~\citep{DBLP:journals/pvldb/SunL19}, join selection~\citep{DBLP:conf/sigmod/MarcusP18}, and influencing database design through learned indexes~\citep{DBLP:conf/sigmod/DingMYWDLZCGKLK20} or key/value design~\citep{DBLP:conf/cidr/IdreosDQAHRLJGL19}. The applications also involve predicting, e.g., query arrival rates~\citep{DBLP:conf/sigmod/MaAHMPG18}.
 
 Our planned extension of the framework falls into the second category. We aim to optimize the management of multi-model databases by exploiting AI.
 %We focus on multi-model database optimization by the automatic distribution of data among the various database systems. % To do that, we will use first rule-based and later model-based AI techniques.
-All user inputs necessary in the current framework are depicted in Figs.~\ref{figure:mmcat-workflow} and~\ref{figure:mmcat-evolution}. The schema category has to be modelled by the user (unless we can infer it from the data, which is still not fully automatic). Similarly, only the user knows what to query (but there are already techniques to infer this information from the application code, e.g., various ORM frameworks). Hence, we will primarily focus on automating the decomposition process and the evolution (in the form of a gradual optimization of how the schema is decomposed).
+All user inputs necessary in the current framework are depicted in Figs.~\pRef{figure:mmcat-workflow} and~\pRef{figure:mmcat-evolution}. The schema category has to be modelled by the user (unless we can infer it from the data, which is still not fully automatic). Similarly, only the user knows what to query (but there are already techniques to infer this information from the application code, e.g., various ORM frameworks). Hence, we will primarily focus on automating the decomposition process and the evolution (in the form of a gradual optimization of how the schema is decomposed).
 
 \subsection{Data for Training}
 The quality of an AI model is highly dependent on the quality of training data. In our case, the expected data will be primarily logs from real-world databases. A member of our research group is already working on a wrapper for commonly used database systems that collect metadata for each query, ranging from the execution time, through the number of entities, to the percentage of entities that were filtered out in each step of the execution plan.
@@ -228,7 +228,7 @@ There are also many open datasets and even some query datasets. But they usually
 Both these approaches solve us the core problem of AI-based approaches -- where to gain high-quality training data.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Open problems}\label{section:open-problems}
+\section{Open problems}\pLabel{section:open-problems}
 Besides identifying the data management tasks where AI can be utilised to lower user interaction and to select the optimal approach, we face more specific challenges.
 %In the previous sections, we described the current state of our research and our plans for the future. Now, we will discuss some of the open problems we are unsure how to solve.
 
@@ -244,7 +244,6 @@ Alternatively, each instance can have its model and be trained on its data. The 
 
 \noindent In each of the cases, we plan to compare the most promising approaches experimentally and identify optimal approaches together with their parameters. %Still, answers to these questions would help us focus on the most promising ones, saving us much time.
 
-\todo{acks}
 % \begin{acks}
 %     This work was supported by the %SVV project no.~260~689,
 %     %by the GAČR grant no.~\mbox{23-077~81S},

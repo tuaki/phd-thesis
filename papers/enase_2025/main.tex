@@ -1,0 +1,90 @@
+% \documentclass[a4paper,twoside]{article}
+
+% \usepackage{epsfig}
+% \usepackage{subcaption}
+% \usepackage{calc}
+% \usepackage{amssymb}
+% \usepackage{amstext}
+% \usepackage{amsmath}
+% \usepackage{amsthm}
+% \usepackage{multicol}
+% \usepackage{pslatex}
+% \usepackage{apalike}
+% \usepackage{algorithm2e}
+% \usepackage[bottom]{footmisc}
+
+% \usepackage{graphicx}
+% \usepackage{booktabs} % For formal tables
+% \usepackage{fancyvrb}
+% \usepackage{url}
+% \usepackage{array}
+% \usepackage{multirow}
+% \usepackage{listings, lstautogobble}
+% \usepackage{rotating}
+% \usepackage{tikz}
+% \usepackage{soul}
+
+% \usepackage{SCITEPRESS}     % Please add other packages that you may need BEFORE the SCITEPRESS.sty package.
+
+\lstdefinestyle{common}{
+    frame = l,
+    autogobble = true
+	showstringspaces = false,
+	basicstyle = \ttfamily\bfseries\scriptsize\linespread{0.5},
+    keywordstyle = \color{blue}\ttfamily\bfseries\scriptsize,
+    stringstyle = \color{red}\ttfamily\bfseries\scriptsize,
+    commentstyle = \color{green}\ttfamily\bfseries\scriptsize,
+}
+
+\lstset{style = common}
+
+\lstdefinelanguage{MMQL}{
+    keywords = {SELECT, WHERE, FILTER},
+    morestring = [b]",
+}
+
+\lstdefinelanguage{MQL}{
+    keywords = {aggregate, \$match, \$review, \$lookup, \$project, \$gt},
+    morestring = [b]',
+}
+
+\lstdefinelanguage{SQL-fix}{
+    language = SQL,
+    deletendkeywords = {DATE},
+}
+
+
+% \input{macros}
+
+% \newtheorem{example}{Example}[section]
+
+% \begin{document}
+% \title{Reshaping Reality: Creating Multi-Model Data and Queries from Real-World Inputs}
+
+% \author{\authorname{%
+% Irena Holubová\sup{1}\orcidAuthor{0000-0003-2113-1539},
+% Alžběta Šrůtková\sup{1},
+% and Jáchym Bártík\sup{1}\orcidAuthor{0000-0002-5664-5890}
+% }
+% \affiliation{\sup{1}Department of Software Engineering, Charles University, Prague, Czechia}
+% \email{irena.holubova@matfyz.cuni.cz, srutkova.alzbeta@gmail.com, jachym.bartik@matfyz.cuni.cz}
+% }
+
+% \keywords{Multi-model data, data transformation, real-world datasets.}
+
+% \abstract{
+\section*{Abstract}
+
+The \textit{variety} characteristic of Big Data introduces significant challenges for verified single-model data management solutions. The central issue lies in managing the \textit{multi-model data}. As more solutions appear, especially in the data\-base world, the need to benchmark and compare them rises. Unfortunately,  there is a lack of available real-world multi-model datasets, the number of multi-model benchmarks is still small, and their general usability is limited. 
+This paper proposes a solution that enables creation of multi-model data from virtually any given single-model dataset. We introduce a framework that enables automatic inference of the schema of input data, its user-defined modification and mapping to multiple models, and the data generation reflecting the changes. Using the well-known Yelp dataset, we show its advantages and usability in three scenarios reflecting reality.
+% }
+
+% \onecolumn \maketitle \normalsize \setcounter{footnote}{0} \vfill
+
+\input{papers/enase_2025/body}
+
+% \bibliographystyle{apalike}
+% {\small
+% \bibliography{bibliography}}
+
+% \end{document}

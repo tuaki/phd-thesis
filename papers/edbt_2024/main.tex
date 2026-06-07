@@ -1,0 +1,680 @@
+% \documentclass[sigconf,edbt]{acmart-edbt2022}
+
+% \def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
+%     T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
+
+% %\IEEEoverridecommandlockouts
+% % The preceding line is only needed to identify funding in the first footnote. If that is unneeded, please comment it out.
+% %\usepackage{cite}
+% \usepackage{url}
+% %\usepackage{amsmath,amssymb,amsfonts}
+% \usepackage{algorithmic}
+% \usepackage{graphicx}
+% \usepackage{textcomp}
+% \usepackage{xcolor}
+% \usepackage{booktabs} % For formal tables
+% %\usepackage{blindtext}
+% %\usepackage{todonotes}
+% \usepackage{hyperref}
+% \usepackage{footmisc}
+% \usepackage{array}
+% %\usepackage{todonotes}
+% \usepackage{hyperref}
+% \usepackage{fancyvrb}
+% \usepackage{subfig} %subfloat	
+% \usepackage[export]{adjustbox}
+
+% \newcommand{\NOTE}[1]{{\color{OliveGreen}{#1}}}
+
+% \newcommand{\RED}[1]{{\color{red}{#1}}}
+% \newcommand{\ORANGE}[1]{{\color{orange}{#1}}}
+% \newcommand{\BLUE}[1]{{\color{blue}{#1}}}
+% \newcommand{\PURPLE}[1]{{\color{purple}{#1}}}
+% \newcommand{\WHITE}[1]{{\color{white}{#1}}}
+
+
+
+% \setcopyright{rightsretained}
+% \acmDOI{}
+% \acmISBN{978-3-89318-095-0}
+% \acmConference[EDBT 2024]{27th International Conference on Extending Database Technology (EDBT)}{25th March-28th March, 2024}{Paestum, Italy} 
+% \acmYear{2024}
+
+% \settopmatter{printacmref=false, printccs=false, printfolios=false}
+
+% \pagestyle{empty}
+
+% \newtheorem{ex}{Example}
+
+% \begin{document}
+
+
+
+% \title{\textit{MM-evoque}: Query Synchronisation in Multi-Model Databases}
+% \titlenote{Supported by the GA\v{C}R project no. 23-07781S and GAUK project no. 292323.}
+% %\subtitle{Demo Paper}
+
+% \author{Pavel Koupil}
+% \affiliation{
+%   \institution{Department of Software Engineering, Charles University}
+%   \streetaddress{Malostransk\'{e} n\'{a}m\v{e}st\'{i} 25}
+%   \city{Prague} 
+%   \state{Czech Republic}
+% }
+% \email{pavel.koupil@matfyz.cuni.cz}
+
+% \author{Jáchym Bártík}
+% \affiliation{
+%   \institution{Department of Software Engineering, Charles University}
+%   \streetaddress{Malostransk\'{e} n\'{a}m\v{e}st\'{i} 25}
+%   \city{Prague} 
+%   \state{Czech Republic}
+% }
+% \email{jachym.bartik@matfyz.cuni.cz}
+
+% \author{Irena Holubov\'{a}}
+% \affiliation{
+%   \institution{Department of Software Engineering, Charles University}
+%   \streetaddress{Malostransk\'{e} n\'{a}m\v{e}st\'{i} 25}
+%   \city{Prague} 
+%   \state{Czech Republic}
+% }
+% \email{irena.holubova@matfyz.cuni.cz}
+
+% \renewcommand{\shortauthors}{}
+
+% 4 pages
+
+% \begin{abstract}
+\section*{Abstract}
+
+As multi-model databases become increasingly prevalent, the evolving multi-model schemas pose a significant challenge to query validity. This demo paper introduces \textit{MM-evoque}, a novel tool designed to propagate schema changes across multi-model databases and synchronise not only data but also respective queries to remain valid and performant. 
+
+To cover all the popular models and their combinations, \textit{MM-evoque} is based on the categorical representation of multi-model data. To cover non-standard multi-model query languages of the underlying database systems, we use a conceptual multi-model query language MMQL. This demo paper introduces the functionality of \textit{MM-evoque} in several types of use cases.
+% \end{abstract}
+% \maketitle
+
+% \begin{IEEEkeywords}
+% multi-model data, unification, cross-model querying, category theory, redundancy
+% \end{IEEEkeywords}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Introduction}
+
+
+% rel -> rel  		SQL -> SQL
+% rel -> doc  		SQL -> MQL
+% rel -> doc+graph  	SQL -> MQL + Cypher
+
+% rel -> rel + doc (vše v PostgreSQ vs. PostgreSQL + MongoDQ)
+
+Unlocking the power of multi-model database management systems (DBMSs)\footnote{\url{https://db-engines.com/en/ranking}} is not just about keeping pace with the present majority; it is a strategic leap into the future of data complexity.
+Regrettably, our extensive survey~\citep{CSUR-Jiaheng} reveals significant variations in multi-model database management systems (DBMSs) even in the core aspects -- the supported models, the way they are combined, as well as the multi-model query languages.
+%This diversity arises from three main factors: (1) these DBMSs are grounded in different core single models, each tailored for specific application domains; (2) the combined models often present conflicting features; and (3) a lack of an acknowledged standard results in varied approaches to supporting model combinations, cross-model querying, or multi-model indices.
+This situation brings many new challenges to multi-model data management. We have already proposed several solutions based on the categorical representation of multi-model data, the so-called \textit{schema category}~\citep{DBLP:journals/jbd/KoupilH22}. This abstract graph representation backed by the formalism of category theory enabled us to build a family of tools for modelling and transformations~\citep{mm_cat}, schema inference~\citep{mm_infer}, data migration under evolving schema~\citep{mm_evocat}, or querying using SPARQL-like query language MMQL~\citep{koupil2023universal}. 
+
+
+In this paper, we further extend our toolset with a new complementary member called \textit{MM-evoque}\footnote{\url{https://www.ksi.mff.cuni.cz/~koupil/mm-evoque/} (including a demo video)}. It extends the functionalities we already provide with an important novel feature -- propagation of changes in the multi-model schema to respective queries. The main contributions can be summarised as follows:
+
+\begin{itemize}
+    \item Since we use the unifying categorical representation, we support any combination of existing popular data models (relational,  key/value, document, column, array, and graph) that can be mutually embedded, referenced, or overlapped (i.e., redundancy is naturally supported too).   
+    \item  The graph categorical representation can be queried using a SPARQL-like query language MMQL that is then decomposed and translated to a set of Database-Specific Languages (DSLs) of underlying DBMSs where they are executed. The results are combined into the final result.
+    \item We introduce a set of schema-modification operations (SMOs) to modify the categorical schema. As each schema is represented as a sequence of operations creating it, the user can return to any previous version.
+    \item The schema changes are propagated to underlying data and respective queries over the data. We ensure synchronisation of the queries when needed and possible. If the correction is ambiguous or cannot be done automatically, the user is informed at least.
+    \item We present a prototype implementation of \textit{MM-evoque} demonstrating the indicated advantages in several use cases and shielding the user from the implementation specifics of particular DBMSs.
+\end{itemize}
+
+% \begin{figure}[h]
+%     \centering
+%     \includegraphics[
+%     %scale=0.45
+%     width=\textwidth
+%     ]{data-models.pdf}
+%     \caption{An example of multi-model data, schema category, and MMQL query}
+%     \pLabel{fig:data}
+% \end{figure}
+
+%Note that the unifying categorical representation does not need to distinguish whether the multiple models reside in a single DBMS or a  set of DBMSs (a polystore). Hence, we shield the user from the need to know system-specific query languages, both when migrating data and when using more than one DBMS.
+
+\paragraph{Paper Outline} In Section~2, we review related work. Section~3 introduces the categorical representation of multi-model data and the categorical query language MMQL. Section~4 describes the presented tool and a bigger example. In Section~5, we outline its demonstration.
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Related Work}
+The evolution management is challenging even for a single model. There exist approaches, e.g., for relational DBMSs~\citep{spivak2015relational}, NoSQL systems~\citep{storl2022darwin}, 
+and first approaches for multi-model DBMSs~\citep{mm_evocat}. But they focus primarily on data adaptation/migration.
+
+Considering also queries, we can encounter related approaches with different aims and motivations. \textit{Query rewriting}~\citep{10.1007/s00778-021-00676-3} focuses on transforming a query to a more efficient version.
+\textit{Query adaptation}~\citep{10.5555/1331939.1331940} focuses on adapting query plans to changing environmental conditions at runtime. In contrast, in this paper, we aim at \textit{query synchronisation} reflecting the evolution of the schema, in particular of multi-model data. Several approaches also exist here, though subtly less represented. Most of them focus on a single model (relational or XML)~\citep{10.14778/1921071.1921078}; some consider aggregate-oriented NoSQL models~\citep{DBLP:conf/er/MollerKHS19}, or polystores~\citep{9252014}.
+
+From its beginning, our approach targets all popular models and existing types of their combinations. It provides an intuitive conceptual graph layer and SPARQL-like querying, both covertly backed by the category theory.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Categorical Model and Querying}
+
+
+Let us first remember the basic notions of category theory.
+A \textit{category} $\mathbf{C} = (\mathcal{O}, \mathcal{M}, \circ)$ consists of a set of objects $\mathcal{O}$, set of morphisms $\mathcal{M}$, and a composition operation $\circ$ over the morphisms ensuring transitivity and associativity. Each morphism is modelled as an arrow $f : A \rightarrow B$, where $A, B \in \mathcal{O}$, $A = \textit{dom}(f), B = \textit{cod}(f)$. And there is an \textit{identity} morphism $1_A \in \mathcal{M}$ for each object $A$.
+%We must also ensure \textit{transitivity} ($g \circ f \in \mathcal{M}$ for any $f, g \in \mathcal{M}$, $f : A \rightarrow B$, $g : B \rightarrow C$), \textit{associativity} (requiring $h \circ (g \circ f) = (h \circ g) \circ f$ for any suitable $f, g, h \in \mathcal{M}$), 
+%as well as introduce an \textit{identity} morphism $1_A$ for each object $A$ such that $f \circ 1_A = f = 1_B \circ f$ for any $f : A \rightarrow B$.
+The key aspect is that a category can be visualised as a multigraph, where objects act as vertices and morphisms as directed edges.
+
+
+\paragraph{Schema Category}
+The \textit{schema category}~\citep{DBLP:journals/jbd/KoupilH22} forms the core of conceptual modelling in all our tools. 
+%To simplify the understanding, we explain it using the terms known from the ER model, though we do not need to distinguish them, as they are all treated in the same way.
+%
+It is defined as a tuple $\mathbf{S} = (\mathcal{O}_\mathbf{S}, \mathcal{M}_\mathbf{S}, \circ_\mathbf{S})$. Objects in $\mathcal{O}_\mathbf{S}$ correspond to the domains of the ER model's entity types, attributes, and relationship types. Morphisms (of semantics \uv{has a property}, \uv{has an identifier}, \uv{has a role}, or \uv{is a}) in $\mathcal{M}_\mathbf{S}$ connect appropriate pairs of objects. The explicitly defined morphisms are denoted as \textit{base}, obtained via the composition $\circ$ as \textit{composite}.
+
+Since the terminology within the particular models differs, we use a unification of respective model-specific terms~\citep{DBLP:journals/jbd/KoupilH22}. A \textit{kind} corresponds to a class of items represented in each model, e.g., a relational table or a collection of JSON documents. A \textit{record} corresponds to one item of a kind, e.g., a table row or a JSON document. Depending on a particular model, a record consists of simple or complex \textit{properties} having their \textit{domains}.
+%
+% \def\myConcat{\!\cdot\!}
+%
+%attribute, ISA, relational (including embedding), identifier (see has an identifier and similar)
+%
+%An \textit{instance category} $I = (\mathcal{O}_\mathbf{I}, \mathcal{M}_\mathbf{I}, \circ_\mathbf{I})$ is defined to represent data instances in a unified way. This category structurally corresponds to the schema category, i.e., a functor $F : I \rightarrow S$ assigns a schema to the data, similar to~\citep{tuijn1996}, but it bears the particular data instances. 
+%
+%(For precise formal definitions with technical details see~\citep{DBLP:journals/jbd/KoupilH22}.)
+%
+% \begin{example}
+% \small
+% Figure~\pRef{fig:schema-er} depicts the schema category of sample data from Figure~\pRef{fig:data} and the instance category of its respective part. 
+% \qed
+% \end{example}
+%
+%
+% \begin{figure}[h]
+%     \centering
+%     \subfloat[]{
+%     \includegraphics[scale=0.41%width=1.0\textwidth
+%     ]{schema-categorical.pdf}
+%     }
+%     \hspace{0.2em}
+%     \subfloat[]{
+%     \includegraphics[scale=0.41%width=1.0\textwidth
+%     ]{mmql.pdf}
+%     }
+%     \caption{%
+%     %ER (a) and 
+%     An example of schema category (a) and instance category (b) of data from Figure~\pRef{fig:data}}
+%     \pLabel{fig:mmql}
+% \end{figure}
+%
+%
+%\paragraph{Mapping}
+
+The decomposition of a schema category $\mathbf{S}$, eventually partial or overlapping, is defined via a set of \textit{mappings}~\citep{DBLP:journals/jbd/KoupilH22}. %Each mapping describes where and how data instances of a subgraph of $\mathbf{S}$ (following specific conditions) are stored in a selected single-/multi-model DBMS.
+%
+% \begin{example}
+% \small
+% The colors in Figure~\pRef{fig:schema-er} depict the decomposition into distinct models indicated in Figure~\pRef{fig:data}.
+% \qed
+% \end{example}
+%
+%Since the terminology within the particular models differs, we use a unification of respective model-specific terms~\citep{DBLP:journals/jbd/KoupilH22}. For instance, a \textit{kind} corresponds to a class of items represented in each model, e.g., a relational table or a collection of JSON documents. % A \textit{record} corresponds to one item of a kind, e.g., a table row or a JSON document. Depending on a particular model, a record consists of simple or complex \textit{properties} having their \textit{domains}.
+For each kind, the mapping specifies where and how its records are stored in a selected single-/multi-model DBMS using a so-called \textit{access path}, which recursively describes the structure of a kind. %The description is rich enough to cover various specifics of the underlying models and their combinations, such as properties with user-defined, anonymous, or dynamically-derived names; properties \textit{inlined} from more distant parts of the categorical graph (via composite morphisms); auxiliary properties used, e.g., for logical grouping of a set of properties; order-preserving/order-ignoring sets of sub-properties, etc.
+
+\begin{example}
+\small
+In Figure~\pRef{fig:query:workflow3B} on the left, we can see a schema category describing customers, their friendships, products, and orders. It is decomposed and mapped to relational (violet) and document (green) models.
+\qed
+\end{example}
+
+
+\paragraph{Multi-Model Query Language (MMQL)}
+The MMQL~\citep{koupil2023universal} is a SPARQL-like model-agnostic query language based on pattern matching. %The queries is then translated into  Database-Specific Languages (DSLs) according to the logical representation of the data. 
+The MMQL expression consists of a projection (\texttt{SELECT}) that defines the structure of the result and a selection (\texttt{WHERE}) where graph patterns can be defined along with filter conditions (\texttt{FILTER}). We also support common constructs such as \texttt{ORDER BY}, \texttt{LIMIT}, or aggregation functions. Graph patterns are expressed using triples $p : s \rightarrow o$, where $o$, $s$ (e.g., variables or constants) correspond to objects from $\mathcal{O}_\mathbf{S}$ and $p$ maps to morphisms in $\mathcal{M}_\mathbf{S}$. For query $q$, patterns in selection form a \textit{selection category} $\mathbf{S}_q^{\sigma}$ (a subcategory of $\mathbf{S}$) and patterns in projection form a \textit{projection category} $\mathbf{S}_{q}^{\pi}$ (a  subcategory of $\mathbf{S}_q^{\sigma}$). 
+
+\begin{example}
+\small
+\pLabel{ex:queries}
+Figure~\pRef{fig:query:workflow3B} on the right shows two MMQL queries $q_1$: \uv{\textit{For each pair of friends, return their names and surnames}} and $q_2$: \uv{\textit{Find the most expensive order ordered by Anne and return its price}}.
+\qed
+\end{example}
+
+\paragraph{Multi-Model Schema Evolution Language (MMSEL)}
+The MMSEL~\citep{mm_evocat} consists of 8 basic \textit{schema modification operations} (SMOs) -- see Table~\pRef{tab:basicSMOs} -- that enable the gradual creation (and deletion) of any \textit{consistent} schema category. Hence, each operation is assigned with prerequisites that must be fulfilled. 
+
+% \BLUE{
+
+%Máme základních 8 operací, které definujeme takto (pro účely konzistence schématu musí být splněny prerekvizity, aby šlo SMO funkci vykonat):
+
+% create(object) - vytvoří nový objekt ve schématické kategorii
+% Prerekvzita: žádná
+
+% create(morphism, domain, codomain) - vytvoří nový morfismus ve schématické kategorii (tj. propojí dva objekty); morfismus může být atributový, ISA, vztahový (včetně embedding), identifikátorový (viz has an identifier a podobně)
+% Prerekvizita: domain a codomain jsou existující objekty. Tato prefekvitiza zajišťuje, že schéma je konzistentní a validní po celou dobu.
+
+% delete(object) - odstraní objekt ze schématické kategorie, p0ud k objektu/z objektu nevede žádný morfismus kromě identitního
+% Prerekvizita: K objektu ani z objektu nevede žádný morfismus (kromě identitního morfismu). Tato prefekvitiza zajišťuje, že schéma je konzistentní a validní po celou dobu.
+
+% delete(morphism) - odstraní morfismus ze schématické kategorie
+% Prerekvizita: žádná
+
+% rename(object, name) - přejmenuje objekt schématické kategorie (přejmenování morfismů nemá zatím smysl, pouze můžeme změnit štítek morfismu; zatím neuvažujeme; štítky jsou zde pouze pro uživatelské pohodlí, ale to jsou jména objektů také - a proto propagace přejmenování nemá téměř žádný vliv).
+% Prerekvizita: objekt existuje
+
+% move(morphism, path) - Přesune objekt morphism.codomain tak, že jej odpojí z morphism.domain a připojí ho k path[last].domain pomocí nového morfismu, ovšem path[first].domain musí být rovno morphism.domain
+% Prerekvizita: cesta path je dosažitelná z objektu morphism.domain
+
+% copy(object) - zkopíruje objekt schématické kategorie (resp. dojde ke kopii domény na úrovni dat - takto je to propagováno v datech)
+% Prerekvizita: žádná, resp. kopírovaný objekt existuje (kopíruje se pouze jeho self-identifikátor)
+
+% copy(morphism, domain, codomain) - tohle je defacto kopie vztahu / atributu / ISA hierarchie
+% Prerekvizita: domain a codomain jsou kopiemi morphism.domain a morphism.codomain
+
+% Z těchto základních operací se dále skládají komplexní operace (pro uživatelské pohodlí), ale pro účely ukázky propagace do dotazů nám stačí propagovat pouze tyto operace a komplexní se z nich složí (efektivně).
+
+% A pak je tam operace změny logické reprezentace, tj. migrace dat mezi dvěma logickými modely - i v tomto případě propagujeme tuto změnu do dotazu.
+
+% Tyto operace se propagují do dat, úložné strategie a nově je propagujeme také do dotazů, a to následovně (viz tabulka)
+% }
+\begin{scriptsize}
+\begin{table}[h]
+\caption{Basic SMOs}
+\pLabel{tab:basicSMOs}
+\def\arraystretch{1.2}
+\begin{tabular}{
+    l
+    |
+    >{\raggedright\arraybackslash}p{30mm}
+    >{\raggedright\arraybackslash}p{27mm}
+    }
+\toprule
+\textbf{SMO}  & \textbf{Behaviour}  & \textbf{Prerequisite} \\
+\midrule
+$\textit{create}(O)$ & Creates object $O$ with a unique identifier and default parameters. & -- \\
+$\textit{create}(m, D, C)$ &  Creates morphism $m: D \rightarrow C$ with a unique signature and default parameters. & $D, C \in \mathcal{O}_{\mathbf{S}}$ \\
+%$delete(o)$   & $\mathcal{O} = \mathcal{O] - o$    & $\forall o_i \in \mathcal{O}, o \neq o_i : \neg (\exists m \in \mathcal{M} : m : o \rightarrow o_i) \wedge \neg (\exists n \in \mathcal{M} : n : o_i \rightarrow o)$  \\
+$\textit{delete}(O)$   & Deletes object $O$.    & $O \in \mathcal{O}_{\mathbf{S}}$, $O$ can participate only in $1_O \in \mathcal{M}_{\mathbf{S}}$  \\
+$\textit{delete}(m)$   & Deletes morphism $m$.    & $m \in \mathcal{M}_{\mathbf{S}}$  \\
+$\textit{rename}(O, n)$   &  Changes the name of object $O$ to $n$.   & $O \in \mathcal{O}_{\mathbf{S}}$  \\
+%$relabel(\mathcal{M}, l)$   &  Changes the label of morphisms in $\mathcal{M}$ to $l$.   & $\mathcal{M} \subseteq \mathcal{M}_{\mathbf{S}}$ %If $l$ = \texttt{\#role}, then $|\mathcal{M}| > 1$ and  morphisms in $\mathcal{M}$ share $dom$.    
+%\\
+$\textit{move}(m, p)$   &  Sets $\textit{dom}(m)$ to  $\textit{cod}(p[\textit{last}])$, i.e. to the end of a path $p$.  & $m \in \mathcal{M}_{\mathbf{S}}$, $\textit{dom}(p[\textit{first}]) = \textit{dom}(m)$  \\
+$\textit{copy}(O)$   &  Creates a copy $O'$ of object $O$ (with a new unique identifier)  &  $O \in \mathcal{O}_{\mathbf{S}}$ \\
+$\textit{copy}(m, D, C)$   &  Creates a copy $m' : D \rightarrow C$ of morphism $m$ (with a new unique signature) & $D,C \in \mathcal{O}_{\mathbf{S}}$, $D = \textit{copy}(\textit{dom}(m))$, $C = \textit{copy}(\textit{cod}(m))$  \\
+\bottomrule
+\end{tabular}
+\end{table}
+\end{scriptsize}
+In addition, we have operations $\textit{addMapping}()$ and $\textit{deleteMapping}()$, which enable one to add/delete mapping of a kind, i.e., data migration. 
+%In addition, we have an operation $remap()$ for changing the mapping, i.e., migrating data between two logical models. 
+
+%addSchemaMapping(LS, S, root)
+%deleteSchemaMapping(m)
+
+Basic SMOs form more user-friendly \textit{composite SMOs}, such as, e.g., (un)group or join/split~\citep{mm_evocat}. \textit{Correct} composition ensures that we only need to define the propagation of basic SMOs.
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{\textit{MM-evoque}}
+\textit{MM-evoque} was built on categorical representation, MMQL, and MMSEL to support query synchronisation. %, i.e., the transformation of MMQL queries reflecting MMSEL SMOs. 
+Currently, it supports the following models/DBMSs: \textit{PostgreSQL}\footnote{\url{https://www.postgresql.org/}} (relational and document, i.e., multi-model), \textit{Neo4j}\footnote{\url{https://neo4j.com/}} (graph), \textit{MongoDB}\footnote{\url{https://www.mongodb.com/}} (JSON document), and \textit{Apache Cassandra}\footnote{\url{https://cassandra.apache.org/_/index.html}} (columnar model). 
+
+%Pro účely vyjádření změn ve schématu jsme navrhli jazyk MMSEL (reprezentující množinu schema modification operations) a pro účely dotazování jsme navrhli jazyk MMQL (modifikace SPARQL, která umožňuje dotazování se pomocí mapování grafových vzorů). Změny vyvolané SMO se pak propagují do dat (transformační algoritmy, resp. migrace dat) a do dotazů (pomocí MM-evoque).
+
+
+ 
+
+In Figure~\pRef{fig:screen}, we provide a screenshot of \textit{MM-evoque}. On the left, we can see MMQL queries synchronised with the schema category from Figure~\pRef{fig:query:workflow3B} visualised on the right.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=\textwidth]{papers/edbt_2024/figures/demo.png}
+    \caption{A screenshot of \textit{MM-evoque}}
+    \pLabel{fig:screen}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{papers/edbt_2024/figures/workflow-version-1.drawio.pdf}
+    \caption{Version 1 -- a naive mapping to the relational model (PostgreSQL) %SMO(s) propagation data and MMQL queries% workflow of query evaluation %(i.e., its decomposition, translation, execution, join of intermediate results, finalization, and transformation to desired logical representation
+    }
+    \pLabel{fig:query:workflow1}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{papers/edbt_2024/figures/workflow-version-2.drawio.pdf}
+    \caption{Version 2 -- a mapping to a normalized relational schema  (PostgreSQL) %An example of SMO(s) propagation data and MMQL queries% workflow of query evaluation %(i.e., its decomposition, translation, execution, join of intermediate results, finalization, and transformation to desired logical representation
+    }
+    \pLabel{fig:query:workflow2}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{papers/edbt_2024/figures/workflow-version-3a.drawio.pdf}
+    \caption{Version 3A -- a mapping to the document model (MongoDB)%An example of SMO(s) propagation data and MMQL queries% workflow of query evaluation %(i.e., its decomposition, translation, execution, join of intermediate results, finalization, and transformation to desired logical representation
+    }
+    \pLabel{fig:query:workflow3A}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{papers/edbt_2024/figures/workflow-version-3b.drawio.pdf}
+    \caption{Version 3B -- a multi-model mapping (PostgreSQL and MongoDB)%An example of SMO(s) propagation data and MMQL queries% workflow of query evaluation %(i.e., its decomposition, translation, execution, join of intermediate results, finalization, and transformation to desired logical representation
+    }
+    \pLabel{fig:query:workflow3B}
+\end{figure}
+
+\begin{example}
+\small
+Consider Figures~\pRef{fig:query:workflow1}--\pRef{fig:query:workflow3B} and queries $q_1$, $q_2$ from Example~\pRef{ex:queries}.
+
+Figure~\pRef{fig:query:workflow1} shows a naive relational schema with several redundant values in table \textit{Orders} (version 1). We also depict the mapping of $\mathbf{S}$ to the relational model, where the violet objects represent kinds (tables), and their neighbours represent their properties (columns). The efficiency of $q_1$ and $q_2$ is satisfactory for low numbers of customers and products.
+
+%V první verzi vytvoříme naivní (neoptimální) schéma, které vede na množství duplicitních hodnot v tabulce Orders, přestože výkon dotazování je usp0ojivý (máme-li malý počet zákazníků a malý počet produktů).
+
+%Schéma d0ážeme vyjádřit pomocí schématické kategorie (viz obrázek), kde fialově zobrazené objekty reprezentují tabulky a množina objektů, ke kterým z fialového objektu vede šipka, tvoří množinu sloupců tabulky (zjednodušeně řečeno).
+
+%Oba pro nás zajímavé dotazy pak vyjadřujeme ve SPARQL-like dotazovacím jazyce MMQL, který je založen na pattern matching a umožňuje vyjádřit model-agnostic výraz (tj. uživatel si nemusí být vědom logické reprezentace dat a dotaz bude podle logické reprezentace dat přeložen do konkrétního DSL).
+
+In Figure~\pRef{fig:query:workflow2}, we decided on the normalisation of the data. We applied the respective SMOs to $\mathbf{S}$ (version 2) and triggered their propagation to data~\citep{mm_evocat}. Their propagation to queries ensured by \textit{MM-evoque} does not change $q_1$. But for $q_2$, it adds the new relationship tables to the selection of MMQL; thus, the SQL translation contains more joins.
+
+%Ve druhé verzi jsme se rozhodli pro větší normalizaci dat, a za tímto účelem jsme provedli úpravy schématu pomocí schema modification operations a transformovali data, aby odpovídala nové verzi schématu. 
+
+%Abychom se nad novými daty (verze 2) mohli dotazovat, musíme ještě změny schématu propagovat do dotazů. Dotaz 1 se nám nezmění - protože jsme neprováděli úpravy schématu nad tabulkami Customer a Knows. Ale změní se nám druhý dotaz, protože jsme přidávali nové vztahové tabulky (v MMQL propagováno jako změny morfismů z 12 na -17/18/12). Po přeložení MMQL do SQL vidíme, že změny vedou na více komplexní dotaz, který obsahuje více spojení. Vyřešíme tedy problém s duplicitními daty, ale dotaz 2 se stává více komplexní.
+
+In Figure~\pRef{fig:query:workflow3A} (version 3A), we try to use the document model instead. Hence, the schema category $\mathbf{S}$ remains unchanged, but the data is migrated from the relational to the document model (green). Queries $q_1$ and $q_2$ are slightly (technically) modified since we assume that every graph pattern must start in the root of a kind. However, we still have a problem with data redundancy (friends of customers and products) in this solution.
+
+
+%Ve třetí verzi zkusíme query-optimised design pro query 2 a použijeme MongoDB pro ukládání dat. NEprovedeme sice strukturální změnu dat, ale provedeme migraci/transformaci dat z relačního do d0umentového modelu. V tomto případě je MMQL pouze přeroutováno - grafový vzor je upraven tak, aby v něm byl root nějakého kind (Důvod je ten, že máme v MMQL restrikci, že každý vzor musí vycházet z kořene nějakého kind - kvůli zamezení redundance ve výsledku dotazu u jinak "vnořeného" kind). Do prvního MMQL je přidáno ?order s cestou do friendA,friendB a druhý MMQL obsahuje upravení cest. A protože Customer ani items v MongoDB nejsou kolekcí, tak musíme vycházet z Order (obojí v dotazu odpovídá proměnné ?orders, ale mohli bychom ji přejmenovat na ?order v obrázku). Výsledkem propagace této změny jsou dva výrazy v MongoDB QL. Problémem verze 3 ovšem je, že opět máme spoustu potenciálně duplicitních dat - duplikované zákazníky (jako přátele zákazníků) a produkty a tato data jsou náročná na správu / aktualizaci a udržení konzistence.
+
+In Figure~\pRef{fig:query:workflow3B} (version 3B), we utilise the multi-model paradigm and migrate the data to a combination of relational (violet) and document (green) models. $q_1$ and $q_2$ are synchronised, respectively, and we gain a good performance for both. 
+\qed
+
+%verze 3B - rel-to-doc transformace v predchozim kroce byla nevhodna, a tak provedeme migraci/transformaci rel-to-rel+doc (tj. vycházíme z verze 2 a zkusíme novou migraci dat), cimz získáme dobrý výkon dotazování pro query 1 i query 2; dekompozice dotazu a přepsání do SQL + MongoDB QL (kombinujeme výhody verze 2 a 3A).
+
+%Let us consider the ...
+
+
+
+
+
+
+
+%Figure~\pRef{fig:query:workflow} depicts ...
+
+%the workflow of evaluation of the query. In Phase I. the user specifies the MMQL query over the schema category. The body of the SELECT clause describes the hierarchical structure of the result, where we want to return the customer's first and last name and the number of common products ordered by both customers. The WHERE clause describes the graph pattern that we match to the data. We also have a filtering condition in clause FILTER to eliminate duplicate pairs of friends in swapped order, we apply aggregation COUNT on DISTINCT pairs, and we sort them using clause ORDER BY.
+
+%In Phase II., the query is decomposed into two query parts: the graph (blue) model of Neo4j and the document (green) model of MongoDB. In Phase III. the queries in the respective DSLs are provided, namely the blue query for Neo4j and the green query for MongoDB. Phase IV. involves evaluation of the queries and gaining the results. In Phase V. we can see their representation as the instance categories whereas the query is finalised, i.e., the data is merged, and the remaining query operations are applied in Phase VI. In Phase VII. we can see its transformation to the relational model, i.e., neither of the original models is used.
+\end{example}
+
+\subsection{Workflow}
+
+% \begin{figure}
+%     \centering
+%     \includegraphics[height=\textheight%scale=0.40%width=\textwidth
+%     ]{papers/edbt_2024/figures/propagation-workflow.pdf}
+%     \caption{An example of SMO(s) propagation data and MMQL queries% workflow of query evaluation %(i.e., its decomposition, translation, execution, join of intermediate results, finalization, and transformation to desired logical representation
+%     }
+%     \pLabel{fig:query:workflow}
+% \end{figure}
+
+\afterpage{
+\begin{landscape}
+
+\begin{table}
+\small
+\caption{Basic SMOs and their impact on MMQL query constructs}
+\pLabel{tab:propagation}
+
+\begin{tabular}{lccccccccc}
+    \toprule
+    & $\textit{create}(O)$ & $\textit{create}(m, D, C)$ & $\textit{delete}(O)$ & $\textit{delete}(m)$ & $\textit{rename}(O, n)$ & $\textit{move}(m, p)$ & $\textit{copy}(O)$ & $\textit{copy} (m, D, C)$ & \makecell{$\textit{addMapping}()$ \\ $deleteMapping()$} \\
+    \midrule
+
+    $\mathbf{S}_q^{\sigma}$  & 0 & 0    & 0 | $\infty$   & 0 | 1 | $\infty$& 0 & 0 & 0 & 0 & 0 | 1 \\
+    \texttt{VALUES}            & 0    & 0    & 0 | $\infty$   & 0 | 1      & 0 & 0 & 0           & 0                     & 0 | 1\\
+    \texttt{FILTER}             & 0    & 0    & 0 | $\infty$   & 0 | 1      & 0 & 0 & 0           & 0                     & 0 | 1\\
+    $\mathbf{S}_q^{\pi}$ & 0    & 0    & 0 | $\infty$   & 0 | 1      & 0 & 0 & 0           & 0                     & 0 | 1\\
+    \texttt{DISTINCT}           & 0    & 0    & 0 | $\infty$   & 0 | 1      & 0 & 1 & 0           & 0      & 0 | 1               \\
+    \texttt{ORDER BY}           & 0    & 0    & 0 | $\infty$   & 0 | 1      & 0 & 0 & 0           & 0              & 0 | 1       \\
+    \texttt{LIMIT}              & 0    & 0    & 0        & 0        & 0 & 0 & 0           & 0                   & 0 | 1  \\
+    Aggregations       & 0   & 0    & 0 | $\infty$    & 0 | $\infty$     & 0 & $\infty$ & 0           & 0                   & 0 | 1  \\
+    \bottomrule
+\end{tabular}
+\end{table}
+
+\end{landscape}
+}
+
+%In Figure~\pRef{fig:query:workflow}, 
+Having the old and new versions of the schema category, denoted $\mathbf{S}$ and $\mathbf{S'}$, and the MMQL query $q$ to be synchronised with the changes, the workflow of \textit{MM-evoque} is as follows:
+
+\begin{enumerate}
+    \item The sequence of basic SMOs which changed $\mathbf{S}$ to $\mathbf{S'}$ is determined (as composite SMOs consist of basic ones). 
+    
+    \item MMQL query $q$ is translated into a set of constructs. The selection category $\mathbf{S}_q^{\sigma}$ and projection category $\mathbf{S}_q^{\pi}$ are created according to respective graph patterns of $q$.
+
+    \item Using Table~\pRef{tab:propagation}, we determine whether $q$ can be synchronised as maximum of $\textit{impact}(\textit{smo}, \textit{construct})$ from all pairs (SMO, affected MMQL construct) occurring in $q$. If the result is $0$, we can synchronise $q$ and preserve its original behaviour. If the result is $1$, we can synchronise $q$, but its behaviour may change (see Section~\pRef{sec:SMO-to-MMQL}). Otherwise, the changes are too critical that we cannot easily adapt the query.
+    
+    \item If the user agrees with the proposed changes, we apply the SMOs to $\mathbf{S}_q^{\sigma}$ and $\mathbf{S}_q^{\pi}$. We use the fact that both are subcategories of $\mathbf{S}$, so we identify SMOs that affect them. 
+        
+    \item The modified query $q'$ is translated to a new version of DSL queries.
+\end{enumerate}
+
+%Note that in the case of SMO $remap()$, we do not change $\mathbf{S}$, but only the mapping. Hence, there should not be any changes in $q$. But, as depicted in Figure~\pRef{fig:query:workflow3A}, we might need to synchronise the query with the newly defined kinds. 
+
+%In addition, \textit{MM-evoque} supports changes in the logical representation of the data by changing the mapping. In such a case, there is no change to MMQL, however, changes in the logical data representation are propagated to DSLs.
+
+
+% pracuje v pěti krocích. Nejprve je určena množina základních SMO (komplexní SMO se vždy skládají ze základních), které vedly na změnu schématu S(version n) na S(version n+1). (k tomu využíváme prostředků a znalostí MM-evocat).
+
+% 2) přeložíme MMQL výraz do množiny operátorů, morfismů a objektů (získáme kategorii na pozadí, jako tomu děláme při dekompozici dotazu na query parts). Jinými slovy, určíme množinu konstruktů (klauzulí) a schématickou kategorii selekce dotazu MMQL (S\_SEL(sigma?)).
+
+% 3) V dalším kr0u vezmeme množinu základních SMO a množinu operátorů spolu s "kategorií dotazu" a podle tabulky (teď v článku) určíme, jestli změny půjde propagovat, aniž bychom dotaz nějak rozbili nebo jak moc se výsledek bude lišit od původního dotazu (tj. jak moc ovlivní propagace změn výsledek dotazu, jak moc jsme těmito SMO omezeni). Jinými slovy, určíme, jestli dotaz lze přeložit/synchronizovat (ano/s omezením/ne). To určíme jako max(omezení(smo,operátor)), kde omezení(smo,operátor) je buňkou v tabulce v demo článku. Tuto zprávu v aplikaci vrátíme uživateli, aby viděl, jestli je to 0, s varováním nebo je tam zásadní $\infty$.
+
+% Spolu s tím určíme množinu dopadů synchonizace dotazu. P0ud max(...) = 0, tak je množina dopadů sum(...) prázdná. P0ud je max(...) = 1, pak je množina sum(...) neprázdná. P0ud je max(...) = $\infty$, pak na obsahu množiny sum(...) nezáleží, protože obsahuje kritický dopad, který brání překladu dotazu.
+
+% 4) P0ud max(...) = 0 | 1 (uživatel souhlasí), provedeme aplikaci SMO na kategorii S\_SEL (selekce dotazu), (tím dojde k témže změnám podobně jako ve schématické kategorii dat). Využijeme faktu, že kategorie dotazu je mapovatelná na schématickou kategorii, a tak změny provedené na schématickou kategorii a) nepůjde provést na kategorii dotazu, protože konkrétní SMO např. mazalo objekt, který není součástí kategorie dotazu, a tak toto SMO nemá vliv na propagaci do dotazu, nebo b) půjde provést, pak tato změna může ovlivnit dotaz. Typicky se tak změní kategorie dotazu, např. přidá se objekt a další morfismy a ve výsledku "Grafový vzor" v MMQL selekci bude více/méně komplexní, což se pak do DSL reflektuje jako zesložitění/zjednodušení joinu, odebrání property nebo odebrání filtrovací podmínky (v závislosti na tom, jaký konstrukt je k té části kategorie dotazu přidružen, tj. jaký je dopad změn - viz tabulka). SMO tedy aplikujeme na kategorii dotazu, čímž dojde k úpravám v grafovém vzoru/klauzulích dotazu (morfismy/proměnné).
+
+
+%Jestliže jsme předtím omezení určili jako max(omezení(smo, operátor)), tak dopady SMO na výsledný dotaz budou sum\_i to n (dopad(smo, operátor)), kde dopad(smo, operátor) je prakticky také buňkou v té tabulce v článku, akorát tam budou trochu jiné hodnoty.
+
+%využívá faktu, že každý MMQL výraz je mapovatelný na schématickou kategorii (resp. grafové vzory v MMQL selekci a projekci jsou mapovatelné na objekty a morfismy ve schématické kategorii). SMO operace mění strukturu schématické kategorie a tyto změny mohou být propagovány do MMQL změnou struktury projekce nebo selekce (resp. grafových vzorů), a to přidáním / odebráním proměnné odpovídající objektu schématické kategorie nebo pŕidáním/odebráním morfismu, případně upravením konstruktu, který pracuje s proměnnou (např. FILTER(?variable)). 
+
+%5) Poslední fáze procesu je pak performed s využitím modulu MM-quecat. Konkrétně, přeložení nové verze MMQL výrazu do nové verze DSL výrazu. %The core issue of the process and the main contribution of \textit{MM-quecat} is the propagation of structural changes into MMQL statement.
+
+%Upravený MMQL je pak s využitím MM-quecat přeložen do nové verze DSL (domain specific language) výrazu, čímž je propagace změn ve schématu do dotazovacích výrazů d0onána.
+
+% Kromě toho ještě umíme propagovat změnu logické reprezentace, aniž by se změnila struktura dat. V takovém případě je výraz MMQL nezměněn (nemění se schématická kategorie), a dochází pouze k překladu MMQL do jiného DSL, který nově odpovídá logické reprezentaci dat.
+
+% MM-evocat umožňuje kromě změn struktury schématu také změnu logické reprezentace dat (pomocí změny mapování schématu na jiný model/kombinaci modelů). V takovém případě nedochází ke změně MMQL, nicméně změny v logické reprezentaci dat jsou propagovány do dotazování tak, že je vytvořen DSL odpovídající logické reprezentaci dat.
+
+%evaluates a query naturally: The specified query is first mapped to the schema category, and, depending on its decomposition, it is decomposed into particular \textit{query parts}. The query parts are then translated into the  \textit{Domain Specific Languages} (DSLs) and evaluated in the respective DBMSs. The returned \textit{intermediate results} are then transformed into the categorical representation and merged into the resulting schema category. Eventually, the remaining part of the query evaluation is applied to the merged data. Depending on the user requirements, it can be transformed into the selected (multi-model) representation.
+
+
+%some phases of the evaluation process are performed with an external tool. Namely, the evaluation of query parts is ensured natively by the respective single/multi-model DBMSs. Also, the process of transforming data from and to the categorical representation is ensured by the multi-model transformation library of \textit{MM-cat}~\citep{mm_cat}. The core issue of the process and the main contribution of \textit{MM-quecat} is the decomposition of the query into query parts, the translation of MMQL to DSLs, and the merging of the intermediate results together with the eventual final evaluation of the remaining parts of the query. The translation process corresponds to the mapping of constructs of MMQL depicted in Table~\pRef{tab:MM-sparql}. Query decomposition reflects the decomposition of the schema category. Inspired by~\citep{spivak_cql,tuijn1996}, for merging and unified processing of the intermediate results, we utilise categorical constructs, such as product (Cartesian product), pullback (join), coproduct (disjoint union), or pushout (union), to be formally described in a separate paper.
+
+
+
+
+
+
+
+%Jak vidíme, některé fáze...
+
+
+%\BLUE{MM-evoque je založen na MM-evocat a MM-quecat, tj. modulech pro správu schématu (schema modification operations, jazyk MMSEL) a propagaci změn ve schématu (transformační algoritmy) do dat a na dotazovacím modulu (jazyk MMQL), a rozšiřuje modulární framework o propagaci změn schématu (nebo logické reprezentace dat) do dotazů.}
+
+
+%MM-evoque rozšiřuje existující modulární framework o propagaci změn ve schématu do dotazů. Namísto nutnosti propagovat změny ve schématu vždy do konkrétního DSL (nutnost pro každý DSL implementovat nové algoritmy a postupy, p0ud bychom chtěli podporovat více DBMS) je MM-evoque postaven na propagaci změn do (abstraktního) model-agnostic jazyku MMQL. Aktualizovaný MMQL výraz pak jednoduše je přeložen do konkrétního DSL výrazu pomocí MM-quecat, čímž d0ážeme propagovat změny...
+
+
+
+
+%Ovšem ne vždy je propagace změn schématu do dotazů přímočará nebo možná a tato propagace má svá omezení (viz tabulka 1). V tabulce 1 souhrně uvádíme dopad základních SMO na výsledek přeloženého dotazu, je-li vůbec možné dotaz přeložit.
+
+
+    
+
+
+%As we can see, ...
+
+
+
+% \subsection{Schema Modification Operations (SMOs)}
+% \pLabel{sec:mmsaprql}
+% ...
+
+
+
+% Máme SMO, pak máme abstraktní dotazovací jazyk MMQL a jeho překlad do DSL, tudíž vytvoření propagace SMO(s) do DSL bylo dalším přirozeným kr0em. A protože máme ten překlad z MMQL do DSL, tak se problém zúžil pouze na propagaci SMO(s) do MMQL, přičemž pak ještě použijeme překlad MMQL\_2 do DSL\_2 a máme propagaci přímo do DSL. A navíc, p0ud provádíme migraci dat (tj. transformujeme data mezi datovými formáty/modely), pak se MMQL nemění (p0ud se nezměnilo schéma), ale my můžeme náš framework použít ke query migration / transformation z jednoho DSL do jiného. z SQL tak získáme ekvivalentní Cypher výraz nebo MongoDB QL výraz (viz obrázek 4, přechod mezi verzemi 2 a 3).
+
+% Hlavní přínosy jsou tedy: (1) propagace SMO do MMQL a následně do DSL a (2) migrace mezi DSL (překlad/transformace/migrace DSL, podle toho, jak to nazveme).
+
+
+
+\subsection{SMO-to-MMQL Propagation}
+\pLabel{sec:SMO-to-MMQL}
+
+% Dopady SMO na vyhodnotitelnost a výsledek dotazu může být trojí: yes (0) - SMo nemá vliv na vyhodnotitelnost ani výsledek dotazu, restricted (1) - dotaz půjde vyhodnotit, ovšem výsledek dotazu může být odlišný, no ($\infty$) - dotaz nepůjde vyhodnotit. Tabulka XXX ilustruje dopady jednotlivých (základních) SMO na konkrétní konstrukty jazyku MMQL.
+
+Let us discuss the impact of SMOs from Table~\pRef{tab:basicSMOs} to $\mathbf{S}_q^{\sigma}$ and $\mathbf{S}_q^{\pi}$. 
+
+Operation $\textit{create}(O)$, i.e., creating a new object $O \in \mathcal{O}_\mathbf{S}$, is not propagated to $\mathcal{O}_{\mathbf{S}_q^{\sigma}}$, i.e., it does not impact $\sigma$.
+%, tj. není do grafového vzoru přidána ani odebrána žádná trojice, ani není přidána nebo odebrána variable v žádné z klauzulí MMQL (neboť ty používají proměnné odpovídajícím $o \in M_{S_{all}}$.
+Similarly, operation $\textit{create}(m, D, C)$, i.e., forming an association between two objects $D,C \in \mathcal{O}_\mathbf{S}$, does not affect $\mathcal{M}_{\mathbf{S}_q^{\sigma}}$.\footnote{Note that the attributes in the projection of $\sigma$ must be explicitly specified.}
+
+%Nic z těchto případů se ovšem do $\mathbf{S}_{\sigma}$ nepropaguje.%, protože MMQL (version n) je postaveno na S (version n), kde m (morph) není.
+
+The $delete(O)$ prerequisite ensures that $O$ cannot participate in non-identity morphisms. So, we delete a whole kind with a single property. This has a critical impact on $\sigma$ if $O \in \mathcal{O}_{\mathbf{S}_q^{\sigma}}$. 
+
+%two sitations may occur: (i) If $\sigma$ contains in the selection/projection part  
+%A MMQL statement being a selection and projection over only a single-property kind, then removing the corresponding object from $\mathbf{S}$ causes a critical $\infty$. 
+
+%(ii) Otherwise, the deletion of the object does not impact evaluability due to the prerequisite of the delete(o).
+
+
+Operation $delete(m)$ is propagated %by removing $m$ from $\mathcal{M}_{\mathbf{S}_q^{\sigma}}$ 
+as follows: (i)~We try to modify $\mathbf{S}_q^{\sigma}$ by replacing $m$ with $m' \in \mathcal{M}_\mathbf{S}$, s.t. $m$ and $m'$ form a \textit{comutative diagram} (i.e., the semantics is preserved). 
+%A->B \cong A->C->X->B
+% Pokud máme dvě cesty, které přes skládání určí dva stejné morfismy, tj. path_1 vede na p a path_2 vede na morfismus p_2, kde p_1 = p_2, tak ano. V tomtle případě je m = p_1 a m' = p_2, přičemž p_1 může být cestou délky 1 a p_2 může být libovolně dlouhou cestou.
+%Zapsali bychom to jako m \cong m'
+%Správně bychom ještě ke kategorii měli mít množinu těchto vztahů, které popisují integritní omezení. Pak můžeme využít tato integritní omezení k rychlému nalezení m \cong m'. Takže je to spíš takové v tuhle chvíli povídání, které je teoreticky možné, ale reálně ho zatím neumíme). Ale bude třeba a bude se dělat přesně tak, jak je popsáno.
+% m \cong m' (protoze obe cesty komutuji)
+(ii)~If there is no such $m'$, we remove all unreachable subgraphs of 
+$\mathbf{S}_q^{\sigma}$.
+%the roots of kinds employed in $\sigma$ (i.e., variables and morphisms reachable from $cod(m) \subseteq \mathcal{O}_\mathbf{S_\sigma}$) are determined and removed from $\mathbf{S}_\sigma$.
+(iii)~The unreachable variables are also removed from $\mathbf{S}_q^\pi$, filtering, aggregation, and result modifiers. %removing $m$ may lead, e.g., to a modification or complete collapse of join (1/$\infty$). Or, %removing an unreachable variable from $\mathbf{S}_q^pi$ may impacts projection (i.e., fewer properties) (1)
+Removing an unreachable variable may cause, e.g., a result containing more records when filtering, a result differently ordered using \texttt{ORDER BY}, etc.  
+% A->B
+% A->X
+%move(A->B, A->X->B)
+%in the case of aggregation the root of the aggregation may be changed ($\infty$), and in the case of ORDER BY the result may be differently ordered (1). 
+
+Operation $\textit{rename}(O, n)$ is not propagated to $\sigma$ as there is no binding between object names and MMQL variable names.
+
+Operation $\textit{move}(m, p)$ only changes the morphisms, 
+%operation replaces $m \in \mathcal{M}_{\mathbf{S}, \sigma}$ with $p$ (e.g., a composite morphism), 
+leaving the MMQL variables unchanged. Thus, the move operation has no impact on the evaluability of $q$ except for the clause \texttt{DISTINCT} and aggregation functions. In the former case, a different result may be returned. In the latter case, the root of the aggregation may be changed.
+Nevertheless, the modification of $\mathbf{S}_q^\sigma$ may be significant in the DSL statement, where, e.g., the join or graph traversal may be more complex as we change a base $m \in \mathcal{M}_\mathbf{S}$ to a composite one.
+
+Operations $\textit{copy}(O)$ and $\textit{copy}(m, D, C)$ do not impact $\sigma$. However, the second one could simplify $\mathcal{M}_\mathbf{S_\sigma}$ by replacing a composite morphism with a base morphism $m'$.
+
+The propagation of $\textit{addMapping}()$ / $\textit{deleteMapping}()$ depends on the underlying logical representation of the data. The following complications may arise: 
+(i)~We do not change $\mathbf{S}$, but only the mapping. Hence, there should not be any changes in $q$. But, as depicted in Figure~\pRef{fig:query:workflow3A}, we might need to synchronise the query with the newly defined kinds, as every graph pattern must start in the root of a kind.  
+%If $\kappa'$ is embedded in $\kappa'$ as part of the model-to-model transformation, then $\mathbf{S}_\sigma$ is modified such that each variable previously reachable from object corresponding to $\kappa$ ($o_\kappa$) is now reachable from an object corresponding to $\kappa'$ ($o_{\kappa'}$) and a path between $o_{\kappa'}$ and $o_\kappa'$ may be added to $\mathbf{S}_\sigma$. This reordering indicates data denormalisation, i.e., the query result can be modified (1). 
+(ii)~MMQL statement does not change, yet target DSL does not allow particular MMQL construct. Then, such construct is evaluated utilising \textit{MM-quecat}~\citep{mm_quecat} as a so-called \textit{postponed statement}, which is not propagated into the target DSL. 
+
+
+% \subsection{Query Rewriting}
+% ...
+
+% %Another essential feature of the proposed categorical representation and thus all our related tools, including \textit{MM-quecat} is the support for redundancy. For more efficient query evaluation (a part of) the data can be stored in multiple models, corresponding, e.g., to classical materialised views. Consequently, the query can be evaluated in different ways, i.e., using different evaluation plans. \textit{MM-quecat} supports this feature at the multi-model level, i.e.,  it detects all query decompositions into query parts. Then it evaluates the cost of such decomposition using a combination of evaluation of the query parts and their merging. We assume that either the underlying DBMS or a system-specific wrapper provides such a cost to enable the estimation for a particular query plan. The user can then analyse the query plans, including their costs.
+
+% %\footnote{Note that this feature is also a preparation for our current research target -- self-adapting multi-model data management.}
+
+
+% %Note that by decomposing the data, we can evaluate the query in different ways. We have the customer information stored in both the graph and relational database/model, and therefore have the option of choosing the more efficient option.
+% \begin{example}
+% \small
+% In Figure~\pRef{fig:query:alternative} we provide an alternative evaluation of the graph (blue) query part from Figure~\pRef{fig:query:workflow} Phase II using the relational (purple) model. Its cost is higher due to the need to evaluate two joins.
+% \qed
+% \end{example}
+
+
+
+
+
+
+% \section{Architecture and Implementation}
+
+% ...
+
+% \begin{figure}[h]
+%     \centering
+%     % \includegraphics[scale=0.4%width=\textwidth
+%     % ]{alternative-plan.pdf}
+%     \includegraphics[%scale=0.4%
+%     width=\textwidth
+%     ]{papers/edbt_2024/figures/architecture-small.pdf}
+% %     \\
+% % \includegraphics[%scale=0.4%
+% %     width=\textwidth
+% %     ]{architecture.pdf}
+    
+%     \caption{Architecture ... }
+%     \pLabel{fig:architecture}
+% \end{figure}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Demonstration Outline}
+In our presentation, we will first demonstrate the described functionality of \textit{MM-evoque} using the example depicted in Figures~\pRef{fig:query:workflow1}--~\pRef{fig:query:workflow3B}. Next, we will demonstrate additional features, such as the representation of the schema category using a sequence of operations or the support for versioning and redundancy. 
+
+As the tool is currently a prototype part of a robust research aim of efficient unifying multi-model data management, we will also introduce the broader context and discuss the open problems and challenges. 
+
+% \section*{Acknowledgements}
+% \begin{small}
+% This paper was supported by the GA\v{C}R grant project no. 20-22276S.
+% \end{small}
+
+
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% \bibliographystyle{ACM-Reference-Format}
+% \bibliography{references} 
+
+% \end{document}
+
+
+% Souhlasím. Není to user friendly - my cílíme na zkušené databázové uživatele (pro které navrhujeme silný dotazovací jazyk inspirovaný SPARQL a založený na pattern matching a přidáváme možnost vrácení strukturovaného, nikoliv jen plochého výsledku). Textovou formu navrhujeme také pro strojové zpracování.
+
+% A pak také cílíme na nezkušené uživatele, pro které navrhujeme grafickou podobu dotazovacího jazyku tak, aby i ti, kteří např. kvůli průmyslové revoluci 4.0 a automatizaci přijdou o práci, aby se graficky mohli jednoduše dotazovat nad daty (pouhé klikání ve schématické kategorii - vyklikají, co chtějí + přidají podmínku). To grafické dotazování ani nemusí řešit všechny případy, ale chceme jim zjednodušit práci. Alespoň ne začátku + pomoc jim generovat dotazy v DML (tj. naše řešení nemusí být aplikovatelné jen pro multi-model databáze, ale také pro single-model systémy). - tj. ta vizualizace.
+
+% A pak navíc uvažujeme různé strategie vyhodnocení dotazu, různé dekompozice do query parts (tj. ta redundance).
+
+% A nakonec explain - vysvětlit vše, tj od začátku se snažíme modely a přístupy k dotazování unifikovat, vytvořit abstraktní úroveň a uživateli vše co možná nejvíc usnadnit. 
+
+% Jinými slovy existují sice další návrhy dotazování, ale ty jsou často zbytečně komplexní a vyžadují po uživatelích expertní znalost (matematiky, programování, databází). My naproti tomu chceme i úplnému nováčkovi usnadnit vstup, aby mohl od začátku dotazovat se nad daty. Pouhé kliknutí na objekt ve schématické kategorii mu vrátí data, tak jednoduché je naše dotazování. Nemusíme psát dlouhý SELECT name FROM person a ještě k tomu vědět, že data jsou uložena v relačním modelu. A p0ud chceme jen zákazníky, kteří se jmenují Petr, tak klikneme na objekt name a přidáme filtrovaní podmínku =="Petr". V tom bych viděl kromě abstraktního jazyka podstatný rozdíl a velký přínos. A to bych také ukázal na videu, poskládat nějaký velmi jednoduchý dotaz a jeho vyhodnocení.
+
+% My se prakticky snažíme najít odpovědi na následující otázky:
+
+%     The query result is often logically represented differently compared to the input data
+%         E.g., graph query languages usually return a (relational) table instead of a graph
+%     Efficient evaluation of the query
+%         Decomposition of the multi-model query into so-called query parts (corresponding to underlying data models)
+%         Evaluation of query parts and the practical order of joining intermediate query results
+%         Planning and selecting a strategy for decomposition and joining
+%     User-friendly querying
+%         The user must be aware of the logical representation of the data (e.g., PostgreSQL and application of SQL, SQL/JSON, SQL/XML)
+%         Usually fixed order of clauses in query statement (e.g., SQL-like languages)
+%         Textual vs graphical query language
+%     Limited portability of query statements between various database systems
+%         Minimum standards, varying expressive power
+
+
+

@@ -1,0 +1,1271 @@
+%% 
+%% Copyright 2007-2024 Elsevier Ltd
+%% 
+%% This file is part of the 'Elsarticle Bundle'.
+%% ---------------------------------------------
+%% 
+%% It may be distributed under the conditions of the LaTeX Project Public
+%% License, either version 1.3 of this license or (at your option) any
+%% later version.  The latest version of this license is in
+%%    http://www.latex-project.org/lppl.txt
+%% and version 1.3 or later is part of all distributions of LaTeX
+%% version 1999/12/01 or later.
+%% 
+%% The list of all files belonging to the 'Elsarticle Bundle' is
+%% given in the file `manifest.txt'.
+%% 
+%% Template article for Elsevier's document class `elsarticle'
+%% with numbered style bibliographic references
+%% SP 2008/03/01
+%% $Id: elsarticle-template-num.tex 249 2024-04-06 10:51:24Z rishi $
+%%
+%% \documentclass[preprint,12pt]{elsarticle}
+
+%% Use the option review to obtain double line spacing
+%% \documentclass[authoryear,preprint,review,12pt]{elsarticle}
+
+%% Use the options 1p,twocolumn; 3p; 3p,twocolumn; 5p; or 5p,twocolumn
+%% for a journal layout:
+%% \documentclass[final,1p,times]{elsarticle}
+%% \documentclass[final,1p,times,twocolumn]{elsarticle}
+%% \documentclass[final,3p,times]{elsarticle}
+%% \documentclass[final,3p,times,twocolumn]{elsarticle}
+%  \documentclass[final,5p,times]{elsarticle}
+%% \documentclass[final,5p,times,twocolumn]{elsarticle}
+
+%% For including figures, graphicx.sty has been loaded in
+%% elsarticle.cls. If you prefer to use the old commands
+%% please give \usepackage{epsfig}
+
+% \usepackage{amssymb}
+% \usepackage{amsmath}
+% \usepackage{bm}             % boldface symbols (\bm)
+% \usepackage{booktabs}       % improved horizontal lines in tables
+% \usepackage{caption}        % custom captions of floating objects
+% \usepackage{dcolumn}        % improved alignment of table columns
+% \usepackage{floatrow}       % custom float environments
+% \usepackage{indentfirst}    % indent the first paragraph of a chapter
+% \usepackage[nopatch=item]{microtype}   % micro-typographic refinement
+% \usepackage{paralist}       % improved enumerate and itemize
+% \usepackage[nottoc]{tocbibind} % makes sure that bibliography and the
+% \usepackage{afterpage}
+% \usepackage{amsfonts}           % math fonts
+% \usepackage{amsthm}             % theorems, definitions, etc.
+% \usepackage[linesnumbered,lined,boxed,commentsnumbered,ruled]{algorithm2e}
+% \usepackage{fancyvrb}       % improved verbatim environment
+% \usepackage{tikz}
+% \usepackage{forest}
+% \usepackage{siunitx}
+% \usepackage{longtable}
+% \usepackage{adjustbox}
+% \usepackage{hyperref}
+% \usepackage{placeins}
+% \usepackage{multirow} % for borders and merged ranges
+% \usepackage{soul}% for underlines
+% \usepackage{colortbl} % for cell colors
+% \usepackage{changepage} % for wide tables
+% \usepackage{bbding}
+% \usepackage{graphicx}           % embedding of pictures
+% \usepackage{framed}    % Required for framed environments
+% \usepackage{xcolor}             % typesetting in color
+% \usepackage{array}
+% \usepackage{subfig}             % pro subfloat
+% \usepackage[inline]{enumitem}   % seznamy na řádek, ne pod sebou
+% \usepackage{url}                % \url{...}
+% \usepackage{listings}
+% \usepackage{pdflscape}
+% \usepackage[para,online,flushleft]{threeparttable}
+
+\let\oldnl\nl% Store \nl in \oldnl
+\newcommand{\nonl}{\renewcommand{\nl}{\let\nl\oldnl}}% Remove line number for one line
+
+\newlength\mylen
+\newcommand\myinput[1]{%
+  \nonl
+  \settowidth\mylen{\KwIn{}}%
+  \setlength\hangindent{\mylen}%
+  \hspace*{\mylen}#1}
+
+
+% \usepackage[figuresright]{rotating}
+
+
+% \newtheorem{example}{Example}
+% \newtheorem{definition}{Definition}
+% \newtheorem{proposition}{Proposition}
+% \newtheorem{theorem}{Theorem}
+
+% \ifcsname DeclareNewFloatType\endcsname
+% \DeclareNewFloatType{listing}{}
+% \floatsetup[listing]{style=ruled}
+% \floatname{listing}{Program}
+% \fi
+
+% \journal{Data \& Knowledge Engineering}
+
+
+\newcommand{\FrelTablesSet}{T = \{t_1, t_2, \dots, t_m\}}
+\newcommand{\FattributeSet}{A = \{a_1, a_2, \dots, a_n\}}
+\newcommand{\FworkloadSet}{W = \{ q_1, q_2, \dots, q_o \}}
+\newcommand{\FrelTable}{t}
+\newcommand{\FAttributes}{A}
+\newcommand{\FWorkload}{W}
+\newcommand{\FIndexCandidate}{i_{cdt}}
+\newcommand{\FIndexConfigurationSet}{C}%{I_{conf}}
+\newcommand{\FIndexSet}{I}
+\newcommand{\FrelTables}{T}
+\newcommand{\FConstraintsSet}{K}
+\newcommand{\FConstraintN}{k_N}
+\newcommand{\FConstraintB}{k_B}
+
+
+
+% \begin{document}
+
+% \begin{frontmatter}
+
+%% Title, authors and addresses
+
+%% use the tnoteref command within \title for footnotes;
+%% use the tnotetext command for theassociated footnote;
+%% use the fnref command within \author or \affiliation for footnotes;
+%% use the fntext command for theassociated footnote;
+%% use the corref command within \author for corresponding author footnotes;
+%% use the cortext command for theassociated footnote;
+%% use the ead command for the email address,
+%% and the form \ead[url] for the home page:
+%% \title{Title\tnoteref{label1}}
+%% \tnotetext[label1]{}
+%% \author{Name\corref{cor1}\fnref{label2}}
+%% \ead{email address}
+%% \ead[url]{home page}
+%% \fntext[label2]{}
+%% \cortext[cor1]{}
+%% \affiliation{organization={},
+%%             addressline={},
+%%             city={},
+%%             postcode={},
+%%             state={},
+%%             country={}}
+%% \fntext[label3]{}
+
+% \title{Refining storage strategy through index selection methods in multi-model database systems: A survey}
+
+
+% \author[label1]{Filip Miha\v{l}} %% Author name
+% \author[label1]{Jáchym Bártík}
+% \author[label1]{Pavel Koupil}
+
+% \affiliation{organization={Department of Software Engineering, Faculty of Mathematics and Physics, Charles University},
+%             addressline={Malostranské náměstí 25},
+%             city={Prague},
+%             postcode={118 00},
+%             %state={},
+%             country={Czech Republic}}
+
+%% Abstract
+% \begin{abstract}
+%% Text of abstract
+\section*{Abstract}
+
+Multi-Model database systems combine the advantages of traditional and NoSQL database systems. However, the management of these systems is challenging, as users have to design an appropriate storage strategy for their data. One of the most influential factors in the storage strategy is the selection of indexes. Indexes can significantly improve query performance, but they require additional storage space and maintenance overhead. Index selection problem is well-studied in the context of single-model Database Management Systems (DBMSs), but there is a lack of research in the context of multi-model database systems.
+
+We address this problem by conducting a survey of current state-of-the-art index selection algorithms and evaluating their applicability to other DBMSs. The results reveal the strengths and weaknesses of existing algorithms and highlight the need for specialized algorithms for multi-model database systems. Moreover, we formulate open questions and suggest future research directions in this field. Our research provides a foundation for the development of efficient index selection algorithms for multi-model DBMSs.
+% \end{abstract}
+
+
+%% Keywords
+% \begin{keyword}
+% Multi-Model Data \sep Index Selection \sep Database Management Systems \sep Querying \sep Reinforcement Learning \sep Survey
+% %% keywords here, in the form: keyword \sep keyword
+% %
+% %% PACS codes here, in the form: \PACS code \sep code
+% %
+% %% MSC codes here, in the form: \MSC code \sep code
+% %% or \MSC[2008] code \sep code (2000 is the default)
+% %
+% \end{keyword}
+
+% \end{frontmatter}
+
+%% Add \usepackage{lineno} before \begin{document} and uncomment 
+%% following line to enable line numbers
+%% \linenumbers
+
+%% main text
+%%
+
+
+\section{Introduction}
+
+The way we store and access data has been changing rapidly over the past few decades. Initially, data was stored in traditional single-node \textit{relational databases}, which were designed to handle \textit{normalised} and \textit{structured data}. Developers had to define the \textit{schema} of the data in advance, storing it in a structured manner. However, as the amount of data grew, relational databases became too slow and expensive to scale. Additionally, the need to store \textit{denormalised} and \textit{unstructured data}, such as logs and multimedia content, emerged, leading to the development of \textit{NoSQL databases}, which were designed to handle unstructured data and scale horizontally across distributed systems. In parallel, new data models and their underlying DBMSs emerged, each optimised for specific data types and use cases.
+
+
+In recent years, the exponential growth of data generated by various applications and devices has driven the need for more advanced and sophisticated database systems. Developers are increasingly required to handle \textit{multi-model data}, combining different data models within a single system. This has given rise to \textit{multi-model DBMSs}, which integrate multiple data models into a unified backend, allowing users to manage and query relational, document, graph, and key-value data within the same platform. While these databases enable efficient cross-model operations and data consolidation, they present new challenges in terms of storage strategy and performance optimisation and vigorous research has been conducted to find the optimal storage strategy for given multi-model data~\citep{ideas2022vision,MultiSQL,DBLP:journals/jbd/KoupilH22,koupil2022mminfer}.
+
+In addition to \textit{multi-model data}, modern applications frequently deal with \textit{multi-modal data}, where data from different modalities (such as text, images, videos, and geospatial information) must be stored and queried together. \textit{Multi-modal databases} require specialised indexing techniques, including \textit{inverted indexes} for text, \textit{R-trees} for spatial data, and \textit{multi-index hashing} for high-dimensional data such as images. Handling such diverse data types within a single system introduces complexities that traditional index selection approaches, which were designed for single-model or structured data, cannot directly address~\citep{DBLP:journals/ijautcomp/LinGGZZL23}. Consequently, new research is needed to adapt and extend these index selection algorithms for the challenges posed by multi-modal and multi-model databases.
+
+Although selecting the right combination of data models is critical for database performance, it is not the only factor. For example, effective \textit{index selection} and \textit{materialised views} are essential for optimising performance~\citep{AI4DB}. Moreover, in multi-modal systems, index types must be tailored to each data modality, and automated index selection algorithms must be capable of handling diverse query patterns across multiple data types. 
+%The latter case means pre-computing frequently executed queries to eliminate repetitive computation.
+%Other essential management methods include database partitioning, which involves dividing a database into smaller, more manageable sections, and query optimisation, which involves reorganising queries to improve performance.
+%Using these management methods, organisations can optimise database performance to meet the demands of their modern workflows.
+
+This paper focuses on the \textit{index selection problem} in multi-model and multi-modal DBMSs. It is a well-studied problem in the field of single-model databases~\citep{IndexSurvey20, Anytime20, AutoAdmin, CoPhy11, DRL, MCTS}, where its impact on query performance is well understood and is constantly improving~\citep{IndexSurvey20}. However, as the complexity of data models grows, particularly with multi-model and multi-modal data, the need for a new level of abstraction in managing indexes becomes evident. We argue that new algorithms must be developed to automate and optimise index selection in these complex environments, ensuring that modern DBMSs can scale efficiently and meet the evolving demands of real-world applications.
+
+The main objectives of the paper can be summarised as follows:
+\begin{itemize}
+    \item \textit{Analysis of indexing in various DBMSs} First, we analyse the most popular DBMSs, describe their use cases, and compare their typical workloads.
+    Next, we conduct a comprehensive analysis of indexing strategies these DBMSs use. We mainly focus on the index types they support and the data structures they use to implement these indexes.
+    \item \textit{Analysis of existing approaches} As index selection is already a well-studied problem in the context of relational databases~\citep{IndexSurvey20}, we first analyse the current state-of-the-art algorithms and select the ones that might be suitable for multi-model data. The algorithms we study vary in their approach, implementation, and complexity. We also consider machine learning-based algorithms, which are currently inferior to the other algorithms, but are extremely promising for the future development of index selection algorithms~\citep{AI4DB}.
+    \item \textit{Verification of their broader applicability}
+    We consider the applicability of the selected algorithms to other DBMSs.
+    We also compare the algorithms and suggest the most promising ones for each database system.
+    In case the algorithms are not applicable, we analyse the reasons and formulate ideas for their improvement.
+    \item \textit{Definition of open questions} Finally, we formulate open questions and challenges for future research of index selection in multi-model and multi-modal DBMSs.
+\end{itemize}
+
+\paragraph{Outline} Section~\pRef{chapter:multi_model} provides an overview of popular data models and their corresponding DBMSs, along with a comparison of these models based on real-world applications, typical queries, advantages, and disadvantages. Section~\pRef{chapter:indexSelectionProblem} introduces the definitions and notations used throughout the paper. Section~\pRef{chapter:algorithms} then reviews state-of-the-art index selection algorithms, categorising them by approach (e.g., machine learning, integer linear programming, greedy algorithms). In Section~\pRef{subsection:comparison}, we compare selected approaches based on their applicability to different data models, the range of supported index types, and computational complexity, and assess their suitability for multi-model and multi-modal data. Section~\pRef{chapter:QuestionsAndIdeas} formulates challenges and open questions for future work in multi-model DBMSs and index selection, followed by the conclusion. Finally, we conclude.
+
+
+\section{Review of popular database systems}
+\pLabel{chapter:multi_model}
+
+There are hundreds of DBMS, more than $50~\%$ of which are considered multi-model systems~\citep{DBEngines}. Each serves a variety of purposes and is suitable for different data. If we want to apply the index selection algorithms to multi-model DBMSs, we need to understand the database systems, supported data models, their characteristics, and how indexes are used to optimise query performance.
+
+This chapter introduces the most popular data models used in multi-model and NoSQL database systems. In particular, a brief overview of the relational, graph, key-value, document, and column models is provided, including a discussion of real-world applications, typical queries, and how indexes are implemented. In addition, a representative DBMS is selected for each model and its index implementation is specifically described.
+Finally, a comparison of the different DBMSs is presented in the context of the data handled and the types of indexes used.
+
+\subsection{Use of indexes in database systems}
+A database index is a data structure that is used to quickly locate data without having to search unnecessarily large parts of the database.
+This advantage comes with the additional write and memory overhead of maintaining the index data structure.
+Most modern database systems implement indexes to allow developers to speed up queries and manage data as efficiently as possible.
+As popular DBMSs use different data models, the indexes they adopt vary.
+For example, there are DBMSs that use indexes to quickly find relationships between entities, others to immediately find specific values, and yet others to enforce strict constraints. However, the most frequent use cases for indexes include quick lookups, data aggregation, sorting, and range queries.
+
+\subsection{Relational database systems}
+
+The relational model is the most popular data model in the world~\citep{DBEngines}.
+It is considered ideal for storing strongly consistent (i.e., ACID transactions are supported), normalised and structured data, where information can be organised into tables with columns and rows.
+This type of data, for example, includes financial records, inventory lists, and customer information.
+
+Typical queries in the relational model involve projection of specific attributes from one or more tables, joining multiple tables, filtering data based on certain criteria, grouping, and aggregating data. Various types of indexes are used for this purpose, including B-trees, hash indexes, and bitmap indexes~\citep{pokorny1998databazove}.
+Namely, B-trees are used for range queries and sorting data, hash indexes for fast lookups in large tables, and bitmap indexes for handling data with boolean operations.
+
+Among the most popular representatives of DBMSs that support the relational model are, e.g., MySQL\footnote{\url{https://www.mysql.com/}}, Oracle\footnote{\url{https://www.oracle.com/database/}}, and PostgreSQL\footnote{\url{https://www.postgresql.org/}}. For example, PostgreSQL provides several indexes, each with its own characteristics and use cases. Namely, it supports B-tree, hash, GiST, GIN, and SP-GiST indexes~\citep{postgresqlIndexTypes}.
+\begin{itemize}
+    \item B-tree is the default index type used for indexing simple data types, such as integers, floats, and timestamps. It is well-suited for range queries and sorting data.
+    \item The Hash index is used for indexing simple equality queries on fixed-length data types such as integers. It is implemented as a hash table, allowing fast lookups for exact matches. However, it does not support range queries and sorting.
+    \item GiST index is used for indexing geometric and text data types and implementing full-text search.
+    \item GIN index is used for indexing arrays and composite types, as well as for implementing full-text search.
+    \item SP-GiST index is used for efficient range queries on multidimensional data types such as geographic coordinates and time-series data.
+\end{itemize}
+
+\subsection{Graph database systems}
+The graph database systems represents a family of NoSQL systems designed to store and manage data in the form of nodes and edges (i.e., graph), allowing for efficient management and querying of complex and connected data,  such as social networks, recommendation engines, and fraud detection systems.
+Moreover, these systems excel at storing data that is constantly changing and evolving. 
+
+As the relationships are not calculated at query time but are stored as physical connections between nodes, it allows for faster and more efficient queries that traverse the relationships between nodes without the need for complex join operations. Hence, typical queries in a graph database include finding the shortest path between two nodes, identifying patterns in the data, and recommending related nodes based on common attributes. In addition to high performance for complex queries, graph databases offer the ability to add or modify relationships and properties without changing the entire schema.
+
+Graph database design offers a large variety of indexes~\citep{neo4jQueryTuning}. For example, indexes can be created on node or edge attributes, on a single property, or on multiple attributes. In addition, indexes themselves can be optimised for range, exact match, or text queries. For that, multiple data structures that support these types of indexes are needed. In particular, graph databases typically use B+ trees, hash tables, and inverted indexes. 
+
+Without a doubt the most popular representative of DBMS implementing the graph model is Neo4j\footnote{\url{https://neo4j.com/}}. It automatically creates lookup indexes for node and edge labels to eliminate the need to search through all entities when executing a query. Moreover, Neo4j supports range, text, point, and full-text indexes~\citep{neo4jQueryTuning}, as illustrated in Figure~\pRef{fig:graph:indexes}. The range index is the most flexible type as it can be used for exact match, range, and sorting queries. Point indexes only handle predicates that operate on points, such as distance or bounding box queries. The text index is optimised for predicates based on prefixes, suffixes, and other text operations. Full-text index, as the name suggests, is used for full-text search. Unfortunately, only lookup and range indexes can be created on multiple attributes (i.e., composite). The remaining index types, namely full-text, text, and point indexes, are limited to single attribute indexing only.
+
+\begin{figure}[!ht]
+    \centering
+    \includegraphics[width=\textwidth]{papers/dke_2026/figures/FIG_graph-indexes.pdf}
+    \caption{Supported index types in Neo4j}
+    \pLabel{fig:graph:indexes}
+\end{figure}
+
+\subsection{Key-value database systems}
+The key-value model is the simplest (aggregate-oriented) model for storing data. Each piece of data is stored as a ($key$, $value$) pair, with the $key$ acting as a unique identifier and the $value$ containing the actual data. It is used for storing semi-structured or unstructured data, such as user profiles, session data, or shopping cart data. The advantages of key-value models include faster read and write operations (e.g., in-memory), scalability, and the ability to handle large volumes of data with low latency.
+
+Typical queries in the key-value model involve retrieving specific values based on their keys, updating or deleting values, and performing basic operations such as incrementing or decrementing values.
+
+A key-value DBMS can be viewed as a hash table that allows fast retrieval of stored values. Unlike other types of DBMSs, in key-value stored, each value is usually treated as black box and the only way to query it is by the associated key.
+
+The key lookups are usually instantaneous, hence there is no or very little need for secondary indexes. However, there exists key-value databases, such as Redis~\citep{RedisIndexes}, that support secondary indexes, but users are expected to explicitly define them.
+
+Among the most popular representatives of key-value stores are Redis\footnote{\url{https://redis.io/}} and Riak\footnote{\url{https://riak.com/}}. As opposed to typical key-value databases, in Redis, values can contain more complex data types, such as lists, geospatial, and sorted sets. These values are then more likely to be queried on attributes other than their keys. Hence, the need for secondary indexes arises. Redis uses hash tables for primary indexes and sorted sets for secondary indexes. There is no automatic way to create a secondary index in Redis; the user must explicitly define it by implementing a new sorted set of the indexed attributes~\citep{RedisIndexes}.
+The sorted list then maps each attribute to a set of primary keys whose values match the attribute. 
+
+\subsection{Document database systems}
+The document model represents data in hierarchically structured aggregates (documents), which are self-contained units of information. As such, it allows for flexible schema design and can easily accommodate changes in data structure over time~\citep{DBLP:conf/er/ContosS20}. DBMSs that implement the document model are ideal for storing unstructured or semi-structured data, such as JavaScript Object Notation (JSON)~\citep{JSON} or eXtensible Markup Language (XML)~\citep{XML} formats. In the industry, document DBMSs are used for content management, social media, and internet of things (IoT) applications.
+
+Typical queries in the document model involve, for example, selecting specific documents based on their fields, filtering data based on specific values, and sorting documents based on certain criteria. The advantages of these queries include the ability to handle complex and dynamic data, faster read and write operations, and theoretically unbounded scalability.
+
+The most common index types used in the document-oriented DBMSs are single field, compound, and multi-key indexes~\citep{mongodbIndexes,couchbaseIndexes}. In particular, single field indexes are used to exact match queries on a specific field and compound indexes to query on multiple fields. Both single field and compound indexes are represented as B-trees. On the other hand, hashed indexes are used to look up data in large collections efficiently and are represented as hash tables. Finally, document-oriented DBMSs also utilise full-text indexes (e.g., inverted index), geospatial indexes, and multi-key indexes.
+
+Among the most popular representatives of document-oriented DBMSs are MongoDB\footnote{\url{https://www.mongodb.com/}} and Couchbase\footnote{\url{https://www.couchbase.com/}}. Notably, MongoDB is a massively scalable distributed system, which makes it an ideal datastore for handling large amounts of data and traffic. As for indexes, single field, compound, multi-key, geospatial, text, and hashed indexes are implemented~\citep{mongodbIndexes}. Moreover, hashed indexes support sharding using shard keys to determine how the data is partitioned across the cluster~\citep{MongoDBSharding}.
+
+\subsection{Columnar database systems}
+Unlike traditional row-based (relational) models, the columnar model represents data by column. Rows then correspond to a collection of columns, and tables (also known as column families) are represented as a collection of rows. Thus, each row does not need to have the same set of columns as opposed to the relational model. The columnar database systems are well-suited for storing large amounts of structured data, such as financial data or log files.
+
+Typical queries in the columnar database systems involve selecting specific columns and filtering data based on specific values. The advantages of using the columnar DBMSs for these queries include faster read and write operations, improved compression and data storage, and the ability to scale horizontally by adding more servers.
+ 
+As systems that use the column model are usually distributed databases, their index architecture differs from other single-node databases. Primary indexes are comprised of a partition key and a clustering key. The partition key determines which node the data is stored on, while the clustering key determines the order of data within a partition. Secondary indexes are hidden tables whose primary key is the indexed column and whose other columns are the primary key of the original table and additional metadata depending on the index type. Secondary indexes are co-located with the source data on the same nodes~\citep{cassandraIndexes}. The partition keys are represented as hashed tokens, and the indexed column values are stored in B+ trees.
+
+The most popular representatives of columnar database systems are Apache Cassandra\footnote{\url{https://cassandra.apache.org/}} and HBase\footnote{\url{https://hbase.apache.org/}}. In particular, Apache Cassandra is heavily optimised for write operations. It indexes data using Log-Structured Merge Trees (LSMT)~\citep{cassandraLSMT}, which might not be as efficient as a B+ tree for read operations, but it can write data in constant time~\citep{LSMT}. On the other hand, Cassandra does not support multi-attribute indexes, and indexed columns are not supposed to have high cardinality~\citep{cassandraIndexOfficial,datastaxCQL}. Hence, rather than use of secondary indexes in Cassandra, it is more common to modify the database schema to make it more suitable for the queries being executed.
+
+\subsection{Multi-Model data}
+%Multi-model data represents a combination of variously logically represented data into a single dataset. 
+Multi-model data, i.e., data represented by a combination of logical models, is becoming increasingly common as organisations generate and store large volumes of diverse data types. For instance, a social media platform may need to store user profiles using a relational model, the relationships between users using a graph model, and user-generated content using a document model. In particular, there are generally two approaches to storing multi-model data: academia-driven \textit{polystores}~\citep{PolyglotPersistance} and industry-driven \textit{multi-model databases}~\citep{CSUR-Jiaheng}.
+
+\paragraph{Polyglot persistence}
+Polystore is an approach that involves using multiple database systems to store multi-model data~\citep{PolyglotPersistance} against single integrated interface. These databases are then managed by database administrators, who are responsible for ensuring that the data is stored and managed correctly. The advantages of polyglot persistence include the ability to use the best-suited storage technology for each type of data, improved scalability, and better performance. On the one hand, it requires additional effort and complexity in the design and management of the system. It may also increase development and maintenance costs.
+
+\paragraph{Multi-model database systems} On the other hand, multi-model DBMSs are designed to support multiple data models against a single, integrated backend~\citep{CSUR-Jiaheng}. The system can automatically process multi-model data without the need for manual intervention. Data is consistent and can be queried by a single (possibly extended) query language that supports querying across all involved data models. One of the disadvantages of multi-model databases is that they are complex to design and implement. Similarly to NoSQL systems, multi-model DBMSs are also quite immature compared to traditional database systems, which means that they are still evolving and may miss some features that are available in relational systems.
+
+Two representatives of multi-model DBMSs are, e.g.,  Aran\-goDB\footnote{\url{https://www.arangodb.com/}} and OrientDB\footnote{\url{http://orientdb.org/}}.
+
+\paragraph{Indexes in multi-model databases}
+In a multi-model DBMS, indexes function similarly to single-model systems. Based on our observation, the most significant difference is that multi-model DBMS must support a broader range of index types than single-model databases, i.e., these systems must support at least the main index types depending on the supported data models to ensure efficient query processing. Another difference is that multi-model databases require more complex query optimisation to determine which secondary index to use for a given query.
+
+\subsection{Multi-Modal data}
+
+In recent years, multi-modal data has gained significant attention due to the increasing need to handle complex data types that go beyond traditional structured data~\citep{DBLP:journals/ijautcomp/LinGGZZL23}. Multi-modal data includes information from multiple sources, such as text, images, videos, and sensor data, which often coexist in modern applications like social networks, healthcare systems, and autonomous driving.
+
+Indexing in multi-modal databases poses unique challenges due to the heterogeneous nature of the data. For instance, unlike relational databases where data is structured in tables, multi-modal data involves a combination of various data types (i.e., formats), which require specialised indexing techniques. Common queries in multi-modal systems include similarity searches, semantic searches, and cross-modal retrieval (e.g., retrieving an image based on a text description)~\citep{DBLP:journals/corr/WangY0W016}.
+
+Several indexing strategies are employed in multi-modal systems, including inverted indexes, multi-index hashing, and R-trees. These indexing methods are chosen based on the type of data and query patterns:
+\begin{itemize}
+    \item Inverted indexes are often used for text-based queries, enabling fast lookups for keywords or phrases across large document collections.
+
+    \item Multi-index hashing is employed to handle high-dimensional data like images and videos, allowing efficient approximate nearest neighbour searches for similarity queries~\citep{DBLP:journals/corr/WangSSJ14}.
+
+    \item R-trees are frequently used for spatial data, supporting range queries and nearest neighbour searches for data that include geographic coordinates or multidimensional attributes.
+\end{itemize}
+
+Popular database systems supporting multi-modal data include Apache Solr\footnote{\url{https://solr.apache.org/}} and Elasticsearch\footnote{\url{https://www.elastic.co/elasticsearch/}}, both of which utilize inverted indexing for handling large-scale textual data, along with support for integrating various other data types. Another notable system is Milvus\footnote{\url{https://milvus.io/}}, an open-source platform designed specifically for vector similarity search in high-dimensional data, making it well-suited for tasks like image and video retrieval~\citep{DBLP:conf/sigmod/WangYGJXLWGLXYY21}.
+
+\subsection{Comparison of selected database systems}
+
+Table~\pRef{table:dbmsComparison} provides a comparison of selected popular DBMSs. Each data model is represented by a single representative. As we can see, most of the selected systems are built to store semi-structured and unstructured data. This reflects a trend in NoSQL systems, as large volumes of dynamically evolving data cannot be stored in a structured form. Relational (PostgreSQL) DBMSs were on the other hand designed to store structured data.
+
+\afterpage{
+\begin{landscape}
+\begin{table}[!htbp]
+\begin{threeparttable}
+    \centering
+    \small
+    \caption{Comparison of different DBMSs}
+    \pLabel{table:dbmsComparison}
+    \def\arraystretch{1.25}
+    \begin{tabular}{
+        >{\raggedright\arraybackslash}p{40mm}
+        >{\raggedright\arraybackslash}p{30mm}
+        >{\raggedright\arraybackslash}p{30mm}
+        >{\raggedright\arraybackslash}p{30mm}
+        >{\raggedright\arraybackslash}p{30mm}
+        >{\raggedright\arraybackslash}p{20mm}
+        >{\raggedright\arraybackslash}p{30mm}
+    }
+        \toprule
+        & \textbf{PostgreSQL}\tnote{1}  & \textbf{Neo4j}    & \textbf{Redis}\tnote{1} & \textbf{MongoDB}\tnote{1}   & \textbf{Cassandra} & \textbf{Apache Solr}   \\
+        \midrule
+        \textbf{Model}              & Relational    & Graph & Key-value & Document  & Columnar  & Document \\
+        \textbf{Data type}          & Structured    & Semi-structured, unstructured & Semi-structured, unstructured & Semi-structured, unstructured & Structured & Semi-structured, unstructured \\
+        \textbf{Indexed attribute}  & Columns       & Node/edge properties  & Keys  & Fields    & Columns   & Fields \\
+        \textbf{Range indexes}      & B-tree, SP-GiST   & B+ tree   & Sorted set    & B-tree    & LSMT  & N/A\tnote{3} \\
+        \textbf{Fast lookups}       & Hash, B-tree  & Hash, B+ tree & Hash  & Hash, B-tree  & Hash  & Inverted Index \\
+        \textbf{Composite indexes}  & Yes   & Yes   & No\tnote{2}   & Yes   & No    & No \\
+        \textbf{Text indexes}       & Yes   & Yes   & No    & Yes   & Yes   & Yes \\%(Full-text, Inverted) \\
+        \textbf{Other indexes}      & GiST, BRIN    & Point & No    & Multi-key, Geospatial & No & Geospatial  \\
+        \bottomrule
+    \end{tabular}
+    \begin{tablenotes}
+        \item[1] This DBMS supports multiple models; in our case, we consider it to represent the selected data model.
+        \item[2] Neither secondary indexes nor composite indexes are supported in Redis. However, we can construct composite indexes using sorted sets.
+        \item[3] Apache Solr primarily relies on inverted indexes and does not natively support range queries like traditional RDBMSs but can handle them through custom configurations.
+    \end{tablenotes}
+\end{threeparttable}
+\end{table}
+\end{landscape}
+}
+
+Generally, the DBMSs share common indexing strategies, but they mainly differ in the implementation details and supported index types. Selected DBMSs optimise indexing strategies for fast read operations with the exception of Cassandra, which takes into account write operations as well. The most common index types are range and lookup indexes. These are usually implemented using B-trees and hash tables, respectively. In addition, MongoDB, PostgreSQL, and Neo4j support various index types ranging from geo-spatial to array indexes.
+
+With a proper index selection, these DBMSs can efficiently process a wide range of queries, but the complexity of the index selection process increases. Another observed pattern is the limited or non-existent support for secondary indexes in columnar and key-value DBMSs. For these DBMSs, it is recommended to modify the database schema instead of using secondary indexes.
+
+\section{Definitions \& Notation}
+\pLabel{chapter:indexSelectionProblem}
+
+In this section, we provide the basic definitions and notation that we use throughout the paper. There are many different notations used in the literature, therefore we use the notation that is most common in the articles we reference.
+
+\paragraph{Workload} Given a set of relational tables $\FrelTablesSet$, where each table $t_r$ (for $r = 1, \dots, m$) is a relation defined over a subset of attributes (i.e., named columns) from the universal set of attributes $\FattributeSet$, a \textit{workload} $\FworkloadSet$ represents a set of queries $q_j$ (for $j = 1, \dots, o$) executed over tables $T$. Each query $q_j$ accesses a subset of attributes $access(q_j) \subseteq \{ a_1, a_2, \dots, a_n \}$.
+
+%Less formally, a workload consists of SQL data manipulation operations, including SELECT, INSERT, DELETE, and UPDATE statements.
+
+\paragraph{Index} Given a relational table $\FrelTable$ with $n$ attributes, i.e., $t = \{ a_1, a_2, \dots, a_n \}$, a \textit{(multi-attribute) index} $i = \{ a_1, a_2, \dots, a_o \}$ over a single table $\FrelTable$\footnote{In this context, we assume that a single index can only reference attributes from a single table, not from multiple tables.} is an ordered set of attributes such that $i \subseteq t$. The set of all (potential) indexes is denoted as $I$. The number of attributes $o$ is referred to as the \textit{width} of the index.
+
+% Different candidate sets and index configurations $I_{conf}$ are evaluated to optimize query performance.
+
+\paragraph{Index Configuration} Given a set of all indexes $\FIndexSet$, an \textit{index configuration} $\FIndexConfigurationSet$ is a subset of $\FIndexSet$ (i.e., $\FIndexConfigurationSet \subseteq \FIndexSet$) that is considered and evaluated by index selection algorithms.
+
+%Moreover, each index $i \in \FIndexConfigurationSet$ is defined on exactly one table, and there are no restrictions regarding the type of the index or the type or number of attributes it covers, except for the condition that no join indices are allowed.
+
+\paragraph{Cost} Given a workload $\FworkloadSet$ and a set of indexes $\FIndexConfigurationSet$, the \textit{cost} of a query $q_j$ ($j = 1, \dots, o$) is determined by a function $cost(q_j, \FIndexConfigurationSet)$, that assigns a cost value to the query $q_j$ based on the indexes in $\FIndexConfigurationSet$. Note that cost of each query can be computed efficiently using the what-if optimizer in existing database systems.% This cost takes into account the specific type of query, such as selection, join, insert, update, or a combination of these operations.
+
+The \textit{total workload cost} $T(\FIndexConfigurationSet)$ is the sum of the individual query costs $cost(q_j, \FIndexConfigurationSet)$, each multiplied by its occurrence frequency $f_j$ (representing the impact of each query), and is formally expressed as:
+
+$$
+T(\FIndexConfigurationSet) = \sum_{j=1}^{|W|} f_j \cdot cost(q_j, \FIndexConfigurationSet)
+$$
+
+Thus, the total workload cost $T(\FIndexConfigurationSet)$ measures the overall execution cost for the workload given the selected index configuration, taking into account both query costs and their occurrences.
+
+\paragraph{Size} Given a set of potential indexes $\FIndexSet$, the \textit{size} of an index  refers to its storage consumption. The memory consumed by a specific index $i \in \FIndexSet$ is denoted by $mem(i)$, where $mem(i)$ can be defined arbitrarily based on the index characteristics. 
+
+\paragraph{Constraint} Given a set of relational tables $\FrelTables$, %a workload $\FWorkload$, 
+and a set of potential indexes $\FIndexSet$, a \textit{constraint} $k$ is a condition that limits or defines specific properties for the chosen index configuration $\FIndexConfigurationSet \subseteq \FIndexSet$. The set of constraints $K$ ensures that the selected configuration $\FIndexConfigurationSet$ meets required criteria, such as storage limits (denoted as $k_B$, $k_B \in K$), update costs (denoted as $k_C$, $k_C \in K$), or the number of indexes in the configuration (denoted as $k_N$, $k_N \in K$). In particular:
+\begin{enumerate}
+     \item The storage limit constraint $k_B$ ensures that the total storage consumption of the selected index configuration $\FIndexConfigurationSet$ does not exceed the available memory budget, that is, $\sum_{i \in \FIndexConfigurationSet} storage(i) \leq k_B$.
+   
+    \item The update cost constraint $k_C$ ensures that the total cost of updating the indexes in $\FIndexConfigurationSet$ remains below a given threshold $k_C$, that is, $\sum_{i \in \FIndexConfigurationSet} updateCost(i) \leq k_C$.
+   
+    \item A cardinality constraint $k_N$ restricts the size of the index configuration $\FIndexConfigurationSet$ by limiting the maximum number of allowed indexes, that is $|\FIndexConfigurationSet| \leq k_N$.
+\end{enumerate}
+
+\paragraph{Index Selection Problem} 
+
+Given a workload $\FworkloadSet$, a set of potential indexes  $\FIndexSet = \FIndexConfigurationSet^1 \cup \dots \cup \FIndexConfigurationSet^n$ for the relational tables $\FrelTablesSet$, and a set of constraints $\FConstraintsSet$, the \textit{index selection problem} is to find a subset of indexes $\FIndexConfigurationSet^* \subseteq \FIndexSet$ that minimizes the total workload cost $T(\FIndexConfigurationSet^*)$ while satisfying the constraints. Hence, the goal is to solve:
+
+$$
+\FIndexConfigurationSet^* = \arg \min_{\FIndexConfigurationSet \subseteq \FIndexSet} T(\FIndexConfigurationSet)
+$$
+
+subject to the constraints $\FConstraintsSet$. 
+
+Since evaluating all possible indexes $I$ is computationally expensive, algorithms focus on selecting relevant \textit{index candidates}, often prioritizing syntactically relevant indexes, which contain columns that appear together in at least one query $q$ from the workload $\FWorkload$. Hence, the solution quality depends on both the chosen set $\FIndexConfigurationSet^*$ and the candidate subset of $I$.
+
+\vspace{1em}
+
+
+To summarize the notation used in this paper, Table~\pRef{table:notation} provides a comprehensive list.
+
+\begin{table}[ht]
+\centering
+    \small
+    \caption{Table of Notations}
+    \pLabel{table:notation}
+    \def\arraystretch{1.25}
+    \begin{tabular}{%
+        c
+        % >{\raggedright\arraybackslash}p{50mm} % params
+        >{\raggedright\arraybackslash}p{80mm} % params
+        %cl
+    }
+    \toprule
+    \textbf{Notation} & \textbf{Description} \\
+    \midrule
+    $\FrelTablesSet$ & Relational tables in the database \\
+    $\FattributeSet$ & Attributes of the relational tables \\ 
+    $\FWorkload$ & Workload, a set of queries executed over $\FrelTables$\\ 
+    $q_1, q_2, \dots, q_o$ & Individual queries in the workload $\FWorkload$\\ 
+    $\textit{access}(q_j) \subseteq \{ a_1, a_2, \dots, a_n \}$ & Subset of attributes accessed by query $q_j$ \\ 
+    $\FIndexSet$ & Set of all potential indexes \\ 
+    $\FIndexConfigurationSet \subseteq \FIndexSet$ & Index configuration, a subset of all indexes \\ 
+    $i = \{ a_1, a_2, \dots, a_o \}$ & Multi-attribute index with $o$ attributes \\ 
+    $\textit{cost}(q_j, \FIndexConfigurationSet)$ & Cost of executing query $q_j$ using configuration $\FIndexConfigurationSet$ \\ 
+    $T(\FIndexConfigurationSet)$ & Total workload cost with respect to index configuration $\FIndexConfigurationSet$ \\ 
+    $f_j$ & Frequency or weight of query $q_j$ \\ 
+    $\FConstraintsSet$ & Set of constraints for index selection \\ 
+    %$P(X)$ & Total memory consumption of index configuration $X$ \\ 
+    $\textit{mem}(i)$ & Memory consumption of index $i$ \\ 
+    $k_B$ & Maximum allowable storage (memory) for index configuration \\ 
+    $k_C$ & Maximum allowable update cost for index configuration \\ 
+    $k_N$ & Maximum allowable number of indexes in the configuration \\ 
+    $\FIndexConfigurationSet^*$ & Optimal index configuration \\ 
+    \bottomrule
+    \end{tabular}
+\end{table}
+
+\section{Index selection algorithms}
+\pLabel{chapter:algorithms}
+
+A proper selection of database indexes, referred as index selection problem (ISP), can have a significant impact on the performance of the database system. When properly chosen and used, indexes can speed up query execution~\citep{IndexSurvey20}. However, choosing the right indexes requires careful consideration of the data model, query patterns, and application workload. By adding too many indexes, write performance can slow down and increase storage requirements, while an insufficient number of indexes can lead to slower query performance. Therefore, it is important to carefully evaluate the trade-offs between the performance benefits of indexes and their associated costs in terms of storage and write performance. Much effort has been put into automating the index selection process~\citep{CoPhy11, Drop, AutoAdmin, Anytime20, DRL, MCTS}.
+
+Index selection is an NP-complete problem~\citep{NP-complete}. Finding the optimal solution is therefore computationally expensive and algorithms must balance the quality of the solution and the time required to find it. Not only is the set of possible combinations of indices exponential, but the indices interact with each other, making the benefit of one index affected by the presence of another index~\citep{IndexInteraction}. This makes the problem even more complex. In addition, the contribution of an index can only be computed by calling the database API, which is a time-consuming operation. Despite these problems, many algorithms achieve commendable results. We discuss a selection of them in Section~\pRef{chapter:algorithms}.
+
+After the problem was proven to be NP-complete~\citep{NP-complete}, further efforts in this area have mostly shifted to heuristic algorithms rather than algorithms that try to find the optimal solution~\citep{Drop,AutoAdmin,Anytime20,Extend,DRL,MCTS}. As a result, modern index selection algorithms approximate the solution. However, it is also difficult to approximate the optimal solution~\citep{NPHardApproximation}. Therefore, the index selection problem is constantly being researched and new algorithms are being developed.
+
+\begin{example}
+\pLabel{example:running} In the running example, let us consider a simple database structure that involves tables $T = \{t_1, t_2\}$, where $t_1 = \texttt{Company}$ and $t_2 = \texttt{Building}$, and a universal set of attributes $A = \{a_1, a_2, a_3, a_4, a_5, a_6\}$, where $a_1 = \texttt{name}$, $a_2 = \texttt{revenue}$, $a_3 = \texttt{profit}$, $a_4 = \texttt{city}$, $a_5 = \texttt{street}$ and $a_6 = \texttt{price}$. As illustrated in Figure~\pRef{fig:example:table}, the table $t_1$ contains attributes \texttt{name}, \texttt{revenue} and \texttt{profit} (i.e., $t_1 = \{a_1, a_2, a_3\}$, $t_1 \subseteq A$), and the table $t_2$ consists of attributes \texttt{city}, \texttt{street} and \texttt{price} (i.e., $t_2 = \{a_4, a_5, a_6\}$, $t_2 \subseteq A$). Each of these tables additionally contains some basic data which is subsequently queried.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=\textwidth]{papers/dke_2026/figures/FIG_example-table.pdf}
+    \caption{Example of relational tables}
+    \pLabel{fig:example:table}
+\end{figure}
+    
+The workload $W$ consists of three queries:
+
+\begin{enumerate}
+    \renewcommand{\labelenumi}{$q_{\arabic{enumi}}$}
+    \item \texttt{SELECT * FROM Company WHERE profit <= 30 AND revenue > 60;}, i.e., a projection of all attributes from the table \texttt{Company}, returning only records that have profit less than or equal to 30 and revenue greater than 60 (that is, we are interested in interval search).
+    \item \texttt{SELECT Name FROM Company WHERE revenue = 200;}, i.e., a projection of a name of companies which have revenue exactly 200 (that is, we are interested in exact value match).
+    % Add a query that uses both tables and has similar execution time as the other ones
+    \item \texttt{SELECT count(*) FROM Company, Building WHERE profit > price;},\linebreak
+    i.e., the query is executed on both tables to select number of records where profit is greater than price.
+\end{enumerate}
+\end{example}
+
+\subsection{General formulation of ISP algorithms}
+Despite the great variety of index selection algorithms, most of them share some key features. As depicted in Figure~\pRef{fig:general:architecture}, a general architecture can be constructed to help us understand the main concepts and will be used to describe the algorithms in this section.
+
+\begin{figure}[!ht]
+    \centering
+    \includegraphics[scale=0.8]{papers/dke_2026/figures/FIG_general-architecture.pdf}
+    \caption{General architecture of the index selection algorithms}
+    \pLabel{fig:general:architecture}
+\end{figure}
+
+As the efficient use of indexes depends on queries executed on the database, queries constitute the main input for \textit{index selection algorithms}. The set of input queries forms \textit{workload} $\FworkloadSet$. Additionally, database systems that require ISP algorithms are usually robust and indexing all attributes is not feasible. Therefore, the algorithms must also be able to handle \textit{constraints} $\FConstraintsSet$. In particular, there are several ways to constrain the index selection process. The most common constraints are, e.g., the number of indexes (denoted $\FConstraintN$), the space for storing the indexes (denoted $\FConstraintB$), and the execution time of the algorithm.
+
+ISP algorithms then process the workload and analyse its content. Based on the analysis, a set of indices is selected that might improve the performance of the workload. This set of indexes is referred to as \textit{candidate set}. Then a subset of the candidate set that satisfies the constraints $\FConstraintsSet$ is selected and \textit{configuration} $\FIndexConfigurationSet$ is created. It represents a possible solution to the index selection problem. The configurations are then evaluated and the best one is selected as the final result.
+
+As enumerating all possible configurations is usually not possible, the algorithms use \textit{heuristics} to select the best configuration. In particular, heuristics differ based on the given constraints. Usually, the evaluation is done by estimating the cost of the workload execution with the selected configuration. In order to save time and not alter the state of the database, the algorithms usually employ \textit{what-if} calls to the \textit{query optimiser} to estimate the execution cost of a query for the given configuration.
+
+Although most algorithms use the same general architecture, they differ in many aspects. The following subsections introduce three groups of algorithms that solve the index selection problem. Each group has a few selected representatives that will be described in detail.
+
+\subsection{Linear Programming based algorithms}
+Integer linear programming allows us to formulate and find a suitable solution to a given problem using a set of linear inequalities. In case of an index selection problem, we attempt to minimise the cost of query execution by implementing suitable indexes that satisfy the given constraints.\footnote{Constraints such as storage budget and number of indexes can be easily formulated utilising a set of linear inequalities.} We can formulate the problem as follows:
+
+$$ \underset{\FIndexConfigurationSet}{\mathrm{arg \ min}}\{ \sum_{q \in W} f_q \cdot cost(q,\FIndexConfigurationSet) | \FIndexConfigurationSet \subseteq \FIndexSet^* \}$$
+
+\noindent where $\FWorkload$ represent the workload, $q \in \FWorkload$ be a particular query, and $\FIndexSet$ be the set of index candidates. The cost of a query $q$ for a configuration $\FIndexConfigurationSet \subset \FIndexSet$ is $cost(q, \FIndexConfigurationSet)$. The weight $f_q$ represents the frequency of query $q$ in the workload. To find the optimal solution, the algorithm must consider all subsets of indexes $\FIndexSet$ satisfying the constraints $\FConstraintsSet$ and return the set whose cumulative cost is the lowest (i.e., $\FIndexConfigurationSet^*$).
+
+\subsubsection{CoPhy}
+A representative of algorithms that solve the index selection problem using linear programming (LP) is CoPhy~\citep{CoPhy11}. The core of CoPhy is based on a binary integer program (BIP). It works with multi-attribute indexes and allows multiple indexes per query. CoPhy is originally designed to be limited by storage space, but the nature of LP allows us to use any kind of linear constraints. For each query, candidate indices are selected and then merged into a single set. The main difference between CoPhy and other LP algorithms is in the way the variables are constructed.
+
+The model of CoPhy is represented by the set of equations illustrated in Figure~\pRef{fig:CoPhyBIP}. In detail, CoPhy considers configurations in the context of a query, i.e., multiple configurations are created for each query. To minimise the number of what-if calls, the configurations are set to be atomic. That is, each configuration contains only one or zero indexes per table. The set of configurations for query $q$ is referred to as $\FIndexConfigurationSet_q$. Candidate indexes that belong to the same table $\FrelTable_j$ are grouped into a single set $S_j$. The binary variables $x_{q,C}$ indicate whether a given configuration $\FIndexConfigurationSet$ is used to query $q$. The variables $y_{q,j,i,C}$ ensure atomicity of the configurations. The binary variables $z_i$ model whether a particular index $i \in \FIndexSet$ is used. Program constraints ensure that the following four conditions are met:
+\begin{enumerate}
+    \item each query must use a single $\FIndexConfigurationSet$,
+    \item $\FIndexConfigurationSet$ must be an atomic configuration,
+    \item each $z_i$ that is included in a used $\FIndexConfigurationSet$ must be set to 1,
+    \item the storage constraint $\FConstraintB$ must be satisfied as well.
+\end{enumerate}
+The size of an index $i$ is denoted by $mem(i)$. The storage budget is denoted as $k_B$. 
+
+\begin{figure}[!ht]
+\begin{framed}
+\raggedright
+minimise:
+$$
+    \sum_{q \in \FWorkload} \sum_{\FIndexConfigurationSet \in \FIndexConfigurationSet_q} x_{q,C} \cdot cost(q,\FIndexConfigurationSet)
+$$
+
+subject to:
+\begin{alignat*}{2}
+    \sum_{\FIndexConfigurationSet \subseteq \FIndexSet} x_{q,C} &= 1 &&\quad \forall q \in \FWorkload \\
+    \sum_{i \in S_j \cup I_{\emptyset}} y_{q,j,i,C} &= x_{q, C} &&\quad \forall q \in \FWorkload, j \in \FrelTables, \FIndexConfigurationSet \in \FIndexConfigurationSet_q \\
+    z_i &\geq y_{q,j,i,C} &&\quad \forall q \in \FWorkload, j \in \FrelTables, i \in S_j \cup I_{\emptyset}, \FIndexConfigurationSet \in \FIndexConfigurationSet_q \\
+    \sum_{i \in I} z_i \cdot mem(i) &\leq \FConstraintB &&
+\end{alignat*}
+
+parameters:
+$$
+  \FWorkload, \FIndexConfigurationSet_{q \in \FWorkload}, \FrelTables,  S_{j \in \FrelTables}, \FConstraintB
+$$
+
+variables:
+$$
+    x_{q,C} \in \{0, 1\}, \   y_{q,j,i,C} \in \{0, 1\}, \ z_i \in \{0, 1\}
+$$
+\end{framed}
+\caption{CoPhy binary integer program}
+\pLabel{fig:CoPhyBIP}
+\end{figure}
+
+CoPhy partially replicates the general architecture of index selection algorithms (see Figure~\pRef{fig:general:architecture}). It generates index candidates for each query using well-known heuristics from literature~\citep{candidateSelection}. However, it creates configurations for each query separately. The query cost is estimated by calling the query optimiser. The binary program is then constructed and solved by the selected BIP solver.
+
+The modularity of CoPhy is a great architectural choice. In case a module becomes obsolete, it can be easily replaced by its superior version. CoPhy, along with other LP algorithms, guarantees an optimal solution for any storage budget at the cost of an exhaustive enumeration of all relevant candidate combinations. Therefore, it is a suitable choice for systems with a small number of candidate indexes. When CoPhy is used on large workloads, a rigorous selection of candidates is required. Otherwise, the number of configurations may be too large for the BIP solver to handle.
+
+\begin{example}
+\pLabel{example:CoPhy}
+Let us consider the simple database structure and workload $\FWorkload = \{q_1, q_2, q_3\}$ from \pRef{example:running}. The first CoPhy module creates a set of index candidates for each query (i.e., $\FIndexConfigurationSet_1, \FIndexConfigurationSet_2, \FIndexConfigurationSet_3$). These sets are based on the attributes used in the queries. An exhaustive list of indexes that affect the query cost is used. The $\{ \ \}$ represents a set of indexes, $( \ )$ represents a single multi-attribute index, and $[ \ ]$ represents an atomic configuration. In this particular case, the index candidates look like this:
+\begin{itemize} 
+    \item Candidates for $q_1$: \{\texttt{ (profit, revenue), profit, revenue } \}
+    \item Candidates for $q_2$: \{\texttt{ revenue }\}
+    \item Candidates for $q_3$: \{\texttt{ (profit, revenue), profit, price }\}
+\end{itemize}
+
+Hence, the set of candidates is:
+$$
+I := \{ \texttt{(profit, revenue), profit, revenue, price} \}
+$$
+
+And the workload is:
+$$
+W := \{ q_1, q_2, q_3 \}
+$$
+
+CoPhy then constructs atomic configurations for each query:
+\begin{alignat*}{2}
+    \FIndexConfigurationSet_1 &:= \{&&\texttt{[], [profit], [revenue], [(profit, revenue)]}\} \\
+    \FIndexConfigurationSet_2 &:= \{&&\texttt{[], [revenue]}\} \\
+    \FIndexConfigurationSet_3 &:= \{&&\texttt{[], [profit], [profit, price], [price],} \\
+    	& &&\texttt{[(profit, revenue), price]} \}
+\end{alignat*}
+
+
+Afterwards, the following is calculated: (1) cost for each of the candidate combinations (see Table~\pRef{table:a1} for $\FIndexConfigurationSet_1$, Table~\pRef{table:a2} for $\FIndexConfigurationSet_2$ and Table~\pRef{table:a3} for $\FIndexConfigurationSet_3$) and (2) the query for which it is used. In this particular case, PostgreSQL is used and 100,000 rows in each table is queried. The costs are given in milliseconds. Storage consumption is given in Table~\pRef{table:storageConsumptions}. Values are in kilobytes. Moreover, our storage budget $\FConstraintB$ is 3000.
+
+\begin{table}[!ht]
+    %\begin{minipage}{.5\textwidth}
+        \centering
+        \caption{Table of costs for $\FIndexConfigurationSet_1$}
+        \def\arraystretch{1.25}
+        \begin{tabular}{ll}
+            \toprule
+            \textbf{Configuration} & \textbf{Cost}   \\
+            \midrule
+            \texttt{[ \ ]} & 35 \\
+            \texttt{[profit]} & 3  \\
+            \texttt{[revenue]} & 18  \\
+            \texttt{[(profit, revenue)]} & 2  \\
+            \bottomrule
+        \end{tabular}
+        \pLabel{table:a1}
+    %\end{minipage}%
+    \end{table}
+    \begin{table}[!ht]
+    %\begin{minipage}{0.5\textwidth}
+        \centering
+        \caption{Table of costs for $\FIndexConfigurationSet_2$}
+        \def\arraystretch{1.20}
+        \begin{tabular}{ll}
+            \toprule
+            \textbf{Configuration} & \textbf{Cost}   \\
+            \midrule
+            \texttt{[ \ ]} & 20 \\
+            \texttt{[revenue]} & 5  \\
+            \bottomrule
+        \end{tabular}
+        \pLabel{table:a2}
+    %\end{minipage}
+    %\vspace{1em}
+    \end{table}
+    \begin{table}[!ht]
+    %\begin{minipage}{.5\textwidth}
+        \centering
+        \caption{Table of costs for $\FIndexConfigurationSet_3$}
+        \def\arraystretch{1.20}
+        \begin{tabular}{ll}
+            \toprule
+            \textbf{Configuration} & \textbf{Cost}   \\
+            \midrule
+            \texttt{[ \ ]} & $>100000$ \\
+            \texttt{[profit]} & 1985 \\
+            \texttt{[price]} & 1648  \\
+            \texttt{[profit, price]} & 1232  \\
+            \texttt{[(profit, revenue), price]} & 1762  \\
+            \bottomrule
+        \end{tabular}
+        \pLabel{table:a3}
+    %\end{minipage}%
+    %\begin{minipage}{0.5\textwidth}
+    \end{table}
+    \begin{table}[!ht]
+        \centering
+        \caption{Table of storage consumptions}
+        \def\arraystretch{1.20}
+        \begin{tabular}{ll}
+            \toprule
+            \textbf{Index} & \textbf{Storage consumption} \\
+            \midrule
+            \texttt{revenue} & 920 \\
+            \texttt{profit} & 920 \\
+            \texttt{(profit, revenue)} & 2208 \\
+            \texttt{price} & 2100 \\
+            \bottomrule
+        \end{tabular}
+        \pLabel{table:storageConsumptions}    
+        \vspace{1em}
+    %\end{minipage}    
+\end{table}
+
+Finally, a BIP is constructed according to the model shown in Figure~\pRef{fig:CoPhyBIP}, minimising the implementation cost while satisfying the budget constraint. Assuming we set the same weights for each query, the optimal solution would be:\texttt{\{price\}}. Although \texttt{profit} helps for multiple queries, \texttt{price} reduces the cost most for $q_3$, which is the most expensive query.
+\qed
+\end{example}
+
+\subsubsection{Summary}
+Besides CoPhy, there exist several other algorithms that solve the index selection problem using linear programming, namely Generalized Uncapacitated Facility Location Problem (GUFLP)~\citep{GUFLP96} and Integer Linear Program by Ailamaki et al. (ILP)~\citep{ILP07}. However, GUFLP allows only one index per query, which makes it unsuitable for modern workloads. ILP, on the other hand, is similar to CoPhy, but creates significantly more variables, leading to longer solution times. Hence, CoPhy is the best-performing algorithm in this category~\citep{CoPhy11}.
+
+\subsection{Greedy algorithms}
+In modern database systems, the number of potential index combinations can be prohibitively large, making it impossible to search the entire space of possible index selections. To address this challenge, researchers have proposed various greedy algorithms~\citep{Drop,AutoAdmin,Anytime20,Extend}. These algorithms can produce results that are close to the optimal solution, while operating significantly faster than optimal algorithms. Although the algorithms are not guaranteed to find the optimal solution, they provide an efficient way to approach the best choice of indices. Therefore, they are widely used in practice~\citep{Anytime20}.
+
+In this subsection, we discuss the application of greedy algorithms, including their characteristics, different types and limitations.
+
+\subsubsection{Drop heuristics}
+The Drop heuristics~\citep{Drop} is one of the oldest index selection algorithms. It does not guarantee an optimal solution, but it is fast and easy to implement. The main idea behind the Drop heuristic (see Algorithm~\pRef{algorithm:drop-heuristics}) is to consider all possible index candidates and then eliminate indexes that are not useful for query processing. It works in a series of iterations, discarding in each iteration the index that contributes the least to query processing performance. The main drawback of this algorithm is that it considers only single-column indexes. The original version drops indexes until there is no cost reduction in the workload execution time. However, this is not suitable for modern, read-intensive workloads. Therefore, a modified version of this algorithm was introduced. This drops indexes until a certain index set size is reached~\citep{IndexSurvey20}.
+
+\begin{algorithm}[!ht]
+    \small
+    \DontPrintSemicolon
+    \SetKwProg{Fn}{function}{:}{}
+    \SetKw{return}{return}
+    \SetKw{break}{break}
+    
+    \KwIn{$\FWorkload$  --  list of queries (workload)\;}
+    \myinput{$\FIndexSet$  -- list of all index candidates\;}
+    \myinput{$\FConstraintN$  -- number of indexes to be selected\;}
+    
+    $RESULT$ := $\FIndexSet$\;
+    \While{\textup{length of $RESULT$ $>$ $\FConstraintN$}}{
+    $lowest\_cost$ := $\infty$\;
+    $index\_to\_drop$ := $\textup{None}$\;
+    \For{$index$ \textup{in} $RESULT$}{
+        $cost$ := $\textup{calculate\_cost}(\FWorkload, RESULT - \{index\})$\;
+        \If{$cost$ $<$ $lowest\_cost$}{
+            $lowest\_cost$ := $cost$\;
+            $index\_to\_drop$ := $index$\;
+        }
+    }
+    $RESULT$ := $RESULT - \{index\_to\_drop\}$\;
+}
+\return{$RESULT$}\;
+\caption{Modern Drop Heuristics}
+\pLabel{algorithm:drop-heuristics}
+\end{algorithm}
+
+\begin{example}
+\pLabel{example:Drop}
+Let us consider the simple database structure and workload from \pRef{example:running}. Once again we are given two tables, namely \texttt{Company} and \texttt{Building}, and a workload $\FWorkload = \{q_1, q_2, q_3\}$.
+
+The Drop algorithm starts with an exhaustive set of all index candidates, i.e., $\FIndexSet = \{\texttt{profit, revenue, price}\}$, from which we want to select only 2 indexes, i.e. $\FConstraintN = 2$. Thus, the algorithm~\pRef{algorithm:drop-heuristics} iteratively discards the least useful index until the desired number of indexes is reached. The first iteration considers the configurations listed in Table~\pRef{table:dropConfig}.
+
+\begin{table}[!ht]
+    \centering
+    \caption{Costs for configurations of size $\vert \FIndexSet \vert - 1$}
+    %\vspace{0.2em}
+    \def\arraystretch{1.25}
+    \begin{tabular}{lllll}
+        \toprule
+        \textbf{Configuration} & \textbf{$q_1$ cost} & \textbf{$q_2$ cost} & \textbf{$q_3$ cost} & \textbf{$\FWorkload$ cost}  \\
+        \midrule
+        \texttt{\{\texttt{profit, revenue}\}} & 3 & 5 & 1985& 1993\\
+        \texttt{\{\texttt{profit, price}\}} & 3 & 20 & 1232& 1255 \\
+        \texttt{\{\texttt{revenue, price}\}} & 18 & 5 & 1648& 1671 \\
+        \bottomrule
+    \end{tabular}
+    \pLabel{table:dropConfig}
+\end{table}
+
+This configuration is then used by the \texttt{calculate\_cost} function. The algorithm greedily discards the least useful index. In this case, it is \texttt{revenue}. As the algorithm reaches the desired number of indices, it stops and returns the resulting index configuration, that is \texttt{\{\texttt{profit, price}\}}.
+\qed
+\end{example}
+
+\subsubsection{AutoAdmin}
+The AutoAdmin~\citep{AutoAdmin} algorithm follows a slightly modified general architecture of index selection algorithms (the modified architecture is illustrated in Figure~\pRef{fig:AutoAdmin:architecture}, with the differences highlighted in orange). The main difference is that it starts with single-column indexes and then iteratively increases the index width until the desired number of indexes is reached or until the cost of the index set cannot be further reduced. Although there exist several versions of this algorithm~\citep{NewAutoAdmin, Anytime20}, the original version uses the number of indexes as the main constraint.
+
+\begin{figure}[!ht]
+    \centering
+    \includegraphics[scale=0.8]{papers/dke_2026/figures/FIG_auto-admin.pdf}
+    \caption{AutoAdmin architecture}
+    \pLabel{fig:AutoAdmin:architecture}
+\end{figure}
+
+The algorithm (see Algorithm~\pRef{algorithm:auto-admin}) first determines the index candidates for each query and then merges them into a single set of candidates.
+
+\begin{algorithm}[!ht]
+    \small
+    \DontPrintSemicolon
+    \SetKwProg{Fn}{function}{:}{}
+    \SetKw{return}{return}
+    \SetKw{break}{break}
+    
+    \KwIn{$\FWorkload$  --  list of queries (workload)\;}
+    \myinput{$\FIndexSet$  -- list of index candidates\;}
+    \myinput{$\FConstraintN$  -- number of indexes to be selected\;}
+    \myinput{$k_X$  -- size of naive enumeration\;}
+    \myinput{$k_W$ -- maximum index width\;}
+
+\Fn{auto\_admin($\FWorkload$, $\FIndexSet$, $\FConstraintN$, $k_X$, $k_W$)}{
+
+    $P$ := $\{\}$ \CommentSty{     // list of potential candidates} \;
+    $S$ := $\{\}$ \CommentSty{     // list of indexes on top of which we will build multi-attribute indexes} \;
+    \For{$w \in [1, \ldots, k_W]$}{
+        $I$ := select\_index\_candidates($\FWorkload$, $P$, $\FConstraintN$)\;
+        $S$ := enumerate\_configurations($\FWorkload$, $\FIndexSet$, $\FConstraintN$)\;
+    
+        \If{$w < k_W$}{
+            $P$ := $S$ $\cup$ create\_multicolumn\_indexes($\FWorkload$, $S$)\;
+        }
+    }
+    \return{$S$}\;
+}
+\caption{AutoAdmin }
+\pLabel{algorithm:auto-admin}
+\end{algorithm}
+
+
+Candidate selection is implemented in function \texttt{select\_in\-dex\_candidates()} (see Algorithm~\pRef{algorithm:auto-admin:selectCandidates}). The function considers potential candidates for each query, performs greedy enumeration, and merges them into a final list of candidates.
+
+\begin{algorithm}[!ht]
+    \small
+    \DontPrintSemicolon
+    \SetKwProg{Fn}{function}{:}{}
+    \SetKw{return}{return}
+    \SetKw{break}{break}
+    
+    \KwIn{$\FWorkload$  --  list of queries (workload)\;}
+    \myinput{$P$  -- list of potential candidates\;}
+    \myinput{$\FConstraintN$  -- number of indexes to be selected\;}
+    %\myinput{$max\_naive$  -- size of naive enumeration\;}
+    %\myinput{$max\_index\_width$ -- maximum index width\;}
+
+    \Fn{select\_index\_candidates($\FWorkload$, $P$, $\FConstraintN$)}{
+    $S$ := \{\}\;
+        \For{$q \in \FWorkload$}{
+        \CommentSty{// Select only those candidates from $P$ that belong to $q$}\;
+        $P_q$ := filter\_candidates\_for\_query($P$, $q$)\;
+        $S$ := $S$ $\cup$  enumerate\_configurations($\FWorkload$, $P_q$, $\FConstraintN$)\;
+    
+    }
+        % $temp\_indexes$ := enumerate\_naive($W$, $I$)\;
+        % $indexes$ := enumerate\_greedy($W$, $temp\_indexes$, $I - temp\_indexes$)\;
+        % \return{$indexes$}\;
+    \return{$S$}\;
+    }
+\caption{AutoAdmin -- function \textit{select\_index\_candidates()}}
+\pLabel{algorithm:auto-admin:selectCandidates}
+\end{algorithm}
+
+The algorithm then utilising function \texttt{enumerate\_configu\-rations()} greedily selects the best indexes from the candidate set until the required number of indexes is reached or the cost stops decreasing (see Algorithm~\pRef{algorithm:auto-admin:enumerateConfigurations}). Utilising function \texttt{create\_multicolumn\_indexes()}, the second iteration of the algorithm uses the index set from the previous iteration to build multi-attribute indexes of +1 width (see Algorithm~\pRef{algorithm:auto-admin:createMulticolumnIndexes}).
+
+\begin{algorithm}[!ht]
+    \small
+    \DontPrintSemicolon
+    \SetKwProg{Fn}{function}{:}{}
+    \SetKw{return}{return}
+    \SetKw{break}{break}
+    
+    \KwIn{$\FWorkload$  --  list of queries (workload)\;}
+    \myinput{$\FIndexSet$  -- list of index candidates\;}
+    %\myinput{$max\_naive$  -- size of naive enumeration\;}
+    %\myinput{$max\_index\_width$ -- maximum index width\;}
+    \myinput{$\FConstraintN$  -- number of indexes to be selected\;}
+
+    \Fn{enumerate\_configurations($\FWorkload$, $\FIndexSet$, $\FConstraintN$)}{
+        $temp\_indexes$ := enumerate\_naive($\FWorkload$, $\FIndexSet$)\;
+        $indexes$ := enumerate\_greedy($\FWorkload$, $temp\_indexes$, $\FIndexSet - temp\_indexes$, $\FConstraintN$)\;
+        \return{$indexes$}\;
+    }
+\caption{AutoAdmin -- function \textit{enumerate\_configurations()}}
+\pLabel{algorithm:auto-admin:enumerateConfigurations}
+\end{algorithm}
+
+\begin{algorithm}[!ht]
+    \small
+    \DontPrintSemicolon
+    \SetKwProg{Fn}{function}{:}{}
+    \SetKw{return}{return}
+    \SetKw{break}{break}
+    
+    \KwIn{$\FWorkload$  --  list of queries (workload)\;}
+    \myinput{$S$  -- list of indexes on top of which we will build multi-attribute indexes\;}
+    %\myinput{$max\_index\_count$  -- number of indexes to be selected\;}
+    %\myinput{$max\_naive$  -- size of naive enumeration\;}
+    %\myinput{$max\_index\_width$ -- maximum index width\;}
+
+    \Fn{create\_multicolumn\_indexes($\FWorkload$, $S$)}{
+        $multicolumn\_candidates$ := \{\}\;
+        \For{$index \in S$}{
+            $indexable\_columns$ := get\_indexable\_columns($index.\textup{table()}$)\;
+            $indexable\_columns$ := $indexable\_columns$ $\setminus$ $index.\textup{columns()}$\;
+            \For{$column \in indexable\_columns$}{
+                $new\_index$ := $index \cup \{column\}$\;
+                $multicolumn\_candidates$ := $multicolumn\_candidates$ $\cup$ $\{new\_index\}$\;
+            }
+        }
+
+        \return{$multicolumn\_candidates$}\;
+    }
+
+\caption{AutoAdmin -- function \textit{create\_multicolumn\_indexes()}}
+\pLabel{algorithm:auto-admin:createMulticolumnIndexes}
+\end{algorithm}
+
+To reduce the number of new multi-attribute index candidates, only indexes from the previous set (i.e., within the current iteration) can be the leading columns of new multi-attribute indexes. In addition to approximating the query cost, AutoAdmin uses two additional tricks to improve its performance.  First, it uses function \texttt{enumerate\_naive()}, i.e., a naive enumeration of candidate indexes, for small configuration sizes (see Algorithm~\pRef{algorithm:auto-admin:enumerateNaive}). Second, in the candidate selection phase, it uses function \texttt{select\_index\_candidates()} itself to determine the best candidates for a single query. Finally, the algorithm performs union of naively enumerated candidates and multi-attribute indexes.
+
+\begin{algorithm}[!ht]
+    \small
+    \DontPrintSemicolon
+    \SetKwProg{Fn}{function}{:}{}
+    \SetKw{return}{return}
+    \SetKw{break}{break}
+    
+    \KwIn{$\FWorkload$  --  list of queries (workload)\;}
+    \myinput{$\FIndexSet$  -- list of candidates that need to be enumerated\;}
+    \myinput{$k_X$  -- size of naive enumeration\;}
+    %\myinput{$max\_index\_width$ -- maximum index width\;}
+
+    \Fn{enumerate\_naive($\FWorkload$, $\FIndexSet$, $k_X$)}{
+        $n$ := $\min(k_X, |\FIndexSet|)$\;
+        $best\_configuration$ := \{\}\;
+        $best\_cost$ := $\infty$\;
+        \For{$i \in [1, \ldots, n]$}{
+            \For{$\FIndexConfigurationSet \in \binom{\FIndexSet}{i}$}{
+                $cost$ := calculate\_cost($\FWorkload$, $\FIndexConfigurationSet$)\;
+                \If{$cost < best\_cost$}{
+                    $best\_configuration$ := $\FIndexConfigurationSet$\;
+                    $best\_cost$ := $cost$\;
+                }
+            }
+        }
+        \return{$best\_configuration$}\;
+    }
+\caption{AutoAdmin -- function \textit{enumerate\_naive()}}
+\pLabel{algorithm:auto-admin:enumerateNaive}
+\end{algorithm}
+
+\begin{algorithm}[!ht]
+    \small
+    \DontPrintSemicolon
+    \SetKwProg{Fn}{function}{:}{}
+    \SetKw{return}{return}
+    \SetKw{break}{break}
+    
+    \KwIn{$\FWorkload$  --  list of queries (workload)\;}
+    \myinput{$\FIndexSet$  -- list of already enumerated candidates\;}
+    \myinput{$\FIndexConfigurationSet$  -- list of candidates that must be enumerated\;}
+    %\myinput{$max\_index\_width$ -- maximum index width\;}
+    \myinput{$\FConstraintN$  -- number of indexes to be selected\;}
+
+    \Fn{enumerate\_greedy($\FWorkload$, $\FIndexSet$, $\FIndexConfigurationSet$, $\FConstraintN$)}{
+        $index\_number$ := $\min(\FConstraintN, |\FIndexSet|)$\;
+        $best\_index$ := None\;
+        $best\_cost$ := $\infty$\;
+        $initial\_cost$ := calculate\_cost($\FWorkload$, $\FIndexSet$)\;
+ 
+        \If{\textup{length of} $\FIndexSet$ $\geq$ $index\_number$}{
+            \return{$\FIndexSet$}\;
+        }
+
+        \For{$index \in \FIndexConfigurationSet$}{
+            $cost$ := calculate\_cost($\FWorkload$, $\FIndexSet \cup \{index\}$)\;
+            \If{$cost < best\_cost$}{
+                $best\_index$ := $index$\;
+                $best\_cost$ := $cost$\;
+            }
+        }
+
+        \If{$best\_cost < initial\_cost$}{
+            $\FIndexConfigurationSet$ := $\FIndexConfigurationSet - \{best\_index\}$\;
+            $\FIndexSet$ := $\FIndexSet \cup \{best\_index\}$\;
+            \Return{enumerate\_greedy($\FWorkload$, $\FIndexSet$, $\FIndexConfigurationSet$, $\FConstraintN$)}\;
+        }
+
+        \return{$\FIndexSet$}\;
+
+    }
+\caption{AutoAdmin -- function \textit{enumerate\_greedy()}}
+\pLabel{algorithm:auto-admin:enumerateGreedy}
+\end{algorithm}
+
+\begin{example}
+\pLabel{example:autoadmin}
+%\subsubsection{AutoAdmin example}
+Let us consider the simple database structure and workload $\FWorkload$ from \pRef{example:running}. We would like to select two indexes for this structure (i.e., $\FConstraintN = 2$), and set the other parameters to $k_X = 0$, $k_W = 2$.
+
+The algorithm starts by finding suitable candidates for the single-column index. This is done for each query separately: 
+\begin{itemize}
+    \item Candidates for $q_1$: \texttt{\{profit, revenue\}}
+    \item Candidates for $q_2$: \texttt{\{profit\}}
+    \item Candidates for $q_3$: \texttt{\{profit, price\}}
+\end{itemize}
+
+Next, a union of all candidates is formed to obtain the set of candidates $\FIndexSet$, which is \texttt{\{profit, revenue, price\}}. Afterwards, a greedy algorithm is executed to select the best indices from $\FIndexSet$. To compute the total cost of each index, the cost values from Table~\pRef{table:a1}, Table~\pRef{table:a2} and Table~\pRef{table:a3} are used. Here, the index \texttt{profit} achieves a cost of $2008$, the index \texttt{revenue} achieves a cost of $>100000$ and the index \texttt{price} achieves a cost of $1703$. The best candidate index, i.e., \texttt{price}, is selected by AutoAdmin. After that, the greedy algorithm is re-executed to select the second index. In this case, the index \texttt{profit} is selected as the total cost of \texttt{\{price, profit\}} is $1255$ according to Table~\pRef{table:dropConfig}.
+
+Finally, the algorithm generates two-column candidates. In this particular case, we have a single two-column candidate \texttt{(profit, revenue)}. As the next algorithm iteration does not lead to any greedy improvement, the algorithm yields the final solution, that is \texttt{\{price, profit\}}.
+\qed
+\end{example}
+
+\subsubsection{Anytime Database Tuning Advisor}
+Anytime Database Tuning Advisor (DTA)~\citep{Anytime20} is an extended version of AutoAdmin. The DTA also selects index candidates for each query, but does so once, including multi-attribute indexes. It then considers indexes that may not be useful in the context of a single query, but may be useful in the context of a workload. DTA then greedily selects the most useful indexes. These indexes are then processed by a combination of several greedy algorithms. The indexes are ranked according to their benefits, so that each time the program stops the process, it returns the current best solution.
+
+\subsubsection{Extend algorithm}
+Extend~\citep{Extend} is one of the most recent greedy index selection algorithms. It criticises the premature pruning of candidates that occurs in the general architecture candidate selection step (see Figure~\pRef{fig:general:architecture}). Although pruning speeds up the algorithms, it usually leads to sub-optimal selection as pruned candidates may appear to be useful. Therefore, the Extend algorithm does not follow a general architecture, but uses a sequential constructive approach. Pruning of candidates occurs as late as possible to maximise the chance of finding an optimal solution. This approach allows the Extend algorithm to consider a larger pool of candidates and make better informed decisions during the selection process.
+
+At each step of the algorithm, Extend considers either an addition of a single-column index to the current set of indexes $\FIndexConfigurationSet_{j}$ or an extension of one of the existing indexes in $\FIndexConfigurationSet_{j}$ with a new attribute. It does so by calculating the ratio of the execution cost and memory consumption of the new index set. In the original paper~\citep{Extend}, the cost of re-configuring the new index set is also considered, which is denoted as $R(\FIndexConfigurationSet_{j+1}, \FIndexConfigurationSet_{j})$. In this context, $\FIndexConfigurationSet_{j+1}$ is the new index set and $\FIndexConfigurationSet_{j}$ is the current index set. The reconfiguration cost is the cost of changing the current index set to the new one. The final ratio for the index $i$ is described by the equation~\pRef{eq:ExtendRatio}:
+
+\begin{gather}
+    \frac{R(\FIndexConfigurationSet_{j}, \emptyset) + \sum_{q \in W} cost(q, \FIndexConfigurationSet_{j}) - \sum_{q \in W} cost(q, \FIndexConfigurationSet_{j} \cup \{i\}) - R(\FIndexConfigurationSet_{j} \cup \{i\}, \emptyset)}{size(\FIndexConfigurationSet_{j} \cup \{i\}) - size(\FIndexConfigurationSet_{j})} \pLabel{eq:ExtendRatio}
+\end{gather}
+
+The index with the best ratio is added to the current index set $\FIndexConfigurationSet_{j}$. The complete algorithm is described here:
+
+\begin{enumerate}
+    \item Start with an empty set $\FIndexConfigurationSet_{j}$.
+    \item Find an index $i$ from the set of single-column candidates $\FIndexSet$ that minimises the ratio of its cost and memory consumption. Add the index to the set $\FIndexConfigurationSet_{j}$ (i.e., $\FIndexConfigurationSet_{j} \cup \{i\}$).
+    \item For each single-column index $i \in \FIndexSet$ and each index $k \in \FIndexConfigurationSet_{j}$, consider the following options:
+    \begin{enumerate}
+        \item Add the selected index $i \in \FIndexSet$ to the set $\FIndexConfigurationSet_{j}$ as a new single attribute index, if $\FIndexSet \cap \{i\} = \emptyset$.
+        \item Append the selected single-attribute index $i \in \FIndexSet$ to an index $k \in \FIndexConfigurationSet_{j}$ to form a multi-attribute index.
+    \end{enumerate}
+    Both steps yields new candidates to a new set of indexes $\FIndexConfigurationSet_{j+1}$.
+    \item From all candidates to $\FIndexConfigurationSet_{j+1}$ created in step 3, select one that maximises the Ratio~\pRef{eq:ExtendRatio} and replace set $\FIndexConfigurationSet_{j}$ by the selected $\FIndexConfigurationSet_{j+1}$.
+    \item Repeat steps 3 and 4 until the budget $\FConstraintB$ is reached or no improvement can be made.
+\end{enumerate}
+
+Note that the algorithm can also be used for online index selection. However, being focused on offline index selection, we do not consider reconfiguration costs.
+
+\begin{example}
+\pLabel{example:Extend}
+Let us consider the simple database structure and workload $\FWorkload = \{q_1, q_2, q_3\}$ from \pRef{example:running} and let our storage budget $\FConstraintB = 3000$.
+
+First, the algorithm compares the different benefit ratios of the single-column index candidates (see Table~\pRef{table:singleColumnIndexCandidates}). The first selected index is \texttt{profit}. Other algorithms would select \texttt{price} as it minimises the total cost. Extend, however, prefers indexes with a higher benefit per unit of storage.
+
+\begin{table}[!ht]
+    \centering
+    \caption{Table of single-column index candidates}
+    %\vspace{0.2em}
+    \def\arraystretch{1.25}
+    \pLabel{table:singleColumnIndexCandidates}
+    \begin{tabular}{llll}
+        \toprule
+        \textbf{Index candidate} & \textbf{Total cost} & \textbf{Storage size} & \textbf{Benefit ratio}  \\
+        \midrule
+        \texttt{profit} & 2008 &920& $\sim 107$\\
+        \texttt{revenue} & $> 100000$ &920&$\sim 0$ \\
+        \texttt{price} & 1703 &2100& $\sim 46$ \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+As the current price of $\FIndexConfigurationSet_{j}$ is $2008$ and the current storage size is $920$, we proceed to step 3, construct new index configurations and calculate the benefit ratios relative to the current $\FIndexConfigurationSet_{j}$ (see Table~\pRef{table:benefitRatio}).
+
+\begin{table}[!ht]
+    \centering
+    \caption{Benefit ratios of extended index candidate sets}
+    %\vspace{0.2em}
+    \def\arraystretch{1.25}
+    \pLabel{table:benefitRatio}
+    \begin{tabular}{llll}
+        \toprule
+        \textbf{Index candidate} & \textbf{Total cost} & \textbf{Storage size} & \textbf{Benefit ratio} \\
+        \midrule
+        \texttt{\{profit, revenue\}} & $1993$ & 1840 & 0.02 \\
+        \texttt{\{profit, price\}} &$1255$ & 3020 & 0.35\\
+        \texttt{\{(profit, revenue)\}} & 2208 & $2022$ & -0.01 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+Although \texttt{\{profit, price\}} has the highest relative benefit ratio, it exceeds the storage budget. Therefore, \texttt{\{profit, revenue\}} is selected as the next index. This leads to a sub-optimal solution, as \texttt{\{price\}} would have been a better choice.
+\qed
+\end{example}
+
+\subsection{Reinforcement Learning based algorithms}
+Reinforcement Learning (RL) is a branch of machine learning that focuses on how an agent can learn to maximise its reward in a given environment. That is, an agent interacts with the environment and receives rewards or punishments based on the actions it performs. In the index selection problem, query costs are used to measure the performance of the system and gradually improve the performance by selecting new combinations of indexes. RL models can use these costs to optimise decisions and adjust their behaviour accordingly, making them suitable for the index selection problem.
+
+\subsubsection{NoDBA}
+Researchers at the Saarland Informatics Campus present the deep reinforcement learning (DRL) algorithm called NoDBA~\citep{DRL}, which learns to select indexes for a given workload. At a high level, it simulates the work of database administrators (DBAs) who change database parameters based on rewards or punishments they receive from the system. The main components of the NoDBA algorithm are:
+\begin{itemize}
+    \item \textit{Input to the neural network}, i.e., workload $\FWorkload$ and the current index configuration $\FIndexConfigurationSet_{j}$.
+    \item \textit{Actions} $x$ that agent can take, i.e., create a secondary index.
+    \item \textit{Reward function} $f(\FIndexConfigurationSet_{j+1})$ , i.e., total workload run-time improvement after adding the index.
+    \item \textit{Hyper parameters}, e.g., the number of hidden layers, neurons, and iterations.
+\end{itemize}
+
+The essential part of the algorithm is the learning process (see Figure~\pRef{fig:nodba-diagram}), which employs the main ideas of RL. In particular, it is an iterative process where each step $j$ is described as follows:
+\begin{enumerate}
+    \item Based on the workload and the current index configuration $\FIndexConfigurationSet_{j}$, the neural network predicts the next action $x$.
+    \item The predicted action $x$ is applied to the current index configuration. A new configuration $\FIndexConfigurationSet_{j+1}$ is created.
+    \item Reward $r$ is computed using the reward function $f$ on the new configuration $\FIndexConfigurationSet_{j+1}$.
+    \item The neural network is trained utilizing quadruple $(\FIndexConfigurationSet_{j}, \FIndexConfigurationSet_{j+1}, x, r)$. The program then returns to step 1.
+\end{enumerate}
+
+\begin{figure}[!ht]
+    \centering
+    \includegraphics[scale=0.8]{papers/dke_2026/figures/FIG_nodba-diagram.pdf}
+    \caption{NoDBA learning process}
+    \pLabel{fig:nodba-diagram}
+\end{figure}
+
+The input to the network is represented as a matrix of size $n \times m$, where $n$ is the number of queries and $m$ is the number of columns in the database. Each cell then describes the selectivity of a column based on the current query. It is the ratio of selected rows based on the column predicate to the total number of rows in the table where the column is located. If the query does not select a particular column, the value is set to 1. The current index configuration is also included in the network input and is encoded as a list of $m$ bits. As could be already deduced, the algorithm considers only single-column indexes. Although it is possible to encode multi-attribute indices, the combination of the current design and the increased index width leads to extremely high learning times~\citep{MCTS}.
+
+Limited experiments indicate that the algorithm performs well on highly selective workloads~\citep{DRL}. However, it does not scale well to larger workloads and has many limitations. For example, it lacks support for multi-attribute indexes and has long training times. However, this work was the first to use RL for index selection, making it a good starting point for further research.
+
+\subsubsection{Budget-aware RL algorithm}
+Despite the great complexity of ISP algorithms, most of their run-time is consumed by what-if calls. Experiments show that what-if calls take between $75~\%$ and $93~\%$ of the total execution time of modern ISP algorithms~\citep{QueryOptimizerEfficientUse}. Therefore, there has been recent interest in budget-aware algorithms that can reduce the number of database optimiser calls. A novel approach utilises reinforcement learning to select indexes while meeting the budget~\citep{MCTS}. The approach follows the general architecture (see Figure~\pRef{fig:general:architecture}) of the cost-based index selection algorithm and focuses on the rebuilding of the candidate enumeration component. Therefore, it assumes that the index candidates are already selected, and only needs to select the best combination of indexes. 
+
+To reduce the number of what-if calls, an upper bound approximation of the actual cost per query is used. The algorithm assumes that the index configuration costs are monotonic, i.e., having $\FIndexConfigurationSet_1 \subseteq \FIndexConfigurationSet_2$ and arbitrary $q$, then $cost(q,\FIndexConfigurationSet_2) \le cost(q,\FIndexConfigurationSet_1)$ (see Proof~\citep{MCTS}). Thus the approximation is computed as the minimum cost over all subset configurations of the current configuration (i.e., for each $\FIndexConfigurationSet' \subseteq \FIndexConfigurationSet$). This approximation is referred to as \textit{derived cost}:
+$$
+derived(q, \FIndexConfigurationSet) = \min_{\FIndexConfigurationSet' \subseteq \FIndexConfigurationSet} cost(q, \FIndexConfigurationSet')
+$$
+
+The main goal of the algorithm is to decide what configurations should be approximated and what configuration cost should be calculated by the database optimiser. Information about the known what-if costs is stored in the so-called \textit{budget allocation matrix}. That is, a matrix $n \times m$, where $n$ is the number of queries and $m$ is $2^{|\FIndexSet|}-1$, where $\FIndexSet$ represents the set of candidate indexes. A cell with a value of $1$ indicates that the cost of query $q$ for the configuration $\FIndexConfigurationSet$ is known, whereas a value of $0$ means the cost needs to be approximated.
+
+To set the values in the matrix, the algorithm must find a balance between allocating the budget to configurations that contain the best indexes so far and configurations that do not contain the best indexes but contain unexplored indexes with similar costs. This problem is known as the exploration vs. exploitation dilemma and is solved by formulating it as a Markov decision process (MDP). The algorithm then uses Monte Carlo tree search (MCTS) to find the actions that maximise the expected reward.
+
+The formulation of the MDP is quite straightforward. The states $\mathcal{C}$ are defined as all index configurations in the searched space. More precisely, it is the set of all subsets of index candidates $\FIndexSet$. The actions $\mathcal{A}(c)$ for a state $c \in \mathcal{C}$ are defined by the missing indexes in the current state. Thus, from a single state whose configuration size is $s$, we can access all subsets of index candidates of size $s+1$. As transitions are deterministic, the transition probabilities $\mathcal{P}$ of actions are defined as $Pr(\texttt{from state } s \texttt{ by action } a \texttt{ to state } s \cup \{a\}) = 1 $. The expected return of state $s$ is the expected cumulative reward of starting from state $s$ and taking actions according to some policy. The algorithm computes the expected return as the expected percentage improvement of all configurations that contain the indexes of state $s$ as a subset. The percentage improvement of state $s$ represented by configuration $\FIndexConfigurationSet$ is calculated as:
+$$
+{\left(1- \frac{\sum_{q \in W} derived(q,\FIndexConfigurationSet)}{\sum_{q \in W} derived(q,\emptyset)}\right)} \times 100
+$$
+The objective of RL is to find the optimal policy that maximises the expected return at the initial state $\emptyset$.
+
+MCTS is then used to find the optimal action selection strategy. It is a tree search algorithm that uses a Monte Carlo method to traverse the tree. Part of MCTS is based on random sampling of index candidates. The authors' implementation selects actions randomly, but assigns higher probability to actions that have lower average costs. To further optimise the number of what-if calls, the cost of the configuration $X$ selected in the episode is approximated by the derived cost, and what-if costs are called only for a single query $q$. The probability of selecting a particular query is proportional to its derived cost. The final costs are then as follows:
+$$
+cost(q,\FIndexConfigurationSet) + \sum_{q' \in W \setminus \{q\}} derived(q',\FIndexConfigurationSet)
+$$
+
+
+
+\section{Comparison of the algorithms}
+\pLabel{subsection:comparison}
+
+The algorithms discussed in Section~\pRef{chapter:algorithms} were originally developed and evaluated on a relational model. In this Section, we compare key characteristics relevant to multi-model databases and verify which algorithms are suitable for non-relational data.
+
+Table~\pRef{table:comparison} presents a comparison of algorithms and their characteristics that are important for multi-model DBMSs. As already shown, most of the examined algorithms belong to the family of greedy algorithms (as the index selection problem is NP-complete and the search for an optimal solution is not feasible~\citep{NP-complete}). One of the key properties of the described algorithms is whether they follow a general architecture (see Figure~\pRef{fig:general:architecture}).
+
+Each of the algorithms compared supports single column indexes, which is applicable to various data models as all support the concept of an indexable attribute. However, algorithms such as Drop and NoDBA do not support multi-attribute indexes. This causes a performance loss in relational models and makes them less suitable for those data models that support multi-attribute indexes. None of the algorithms support partition keys. This is understandable as the authors developed them exclusively for single-node relational databases. However, for distributed DBMSs, such as document and columnar stores, this poses a potential concern.
+
+\afterpage{
+\begin{landscape}
+\begin{table}[!ht]
+    \centering
+    \footnotesize
+    \caption{Comparison of index selection algorithms}
+    \pLabel{table:comparison}
+    \begin{threeparttable}
+    \def\arraystretch{1.25}
+    \begin{tabular}{llllllll}
+        \toprule
+        & \textbf{CoPhy}~\citep{CoPhy11} & \textbf{Drop}~\citep{Drop} & \textbf{AutoAdmin} \citep{AutoAdmin} & \textbf{DTA}~\citep{Anytime20} & \textbf{Extend}~\citep{Extend} & \textbf{NoDBA}~\citep{DRL} & \textbf{MCTS}~\citep{MCTS} \\
+        \midrule
+        \textbf{Approach type} & ILP & Greedy & Greedy & Greedy & Greedy & ML & ML \\
+        \textbf{Follows architecture}~\pRef{fig:general:architecture} & Yes & No & Yes & Yes & No & No & Yes \\
+        \textbf{Main constraint} & Storage & Indexes & Indexes & Many\tnote{1} & Storage &  Indexes & What-if calls \\
+        \textbf{Single-column indexes} &  \multicolumn{7}{c}{Each algorithm supports single-column indexes} \\
+        \textbf{multi-attribute indexes} & Yes & No & Yes & Yes & Yes & No & Yes \\
+        \textbf{Index types} & \multicolumn{7}{c}{B-Tree, Hash, B+ Tree, Bitmap, Inverted index} \\
+        \textbf{Best index type} & No & No & No & No & No & No & No \\
+        \textbf{Partitioning keys} & No & No & No & No & No & No & No \\
+        \textbf{Optimal solution} & Yes\tnote{2} & No & No & No & No & No & No \\
+        \textbf{Stop any time} & Yes & No & Yes & Yes & Yes & No & No \\
+        \textbf{Candidates context}  & Query & Workload & Query & Workload & Workload\tnote{5} & Workload & Depends\\ %TODO: fix Extend 
+        \textbf{Online selection} & No & No & No & No & Yes & Yes & No \\
+        \textbf{Relational DBMSs} & Yes & Partial & Yes & Yes & Yes & Partial & Yes \\
+        \textbf{Graph DBMSs} & Yes\tnote{3} & Partial & Yes\tnote{4} & Yes\tnote{4} & Partial & Partial & Yes\tnote{4} \\
+        \textbf{Key/Value DBMS}s &\multicolumn{7}{c}{None of the algorithms supports manual construction of secondary indexes} \\
+        \textbf{Document DBMS}s & Yes\tnote{3} & Partial & Yes & Yes & Yes\tnote{3} & Partial & Yes \\ %TODO: MCTS not sure
+        \textbf{Columnar DBMS}s &\multicolumn{7}{c}{Each algorithm supports single-column indexes}  \\
+        \textbf{Multi-model DBMSs} & Partial & Partial & Partial & Partial & Partial\tnote{6} & Partial\tnote{6} & Partial \\
+        \textbf{Multi-modal DBMSs} & Partial & Partial & Partial & Partial & Partial\tnote{7} & Partial & Partial \\
+        \bottomrule
+    \end{tabular}
+    \begin{tablenotes}
+        \item[1] DTA can be configured to use many constraints at the same time. It supports indexes, storage, and running time.
+        \item[2] CoPhy does find the optimal solution based on the candidates that were provided. Usually, the number of candidates is limited.
+        \item[3] Generally supports the data model but is not suitable for it.
+        \item[4] Generally supports the data model, however, at least three components of the algorithm need to be adjusted.
+        \item[5] Extend does not contain a candidate selection phase. However, it considers potential indexes in the context of the workload.
+        \item[6] Extend and NoDBA have adaptive elements that make them flexible for multi-model systems by allowing different index types.
+        \item[7] Extend can potentially be adapted to support multi-modal data indexing by incorporating different indexing strategies.
+    \end{tablenotes}
+    \end{threeparttable}
+\end{table}
+\end{landscape}
+}
+
+In addition, the algorithms do not consider multiple index types, a typical feature of many DBMSs. This limitation can be solved, for example, in the candidate selection phase by selecting multiple index types for a single attribute and then enumerating the candidates.
+
+The way the candidates are selected is another important feature of the studied algorithms. While older proposals, such as AutoAdmin and CoPhy, select candidates based on individual queries, more recent algorithms, such as NoDBA and DTA, select candidates based on workload. Both approaches have advantages and disadvantages. The workload-based approach is more complex but can find beneficial indexes for the entire workload. On the contrary, the query-based approach is more straightforward but may miss indexes that are not beneficial for individual queries but are beneficial for the entire workload.
+
+Non-essential features include anytime support and online selection support. The anytime feature ensures that the algorithm can stop at any time and still have a valid solution. This is quite useful for NoSQL and multi-model DBMSs as they may work with very large datasets and the index selection process can take a long time. The online selection feature allows the algorithm to select indexes in a system where the workload and database architecture is constantly changing. The algorithm must then take these changes into account and drop or add indexes depending on the current workload. Of the algorithms discussed, only NoDBA and Extend support online selection.
+
+\subsection{Index selection in Relational DBMSs}
+Since all the surveyed algorithms were developed for relational DBMS, they are highly optimised for this particular model. However, Drop and NoDBA have limitations when considering multi-attribute indexes. Otherwise, there are no major drawbacks to using these algorithms for the relational model. When implementing the algorithms with specific database systems such as PostgreSQL, Oracle or MySQL, we have to consider minor changes, e.g., in database optimiser utilisation.
+
+\subsection{Index selection in Graph DBMSs}
+The graph model also groups data into independent units, but in this case the units are represented as nodes instead of rows in a table. Then, edges can easily be added, allowing for more flexible and expressive modelling of complex relationships. 
+
+For graph models, we can still employ the surveyed algorithms. However, we need to make some modifications based on the general architecture (see Figure~\pRef{fig:general:architecture}). First, we need to change the workload analysis phase. Graph databases such as Neo4j use the Cypher query language. This is a declarative language that allows us to express complex graph traversal in a single query. %This is a significant difference from the relational model where we need to use multiple queries to express complex relationships. 
+Therefore, the query parsing component must be modified to support parsing of node and edge property predicates, such as the example in Figure~\pRef{fig:example:cypher}:
+
+\begin{figure}[ht!]
+\begin{Verbatim}[frame=single,fontsize=\small]
+MATCH
+    (t:Actor {name: "Tom"})-[:ACTED_IN]->(m)<-[:ACTED_IN]-(p:Actor) 
+WHERE 
+    p.gender = "male" AND p.born <= 1985
+RETURN 
+    DISTINCT p.name
+\end{Verbatim}
+\caption{A Cypher query example.}
+\pLabel{fig:example:cypher}
+\end{figure}
+
+Secondly, the selection phase needs to be adjusted. The scenario is similar to that of document DBMSs, where we need to add new index types and consider their limitations to avoid generating invalid candidates. Finally, the candidate enumeration does not need to be changed, except for algorithms that do not follow the general architecture, such as Extend, Drop and NoDBA. The fundamental change that affects each of the algorithms researched is the cost estimation. Cost estimation in graph DBMSs is more complex than in other systems because queries can be based on graph traversal and complex relationships between nodes. However, Neo4j provides a sufficient API for cost estimation~\citep{neo4jExecutionPlans}. A query plan does not provide an expected execution plan, but provides all the operations that the query will perform. After the above modifications, we can use any of the algorithms for graph models. As the number of index candidates can be large, CoPhy must implement a more rigorous candidate selection phase. However, this may lead to sub-optimal solutions, making CoPhy less suitable for graph models.
+
+\subsection{Index selection in Key-Value DBMSs}
+Key-value stores represent the simplest of all the database systems that we discuss. Therefore, there is little need to use secondary indexes as queries are usually based on the primary key. However, there exist key-value databases, such as Redis, that support more complex data structures, which additionally may require secondary indexes. In such case, secondary indexes can be implemented manually using appropriate data structures (e.g., hash tables, sorted sets). Thus, the problem of selecting indexes is replaced by the problem of selecting appropriate data structures and modifying queries to fit them. Although we might be able to find a bijection between the index selection problem and the data structure selection problem, the researched algorithms are not originally designed for this problem. Thus, creating a new algorithm that constructs data structures and modifies queries is beyond the scope of this paper.
+
+\subsection{Index selection in Document DBMSs}
+Workloads in document DBMSs do not use relationships between collections, making the queries generally simpler than in relational DBMSs. On the other hand, document DBMSs use new kinds of indexes, such as inverted indexes and geospatial indexes, which are not explicitly supported by any of the algorithms. Therefore, we need to take these new types of indexes into account when applying the algorithms to document DBMSs. We can do this, for instance, by changing the candidate selection phase to include the new types of indexes. In addition, index types such as hash and text indexes do not support multi-attribute indexes. Therefore, we need to modify Extend algorithm to omit these indexes when extending existing candidates. Drop and NoDBA only support single-item indexes, making them impractical for document stores. AutoAdmin and DTA support multi-attribute indexes and follow the general architecture, making them the most suitable for document stores. CoPhy can also be used for document DBMSs, but the increased number of index types makes the candidate enumeration phase more expensive. With proper candidate selection, we can use MCTS for document stores as well. This can be a good choice because what-if calls are expensive in document models and MCTS can reduce the number of them. ML-based algorithms show great potential for document models as well, as there are many types of indexes and they can learn strategies to avoid inappropriate ones.
+
+\subsection{Index selection in Columnar DBMSs}
+Distributed column-based systems use distributed indexes that store the distribution key along with the indexed value. This key is used to partition the data within the cluster. This poses a challenge for index selection algorithms because they do not support data partitioning. Many modern distributed columnar databases solve this problem by partitioning the data based on the primary key. The secondary indexes are then placed co-located with the original data across the cluster~\citep{cassandraIndexes}. Index selection algorithms therefore do not need to take into account data partitioning. However, one of the problems that the algorithms need to address is that they can no longer rely on cost estimates because the distributed nature of the system cannot guarantee the same performance every time the same query is executed. Queries in the columnar model are much simpler than in the relational model, which eases the index selection problem. Cassandra also supports multi-attribute indexes, distinguishing between partition keys, clustering keys, and composite keys. However, despite this support, algorithms like DTA, MCTS, and NoDBA are unsuitable as they fail to differentiate between index types. Among the remaining approaches, Drop only considers single-column indexes, while CoPhy can efficiently find the optimal solution when the number of index candidates is relatively small.
+
+\subsection{Index selection in multi-model and multi-modal data}
+
+The surveyed index selection approaches have primarily been designed for relational databases and the specific challenges they face, such as choosing the best set of indexes to optimize query performance in a structured environment. However, while these methods excel in relational settings, they require substantial adaptation to be directly applicable for multi-modal data. Multi-modal data involves a mix of structured, semi-structured, and unstructured data, including text, images, videos, and even sensor data. The heterogeneity of the data requires different types of indexes (e.g., inverted indexes for text, multi-dimensional indexes like R-trees for spatial data, and hashing for high-dimensional data). Thus, simply applying relational-based index selection strategies without modification would not be sufficient.
+
+To extend these approaches for multi-modal data, the methodologies would need to be adapted to handle multiple data representations. For example, AutoAdmin or DTA could potentially be modified to select across a broader array of index types, such as inverted indexes for textual data or R-trees for spatial/geometric data. Heuristic-based methods like Drop Heuristics could be adapted by including additional factors such as data modality and query patterns specific to multi-modal queries, such as similarity searches or cross-modal retrieval. Another example is NoDBA, which focuses on adaptive indexing; it could be enhanced to handle real-time data in a multi-modal context, particularly for streaming data like video feeds or IoT sensors, which require dynamic indexing strategies. In all cases, the tuning process would need to consider how different index types (e.g., inverted, R-tree, multi-index hashing) interplay with the complex query workloads found in multi-modal environments.
+
+\section{Open questions and challenges}
+\pLabel{chapter:QuestionsAndIdeas}
+Based on our analysis of state-of-the-art index selection algorithms and their applicability to different data models, several open questions and issues were revealed. In this section, we discuss these questions and challenges and suggest possible directions for future research. We have divided the questions and challenges into five categories: \textit{general}, \textit{load distribution}, \textit{candidate selection}, \textit{query cost}, and \textit{candidate enumeration}. The last four categories are based on the key components of the general architecture of ISP algorithms (as illustrated in Figure~\pRef{fig:general:architecture}).
+
+\paragraph{General questions and challenges}
+\begin{itemize}
+    \item As the volume of (big) data increases, iterative index selection methods are becoming increasingly impractical due to high computational cost and time consumption nature. We found CoPhy~\citep{CoPhy11} to be unsuitable for most of the researched DBMSs. Its time complexity increases rapidly with the number of index types. DRL algorithms such as NoDBA~\citep{DRL}, although only partially successful, represent a promising direction for future research.
+    
+    \item In columnar and key-value DBMSs such as Cassandra and Redis, it is more important to design an appropriate \textit{schema} than to use secondary indexes~\citep{cassandraIndexes,RedisIndexes}. Therefore, ISP algorithms for multi-model data should be able to recommend a schema for the database. This is a challenging task because schema design is a complex process that requires a deep understanding of the data model and workload. Another solution could be to find a bijection between the recommended secondary index and the schema. For example, in Cassandra, a multi-attribute index can be interpreted as a composite primary key.
+\end{itemize}
+
+\paragraph{Workload parsing}
+\begin{itemize}
+    \item Different query languages are used by various DBMSs, such as, e.g., Cypher, Cassandra Query Language (CQL) and MongoDB query language. We need to be able to parse the queries and extract index candidates from them. This can be solved, for example, by using a specific query parser for each query language and then passing the index candidates to the candidate selection component.
+\end{itemize}
+
+\paragraph{Candidate selection}
+\begin{itemize}
+    \item The algorithms we have examined do not formally distinguish between different types of indexes. This poses a challenge for DBMSs that support a wide variety of index types and their workloads can benefit significantly from their use. Algorithms should be able to find the proper index types for each candidate. This problem can be solved, for example, by generating a set of candidates for each attribute according to the available index types. However, this will increase the number of candidates and thus the computational cost of the algorithm. Therefore, ML algorithms that can learn strategies for preferring certain index types over others might be useful for these DBMSs.
+\end{itemize}
+
+\paragraph{Query cost}
+\begin{itemize}
+    \item Query cost estimation is the main challenge of the index selection problem. It requires index construction and query execution. This process is time consuming and not feasible to perform for every index configuration. Current state-of-the-art algorithms speed up this process by approximating the query cost using what-if calls and virtual indexes. These tools are available in relational DBMSs, but their availability in other database systems is limited. In order to use these algorithms in other DBMSs, we first need to explore possible ways of estimating query costs for each model.
+    
+    \item Even by having tools for estimating costs on demand, they would still be slow and lacking in accuracy. Therefore, algorithms that are optimised to minimise the number of what-if calls, such as MCTS~\citep{MCTS}, would be a great choice. In addition, we can try a new approach that uses machine learning to predict the cost of a query~\citep{MLCost}. This might be the best solution because modern DBMSs have robust schemas, so the learning time can easily match the time required to make all the what-if calls.
+    
+    \item All the surveyed algorithms assume a read-intensive workload and do not optimise write time. Some of them, such as Extend, consider reconfiguration costs~\citep{Extend}. As NoSQL systems may be write-intensive, we may need to consider write costs and include insert queries and their weights in the workload.
+\end{itemize}
+
+\paragraph{Candidate enumeration}
+\begin{itemize}
+    \item The enumeration is the part that is easiest to generalise for all data models. It just receives a set of candidates and their costs and returns the optimal configuration. The only challenge is to find the most optimal enumeration algorithm for each model. Some models may benefit from a greedy approach that selects the candidate with the absolute highest cost reduction, while others may benefit from a more sophisticated approach, such as the benefit ratio presented in Extend~\citep{Extend}. In addition, as the enumeration component interacts closely with the query cost, we need to minimise the number of what-if calls. Therefore, MCTS~\citep{MCTS} may be a good choice for this component as well.
+\end{itemize}
+
+
+
+\section*{Conclusion}
+In this paper, we have taken the next step towards the development of efficient and possibly autonomous multi-model DBMSs. %~\citep{ideas2022vision}. 
+We have done so by analysing state-of-the-art index selection algorithms currently used in relational DBMSs. We then verified their applicability in other database systems, specifically graph, key-value, document and columnar DBMSs. Through our analysis, we were able to formulate open questions, challenges, and ideas that could help in the future development of index selection algorithms for multi-model database systems.
+
+Additionally, we have highlighted the growing need for adapting traditional index selection approaches to handle heterogeneous data types demanding different indexing strategies in multi-model and multi-modal data.
+
+In our future work, we plan to address the open questions (see Section~\pRef{chapter:QuestionsAndIdeas}). This will involve further investigation into how index selection algorithms can be generalised to handle multi-model and multi-modal data simultaneously. We will focus primarily on issues related to the general architecture of ISP algorithms, as they concern key components of the algorithms under investigation. These issues include handling diverse query workloads, supporting a variety of indexing types, and dynamically tuning indexes based on the evolving data. Once we have resolved these challenges, we will be able to implement an improved algorithm that works well on both multi-model and multi-modal database systems.
+
+% \section*{Acknowledgements}
+% This paper is based on Filip Mih\'a\v{l}’s thesis~\citep{mihal2023}. This work was supported by the GA\v{C}R project no. 23-07781S and GAUK project no. 292323.
+
+% \bibliographystyle{elsarticle-num}
+
+% \bibliography{bibliography}
+
+% \end{document}

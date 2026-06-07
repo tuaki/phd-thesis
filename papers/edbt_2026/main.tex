@@ -1,0 +1,350 @@
+%%
+%% This is a minimal skeleton LaTeX file for EDBT Proceedings papers.
+%%
+%% It uses the (somewhat) current ACM `sigconf' style with modifications
+%% for EDBT Proceedings to be published on OpenProceedings.org
+%%
+%% You will need (apart from the ACM style) two EDBT-specific files:
+%%
+%% openproceedings.png   -- the OpenProceedings.org logo to be placed
+%%                          on the top right corner of the first page
+%%
+%% edbt-macros-v29-n1.tex -- settings for Volume 29, Number 1
+%%
+
+% \documentclass[sigconf]{acmart}
+
+% Custom macros
+% \usepackage{graphicx}
+% \usepackage[utf8]{inputenc}
+% \usepackage{booktabs}
+% \usepackage{fancyvrb}
+% \usepackage{url}
+% \usepackage{array}
+% \usepackage{subcaption}
+% \usepackage{amsfonts}
+% \usepackage{amstext}
+% \usepackage{amsmath}
+  
+% \usepackage[export]{adjustbox}
+% \usepackage{multicol}
+% \usepackage{multirow}
+% \usepackage{algorithm2e}
+
+% \newcommand{\val}[1]{\texttt{#1}}
+% \newcommand{\monospace}[1]{\texttt{#1}}
+% \newcommand{\term}[1]{\textit{#1}}
+% \newcommand{\termref}[2]{\hyperref[{#1}]{\textit{#2}}}
+
+% \newcommand{\mathcard}{\leftrightarrow}
+% \newcommand{\card}[2]{(\val{#1}~$\mathcard$~\val{#2})}
+% \newcommand{\transition}[2]{$\mathrm{\mathbf{#1}}^{\boldsymbol{#2}}$}
+% \newcommand{\arrayof}[1]{#1\ast}
+% \newcommand{\optional}[1]{#1?}
+% \newcommand{\dual}[1]{\overline{#1}}
+
+% \newcommand{\mmcat}{MM-cat}
+% \newcommand{\mmevocat}{MM-evocat}
+% \newcommand{\mmcatdbDemo}{\url{https://demo.mmcatdb.com}}
+% \newcommand{\mminfer}{MM-infer}
+% \newcommand{\mmevolver}{MM-evolver}
+% \newcommand{\mmql}{MMQL}
+% \newcommand{\mmquecat}{MM-quecat}
+
+
+%% copied from acmart.cls, but modified to a4paper
+% \geometry{twoside=true, head=13pt,
+%      a4paper, % for EDBT: use A4 paper
+% %     paperwidth=8.5in, paperheight=11in,
+%      includeheadfoot, columnsep=2pc,
+%      top=57pt, bottom=73pt, inner=54pt, outer=54pt,
+%      marginparwidth=2pc,heightrounded
+%      }%
+
+% \AtBeginMaketitle{%
+%   \input{edbt-macros-v29-n3}
+% }% \AtBeginMaketitle
+
+% %% end of the preamble, start of the body of the document source.
+
+% \begin{document}
+
+%%
+%% The "title" command has an optional parameter,
+%% allowing the author to define a "short title" to be used in page headers.
+%%
+%% EDBT rule: --> Please use \uv{titlecase} in the title!
+
+% \title{MM-mapsearch: Workload-Aware Mapping Selection}
+
+%%
+%% The "author" command and its associated commands are used to define
+%% the authors and their affiliations.
+%% Of note is the shared affiliation of the first two authors, and the
+%% "authornote" and "authornotemark" commands
+%% used to denote shared contribution to the research.
+%%
+%% EDBT rule: --> At least 1 (the corresponding) author needs to have a
+%%                registered ORCID, ideally all authors have one
+% \author{Pavel Koupil}
+% \orcid{0000-0003-3332-3503}
+% \affiliation{%
+%   \institution{Charles University}
+%   \city{Prague}
+%   \country{Czech Republic}
+% }
+% \email{pavel.koupil@matfyz.cuni.cz}
+
+% \author{Bedřich Mazourek}
+% \affiliation{%
+%   \institution{Charles University}
+%   \city{Prague}
+%   \country{Czech Republic}
+% }
+% \email{mazourek420@gmail.com}
+
+% \author{Jáchym Bártík}
+% \orcid{0000-0002-5664-5890}
+% \affiliation{%
+%   \institution{Charles University}
+%   \city{Prague}
+%   \country{Czech Republic}
+% }
+% \email{jachym.bartik@matfyz.cuni.cz}
+
+% \author{Irena Holubová}
+% \orcid{0000-0003-2113-1539}
+% \affiliation{%
+%   \institution{Charles University}
+%   \city{Prague}
+%   \country{Czech Republic}
+% }
+% \email{irena.holubova@matfyz.cuni.cz}
+
+%%
+%% By default, the full list of authors will be used in the page
+%% headers. Often, this list is too long, and will overlap
+%% other information printed in the page headers. This command allows
+%% the author to define a more concise list
+%% of authors' names for this purpose.
+
+% \renewcommand{\shortauthors}{Koupil et al.} %%MS: removed contents
+%\renewcommand{\shorttitle}{} %%MS: added this one
+
+
+
+%%
+%% The abstract is a short summary of the work to be presented in the
+%% article.
+% \begin{abstract}
+\section*{Abstract}
+
+Modern database systems offer several alternative representations of the same data, both within one model and across multiple models. These choices have a strong influence on performance. But manually identifying an efficient mapping is challenging, especially in multi-model environments that combine heterogeneous operators.
+
+In this paper, we present \textit{MM-mapsearch}, an automatic advisor for selecting workload-aware multi-model mappings. A simplified categorical schema defines the search space and enables uniform reasoning about structural alternatives. \textit{MM-mapsearch} analyses a weighted workload, explores feasible schema variants using Monte Carlo Tree Search, and estimates their performance with a plan-structured neural predictor that generalizes across relational, document, and graph systems.
+% \end{abstract}
+
+%% Keywords. The author(s) should pick words that accurately describe
+%% the work being presented. Separate the keywords with commas.
+% \keywords{Multi-model DBMS, workload-aware optimization, data migration}
+
+%%
+%% This command processes the author and affiliation and title
+%% information and builds the first part of the formatted document.
+% \maketitle
+
+\section{Introduction}
+\pLabel{sec:intro}
+Modern database management systems (DBMSs) usually allow several ways to represent the same data. Even within one data model, the data can be organized using different structural designs that vary in their level of nesting, granularity, or normalization. Prior work has shown that such representation choices can lead to substantial performance differences across workloads~\citep{10.1145/3183713.3199671}. Many systems also support multiple data models\footnote{\url{https://db-engines.com/en/ranking}} simultaneously, which enables the combination of representations across models~\citep{CSUR-Jiaheng}. While all these options provide flexibility, they also introduce significant performance differences. 
+
+Choosing an appropriate mapping is, therefore, a challenging task. Multi-model workloads may contain heterogeneous access patterns and operator families, and each representation affects operator behavior, indexing, and traversal differently. As the number of possible mappings grows rapidly, manual evaluation becomes time-consuming, error-prone, and often unrealistic without a deep understanding of the underlying systems.
+
+Schema evolution and workload-driven optimization have been studied across various DBMSs. For multi-model databases, recent work shows that deep reinforcement learning can tune system parameters~\citep{10.1007/s10844-022-00762-0,10.1155/2023/8835111}, but these approaches do not modify the schema or the underlying data representation. In NoSQL systems, schema evolution has been explored extensively:~\citep{stoerl2020nosqlsurvey} surveys practical challenges of schema evolution and migration, 
+MigCast~\citep{hillenbrand2019migcast} estimates the cost and performance implications of data-model changes,~\citep{chillon2022taxonomy} introduces a formal taxonomy of schema modifications,~\citep{10.1109/TKDE.2024.3362273} proposes generic evolution techniques applicable across both NoSQL and relational models,~\citep{gillet2025categorical} presents a categorical framework for migrations between NoSQL models,~Darwin~\citep{storl2022darwin} offers a platform for multi-model data evolution, and~\citep{DBLP:conf/rcis/KoupilBH25} defines basic operations for both evolution and migration of multi-model data. Although these works highlight the importance of structural adaptation, none address \textit{query-driven} schema changes in multi-model settings. 
+
+The natural solution -- automatically suggesting or adapting data representations in multi-model settings -- introduces several challenges. (1) The search space of possible mappings grows exponentially with the number of entities and their possible embeddings, inlinings, or placements across models. (2) Multi-model query workloads may combine different operator families (relational, document, graph), and the impact of a representation change often propagates across model boundaries. (3) Evaluating each candidate mapping requires estimating performance for heterogeneous operators, which is difficult without a unified model of query-plan behavior. 
+
+To address these challenges, we introduce \textit{MM-mapsearch}, a tool that analyses multi-model workloads and recommends performance-oriented schema or mapping changes. Its main contributions are:
+
+\begin{itemize}
+    \item A simplified categorical layer~\citep{DBLP:journals/jbd/KoupilH22} that provides a uniform representation of relational, document, and graph structures and enables principled cross-model reorganization.
+    \item Automatic analysis of weighted multi-model workloads, with schema and mapping changes derived directly from query patterns, removing the need for manual inspection.
+    \item Systematic exploration of model assignments and embedding variants via Monte Carlo Tree Search (MCTS), with a reward function balancing predicted latency and migration effort
+    \item Performance estimation for each candidate representation using an extended plan-structured neural predictor~\citep{10.14778/3342263.3342646}, steering the search toward high-quality schema variants.
+    \item A full-featured prototype implementation integrating workload analysis, schema-variant generation, neural performance prediction, and an interactive interface for inspecting and comparing recommended mappings.
+\end{itemize}
+
+\section{Proposed Approach}
+\pLabel{sec:approach}
+
+The goal of \textit{MM-mapsearch} is to identify an optimal representation across logical models -- relational, document, and graph -- for a given workload of queries. It searches for mappings that minimize query latency and migration cost by exploring alternative schema variants and predicting their performance. Fig.~\pRef{fig:input},~\pRef{fig:mcts}, and~\pRef{fig:neural} shows the overall workflow, composed of three main stages:
+
+\begin{enumerate}
+    \item \textbf{Categorical representation}: The schema is converted into a simplified categorical form capturing complex properties and their embedding or reference links, which together with the weighted workload define the search space.
+    \item \textbf{MCTS space exploration}: The algorithm explores model assignments and embedding variants, maintaining a directed acyclic graph (DAG) of visited states and using a reward function balancing predicted latency and migration effort.
+    \item \textbf{Performance prediction}: A trained neural model estimates query latency for each candidate mapping based on system-specific plans represented in a unified operator-level form.
+\end{enumerate}
+
+\begin{example}
+\pLabel{ex:running}
+\small
+Consider a simplified TPC-H\footnote{\url{https://www.tpc.org/tpch/}} scenario in Fig.~\pRef{fig:input}, where order data are stored in a relational DBMS (purple), while information about parts and suppliers resides in a graph DBMS (blue). The workload contains three queries ($Q_1$, $Q_2$, $Q_3$) with associated execution frequencies ($w_1$, $w_2$, $w_3$). The goal is to find a representation that minimizes overall latency, whether by keeping the current placement, migrating dataset(s), or reorganizing all data under a single model.
+
+\textit{MM-mapsearch} evaluates the alternatives automatically. The schema and workload in Fig.~\pRef{fig:input} are encoded into the root state of the MCTS search: each complex property is assigned a model and an optional embedding parent, represented by two vectors that form the initial configuration. MCTS (Fig.~\pRef{fig:mcts}) then explores neighboring states, where each edge corresponds to a single change in model assignment or embedding. During search, the four MCTS phases are applied repeatedly: a promising state is selected, one modification is expanded, its workload latency is estimated using the neural predictor (Fig.~\pRef{fig:neural}), and the resulting average value, total reward, and visit counts are backpropagated along the path to the root. The final output is a recommended mapping together with predicted performance gains.
+\end{example}
+
+Contrary to the example, the initial mapping doesn't have to be multi-model. \textit{MM-mapsearch} can also start from a single-model schema and explore its multi-model alternatives. The resulting mapping can then directly replace the original representation, keeping the same query interface while improving performance.
+
+
+
+% \begin{figure}[ht!]
+% \centering
+%     \subfloat[
+%     ]{\includegraphics[width=\textwidth]{papers/edbt_2026/figures/EDBT2026-input.pdf}}
+%     \hfill
+%     \subfloat[
+%     ]{\includegraphics[width=\textwidth]{papers/edbt_2026/figures/EDBT2026-mcts.pdf}}
+%     \hfill
+%     \subfloat[
+%     ]{\includegraphics[width=\textwidth]{papers/edbt_2026/figures/EDBT2026-neural.pdf}}
+% \caption{Main components of \textit{MM-mapsearch}: (a) categorical input representation of the schema and workload; 
+% (b) exploration of the mapping space using MCTS; 
+% (c) plan-structured neural predictor for estimating query performance.}
+% \pLabel{fig:workflow}
+% \end{figure}
+
+\subsection{Categorical Multi-Model Representation}
+
+The input to the framework is a categorical schema
+$\mathcal{S} = (O, M, \circ, 1)$,
+where $O$ is the set of objects representing data properties,
+$M$ is the set of morphisms describing connections between properties,
+$\circ$ denotes morphism composition, and $1$ is the identity morphism.
+In the general form~\citep{DBLP:journals/jbd/KoupilH22},
+morphisms capture a rich set of structural relationships, such as
+\emph{\uv{has an identifier}}, \emph{\uv{has a property}}, \emph{\uv{has a role}},
+or \emph{\uv{is a}}. The categorical schema $\mathcal{S}$ can be created manually~\citep{mm_cat} or inferred automatically from sample data instances~\citep{mm_infer}.
+
+For the purpose of mapping optimization
+\textit{MM-mapsearch} operates on a simplified variant of $\mathcal{S}$ that
+retains only \emph{complex properties} and their \emph{embedding} or \emph{reference} morphisms.
+Complex properties correspond to entire structural units such as tuples,
+(nested) documents, graph vertices, or edges (e.g., \textit{Orders} or \textit{Supplier} in Fig.~\pRef{fig:input}).
+
+\begin{figure}[ht!]
+\centering
+\includegraphics[width=\textwidth]{papers/edbt_2026/figures/EDBT2026-input-cr.pdf}
+\caption{Categorical input representation of the schema and workload.}
+\pLabel{fig:input}
+\end{figure}
+
+\begin{figure}[ht!]
+\centering
+\includegraphics[width=\textwidth]{papers/edbt_2026/figures/EDBT2026-mcts-cr.pdf}
+\caption{Exploration of the mapping space using MCTS.}
+\pLabel{fig:mcts}
+\end{figure}
+
+\begin{figure}[ht!]
+\centering
+\includegraphics[width=\textwidth]{papers/edbt_2026/figures/EDBT2026-neural.pdf}
+\caption{Plan-structured neural predictor for estimating query performance.}
+\pLabel{fig:neural}
+\end{figure}
+
+The resulting schema can be viewed as a directed graph
+$\mathcal{G} = (V,E)$ induced by the objects and morphisms of $\mathcal{S}$,
+where vertices $v \in V$ represent complex properties and edges
+$e = (v_i, v_j) \in E$ denote embedding, inlining, or reference links. 
+Together with this simplified schema, the user provides a workload $Q = \{(q_i, w_i)\}$ of queries $q_i$ and their execution frequencies $w_i$. Additional constraints may be attached to edges to specify whether embedding, inlining, or referencing is permitted or mandatory, thus defining the feasible search space to be explored.
+
+
+
+\subsection{Mapping-Space Exploration using MCTS}
+Given the simplified schema and workload, \textit{MM-mapsearch} employs MCTS to explore possible model assignments and embedding configurations that jointly determine the multi-model mapping.
+Each \textit{state} $S = (R,E)$ consists of two vectors: $R[i] \in \{\text{rel}, \text{doc}, \text{grp}\}$ encodes the logical model of the $i$-th complex property, and $E[i] \in \{-1,0,\ldots,n-1\}$ specifies its embedding parent, with $E[i] = -1$ indicating a top-level property. \textit{Actions} modify the state by changing a model assignment or altering an embedding relation.
+Each node in the search graph maintains its \emph{visit count}, \emph{total reward}, and \emph{average reward}, while edges store their own visit counts. This enables a UCT2-style~\citep{DBLP:conf/cig/ChildsBK08} adaptation of the \textit{upper confidence bound} (UCB) for DAGs, ensuring consistent exploration even when different action sequences lead to the same decomposition. Before the search begins, the predicted latency of the root state is computed to establish the initial baseline. The reward is defined as $r = \frac{100}{t_{\mathrm{m}} \,+\, t_{\mathrm{e}} \,+\, 0.001}$, where $t_{\mathrm{m}}$ is the migration cost and $t_{\mathrm{e}}$ is the weighted query latency (both in seconds).
+
+The MCTS iterates through four phases. During \emph{selection}, the algorithm traverses the search space from the root, choosing at each step the child that maximizes a UCB score. Exploitation uses a node's average reward, whereas exploration relies on the visit count of the connecting edge. Selection stops once a state with untried actions is reached. In \emph{expansion}, one such action is applied, usually modifying a single component of $(R,E)$ to create a new mapping candidate. During \emph{simulation}, the neural predictor estimates the workload latency for this candidate, which is converted into a reward. In \emph{backpropagation}, every node and edge along the selected path updates its visit count and reward value.
+
+Unlike standard tree-based MCTS, our implementation builds a DAG of visited states because many action sequences produce identical mappings. This avoids redundancy and significantly reduces the search space. To prevent cycles (e.g., repeatedly migrating a property back and forth), visited paths are recorded and actions leading to previously seen states are excluded.
+
+\begin{example}
+\small
+Figure~\pRef{fig:mcts} illustrates a single MCTS iteration. The root mapping is selected, and a new variant is generated by modifying one model assignment (here, $R[0] = \text{rel}$). The neural predictor estimates its workload latency (68.7\,ms), producing a reward of~1.43, which is then backpropagated to update statistics along the visited path. Iterations continue until the time budget is reached, at which point the best mapping found is recommended.
+\end{example}
+
+\subsection{Plan-Structured Neural Predictor}
+During the \emph{simulation} phase, MCTS invokes a learned performance predictor that estimates workload latency for the current mapping. The model extends the \textit{plan-structured neural network} of~\citep{10.14778/3342263.3342646} to support multiple logical models. As illustrated in Fig.~\pRef{fig:neural}, the predictor is built from \emph{operator-level neural units}, each specialized for a single operator type (e.g., \texttt{Projection}, \texttt{Selection}, \texttt{Join}). These units are dynamically assembled into a network mirroring the query plan. A unit receives an operator's \emph{feature vector} (red arrow) and a \emph{data vector} (black arrow) from its children and outputs (i) a latency contribution and (ii) a new data vector summarizing intermediate statistics. Computation proceeds bottom-up: leaf units (e.g., \texttt{Scan}, \texttt{NodeByLabelScan}) use only operator features, internal units concatenate their children's outputs with their own features, and the root (\texttt{ProduceResults}) emits the final latency estimate. The left three trees (blue leaves) correspond to Neo4j operators (e.g., \texttt{NodeByLabelScan}, \texttt{Expand(All)}), while the right three trees (purple leaves) represent PostgreSQL plans (e.g., \texttt{Scan}, \texttt{Filter}).
+
+To support multi-model workloads, equivalent operator families across PostgreSQL, MongoDB, and Neo4j are mapped to unified operator types inspired by MMQL translation~\citep{koupil2023universal}. The feature extractors normalize numeric parameters (e.g., \texttt{Plan Rows}, \texttt{Total Cost}), convert categorical fields into vectors, and represent yes/no properties as binary flags. PostgreSQL features come from \texttt{EXPLAIN ANALYZE}; MongoDB features from JSON plans; and Neo4j features from \texttt{PROFILE}. As Neo4j lacks per-operator timings, internal nodes emit only data vectors, while the root predicts total latency.
+
+Training data are obtained by executing benchmark workloads and recording plans and runtimes. For systems with operator-level timings, the loss aggregates errors across all plan nodes; for Neo4j, it compares only the total latency. The resulting unified model serves as a fast cost oracle, enabling MCTS to evaluate mapping alternatives without executing the workload physically.
+
+\section{Architecture and Implementation}
+\pLabel{sec:impl}
+
+\begin{figure}[!t]
+    \centering
+    % The scale is not here to fit width ... it's here to fit height.
+    % a take pro urceni velikosti pisma
+    \includegraphics[width=0.75\textwidth]{papers/edbt_2026/figures/EDBT2026-architecture.pdf}
+    \caption{Architecture.}
+    \pLabel{fig:architecture}
+\end{figure}
+
+\textit{MM-mapsearch}\footnote{\url{https://github.com/mmcatdb/aimm}} is implemented as a standalone microservice within the \textit{MM-evocat} toolset~\citep{mm_evocat} (see Fig.~\pRef{fig:architecture}), a broader ecosystem for modeling, querying, evolving, and propagating changes in multi-model data. The toolset follows a modular, service-oriented architecture in which components communicate through REST APIs and exchange data using a unified categorical representation. The \textit{MM-mapsearch} service is written in Python and exposes an endpoint that accepts the simplified schema category (Section~\pRef{sec:approach}), mapping constraints, and a weighted query workload. Based on this input, the service produces a mapping recommendation together with estimated performance characteristics. Due to its declarative interface and reliance on the common representation layer, the advisor can be easily extended to support new logical models, workload types, or integration scenarios within the \textit{MM-evocat} ecosystem.
+
+The microservices cooperate through a request–response workflow. Mapping analysis can be initiated either on demand (1) or through the scheduling component (2), which periodically triggers advisory jobs (3). A job instance communicates with \textit{MM-mapsearch} via its REST API, submitting a request for a new recommendation (4). Before launching a computation, the service consults an internal cache to reuse previously generated results (5), ensuring fast responses when the schema and workload have not changed. Otherwise, \textit{MM-mapsearch} performs a fresh optimization (6-7) and returns the resulting mapping plan to the invoking component, where it is visualized and may be further propagated to schema-management or migration pipelines.
+
+Internally, the service organizes optimization tasks as isolated Python processes. At most one optimization job is executed for a project at a time, preventing conflicting updates or excessive load. The trained neural model used for performance estimation is trained on query plans from PostgreSQL, MongoDB, and Neo4j using the TPC-H benchmark.
+
+\section{Demonstration Outline}
+\pLabel{sec:conclusion}
+
+\begin{figure}[!t]
+    \centering
+    \fbox{\includegraphics[width=\framedWidth]{papers/edbt_2026/figures/EDBT2026-screenshot-1-cr.png}}
+    \caption{Input and workload selection.}
+    \pLabel{fig:screenshot:input}
+\end{figure}
+
+Our interactive demo presents the complete \textit{MM-mapsearch} workflow. Users can start with curated examples (e.g., TPC-H), which include predefined schemas and workloads, or import their own data into PostgreSQL, Neo4j, and/or MongoDB, and define custom properties and queries. Through the interface (Fig.~\pRef{fig:screenshot:input}), they select optimization targets, set mapping constraints (embedding, inlining, reference), assign workload weights, and specify a time budget for the search.
+
+During optimization, the system provides continuous interactive feedback  (Fig.~\pRef{fig:screenshot:results}). Users can track MCTS progress, inspect the current top candidates, and see how each proposed representation differs from the original. Graphical summaries highlight estimated latency gains, structural reorganization steps, and migration implications.
+
+After the search terminates, or at any time when the user accepts a suggested mapping, the interface enables direct execution or scheduling of data migration. Up to three candidates can be inspected side by side, with detailed statistics that clarify their respective trade-offs. The demo highlights the interactivity and transparency of \textit{MM-mapsearch}, offering a concise yet hands-on exploration of workload-aware multi-model mapping selection.
+
+\begin{figure}[t!]
+    \centering
+    \fbox{\includegraphics[width=\framedWidth]{papers/edbt_2026/figures/EDBT2026-screenshot-2-cr.png}}
+    \caption{Mapping results and statistics.}
+    \pLabel{fig:screenshot:results}
+\end{figure}
+
+%%
+%% The acknowledgments section is defined using the "acks" environment
+%% (and NOT an unnumbered section). This ensures the proper
+%% identification of the section in the article metadata, and the
+%% consistent spelling of the heading.
+% \begin{acks}
+% Supported by the GAČR grant no. 23-07781S and SVV grant no. 260821.
+% % Obe cisla nechat!!
+% \end{acks}
+
+% %%
+% %% The next two lines define the bibliography style to be used, and
+% %% the bibliography file.
+% \bibliographystyle{ACM-Reference-Format}
+% \bibliography{bibliography}
+
+
+% %%
+% %% If your work has an appendix, this is the place to put it.
+% %%\appendix
+
+
+% \end{document}
+% \endinput
+%%
+%% End of file `edbt-paper-template-29-1.tex'.

@@ -1,0 +1,342 @@
+
+% VLDB template version of 2020-08-03 enhances the ACM template, version 1.7.0:
+% https://www.acm.org/publications/proceedings-template
+% The ACM Latex guide provides further information about the ACM template
+
+% \documentclass[sigconf, nonacm, pdfa]{acmart}
+
+% %% Generate PDF/A-2u
+% \usepackage[a-2u]{pdfx}
+
+% %% The following content must be adapted for the final version
+% % paper-specific
+% \newcommand\vldbdoi{10.14778/3750601.3750612}
+% \newcommand\vldbpages{5227-5230}
+% % issue-specific
+% \newcommand\vldbvolume{18}
+% \newcommand\vldbissue{12}
+% \newcommand\vldbyear{2025}
+% % should be fine as it is
+% \newcommand\vldbauthors{\authors}
+% \newcommand\vldbtitle{\shorttitle} 
+% % leave empty if no availability url should be set
+% \newcommand\vldbavailabilityurl{https://github.com/mmcatdb/fdephunter}
+% % whether page numbers should be shown or not, use 'plain' for review versions, 'empty' for camera ready
+% \newcommand\vldbpagestyle{empty}
+
+% \usepackage[]{todonotes}
+% \usepackage{etoolbox}
+
+
+% \newtheorem{definition}{Definition}
+
+% \begin{document}
+
+% \title[FDepHunter: Harnessing Negative Examples to Expose Fakes and Reveal Ghosts]{FDepHunter: Harnessing Negative Examples \break to Expose Fakes and Reveal Ghosts}
+
+% \author{Pavel Koupil}
+% \affiliation{%
+%   \institution{Charles University}
+%   \city{Prague}
+%   \country{Czech Republic}}
+% \email{pavel.koupil@matfyz.cuni.cz}
+
+% \author{Jáchym Bártík}
+% \affiliation{%
+%   \institution{Charles University}
+%   \city{Prague}
+%   \country{Czech Republic}}
+% \email{jachym.bartik@matfyz.cuni.cz}
+
+% \author{Stefan Klessinger}
+% \affiliation{%
+%   \institution{University of Passau}
+%   \city{Passau}
+%   \country{Germany}}
+% \email{stefan.klessinger@uni-passau.de}
+
+% \author{André Conrad}
+% \affiliation{%
+%   \institution{University of Hagen}
+%   \city{Hagen}
+%   \country{Germany}}
+% \email{andre.conrad@fernuni-hagen.de}
+
+% \author{Stefanie Scherzinger}
+% \affiliation{%
+%   \institution{University of Passau}
+%   \city{Passau}
+%   \country{Germany}}
+% \email{stefanie.scherzinger@uni-passau.de}
+
+%\renewcommand{\shortauthors}{Koupil et al.}
+
+% \begin{abstract}
+\section*{Abstract}
+
+Functional dependency (FD) discovery is fundamental in data profiling. Inevitably, existing approaches can return fake FDs that hold only coincidentally. Moreover, these approaches fall short of identifying ghost FDs that would be observable in a clean dataset, but that remain undetected because of outliers in the data.
+We introduce an interactive method for dependency discovery that augments an Armstrong relation with additional tuples. 
+We rely on
+artificially generated \textit{negative examples} that emulate real-world tuples to help expose fake FDs. In addition, we rely on domain experts to confirm that \textit{positive examples} indeed reflect the characteristics of the original dataset. Our tool prototype \emph{FDepHunter} thus provides a novel human-in-the-loop workflow where the set of discovered FDs can be iteratively refined.
+% \end{abstract}
+
+%\keywords{%Data Profiling, 
+%Functional Dependency, Armstrong Relation, Negative Example}
+
+% \maketitle
+
+%%% do not modify the following VLDB block %%
+%%% VLDB block start %%%
+% \pagestyle{\vldbpagestyle}
+% \begingroup\small\noindent\raggedright\textbf{PVLDB Reference Format:}\\
+% \vldbauthors. \vldbtitle. PVLDB, \vldbvolume(\vldbissue): \vldbpages, \vldbyear.\\
+% \href{https://doi.org/\vldbdoi}{doi:\vldbdoi}
+% \endgroup
+% \begingroup
+% \renewcommand\thefootnote{}\footnote{\noindent
+% This work is licensed under the Creative Commons BY-NC-ND 4.0 International License. Visit \url{https://creativecommons.org/licenses/by-nc-nd/4.0/} to view a copy of this license. For any use beyond those covered by this license, obtain permission by emailing \href{mailto:info@vldb.org}{info@vldb.org}. Copyright is held by the owner/author(s). Publication rights licensed to the VLDB Endowment. \\
+% \raggedright Proceedings of the VLDB Endowment, Vol. \vldbvolume, No. \vldbissue\ %
+% ISSN 2150-8097. \\
+% \href{https://doi.org/\vldbdoi}{doi:\vldbdoi} \\
+% }\addtocounter{footnote}{-1}\endgroup
+%%% VLDB block end %%%
+
+%%% do not modify the following VLDB block %%
+%%% VLDB block start %%%
+% \ifdefempty{\vldbavailabilityurl}{}{
+% \vspace{.3cm}
+% \begingroup\small\noindent\raggedright\textbf{PVLDB Artifact Availability:}\\
+% The source code, data, and/or other artifacts have been made available at \url{\vldbavailabilityurl}.
+% \endgroup
+% }
+%%% VLDB block end %%%
+
+\section{Introduction}
+Functional dependencies (FDs) are a foundational concept in data management, with applications in schema matching, dataset similarity, outlier detection, and extraction of both integrity constraints and business rules. 
+%The discovery of functional dependencies (FD) is integral in data profiling
+%and can be a prerequisite to schema matching, outlier detection, identification of similar datasets, and extraction of both integrity constraints and business rules. 
+Several approaches to facilitate FD discovery have been proposed~\citep{DBLP:conf/edbt/LopesPL00,DBLP:conf/sigmod/PapenbrockN16,DBLP:journals/pvldb/PapenbrockEMNRZ15}, which differ primarily in performance and suitability for specific datasets.
+
+%Regardless of the approach chosen,
+Which FDs are discovered depends on the %completeness and 
+quality of the input data. In particular, 
+FDs can be classified into three types~\citep{DBLP:journals/pvldb/Berti-EquilleHN18}: 
+(1)~\emph{genuine} FDs, which remain valid across all realistic dataset instances and capture inherent dependencies; (2)~\emph{fake} FDs, which hold only within the given dataset but fail when additional valid tuples are introduced; fake FDs tend to occur in datasets with large numerical domains, such as medical or transport data, where most values are effectively unique -- for example, the US flights dataset\footnote{\url{https://www.transtats.bts.gov}, accessed July 2025}
+contains over 900,000 FDs~\citep{hpi_fds}, many of which are probably fake; and (3)~\emph{ghost} FDs, which remain undetected due to outliers or anomalies but which would hold in a clean dataset.%~\citep{DBLP:journals/pvldb/Berti-EquilleHN18}.
+
+
+A fully representative dataset would help in identifying genuine~FDs.
+To better approximate dataset completeness, we introduce two complementary concepts:
+\textit{negative} and \textit{positive examples}.
+The former are artificially constructed to simulate realistic but absent data, allowing the removal of fake FDs.
+This approach is motivated by Gold's Theorem~\citep{DBLP:journals/jsyml/Gold65}, which highlights the need for negative evidence, such as unseen valid tuples, to infer generalizable properties from incomplete data.
+The latter reflect tuples of the original dataset and are used to reveal ghost FDs obscured by outliers.
+\emph{FDepHunter}, the tool presented in this paper, enables
+users to interactively confirm or reject negative and positive examples.
+
+%Most FD discovery approaches return only a minimal FD set, i.e., a basis from which additional FDs can be derived through Armstrong's axioms. Yet, some derivable FDs must be checked for genuineness.
+
+Most FD discovery approaches return a minimal FD set, i.e., a basis from which other (non-minimal) FDs follow via Armstrong’s axioms. When the dataset is extended (e.g., with negative examples), the minimal set may change, and newly added FDs must be validated to ensure their genuineness. Beyond incompleteness, this introduces the challenge of validating such FDs. We propose a human-in-the-loop workflow to discover genuine FDs and lay the groundwork for follow-up research, e.g., on handling this at scale.
+
+Contributions of this paper include the following:
+\begin{itemize}
+    \item We present \emph{FDepHunter}, a data profiling tool designed to support domain experts. The tool provides a novel interactive workflow to detect fake FDs and to facilitate the discovery of ghost FDs.
+    \item \emph{FDepHunter} incrementally constructs an Armstrong relation~\citep{DBLP:books/aw/AbiteboulHV95}, augmented with so-called \emph{negative} and \emph{positive examples}, to approximate the properties of a complete dataset.
+    \item %We demonstrate a workflow in which 
+    Users iteratively refine the set of FDs: 
+    they identify genuine FDs, expose fake FDs through \emph{negative examples}, and uncover ghost FDs via \emph{positive examples}.
+    \item Negative and positive examples are generated to target multiple fake or ghost FDs simultaneously. This allows to efficiently refine multiple dependencies in a single step.
+\end{itemize}  
+
+\section{Core Concepts}
+
+%In this section, we outline and illustrate the core concepts of our approach for analyzing and refining FDs.%, utilizing negative examples derived from real-world data.
+
+In this section, we introduce and illustrate the core concepts.
+
+For a relational schema $R$ and sets of attributes $X, Y\subseteq R$, a FD $X \rightarrow Y$ holds if, whenever two tuples agree on $X$ they also agree on $Y$; c.f. Abiteboul et al.~\citep{DBLP:books/aw/AbiteboulHV95} for further details. We call $X$ the left-hand side (LHS) and $Y$ the right-hand side (RHS) of the FD. A FD $X \rightarrow Y$ is \emph{minimal} if there is no strict superset $X' \subseteq R$ of $X$ for which $X' \rightarrow Y$ holds.%~\citep{DBLP:conf/sigmod/PapenbrockN16}}.\compacttodo{cite Alice book?}
+% This assertion is fundamental to understanding the structural relationships within the data.
+%Moreover, we distinguish three types of FDs based on their reliability: \emph{genuine} FDs remain valid across all realistic extensions of the dataset, \emph{fake} FDs hold only within the current dataset but fail when additional valid tuples are introduced, and \emph{ghost} FDs would hold in a more complete or representative dataset but remain undetected due to outliers or anomalies.
+
+We classify FDs by their RHS, grouping FDs determining the same attribute into distinct \emph{classes}. The set of these classes is denoted by $\mathcal{C}$. Within each class $c \in \mathcal{C}$, we identify \emph{maximal sets}~\citep{DBLP:conf/edbt/LopesPL00} of attributes on the LHS that do not form a FD for the corresponding RHS. 
+Formally, a set $X \subseteq R$ is a maximal set for the class of $A$ if $X \rightarrow A$ does not hold, but $X' \rightarrow A$ holds for every strict superset $X' \subseteq R$ of $X$. 
+The set of all maximal sets for a class~$c$ is denoted by~$\mathcal{M}_c$. The elements of $\mathcal{M}_c$ and the FDs can be illustrated using a \emph{lattice}, where each node represents a subset of attributes and edges indicate the addition or removal of an attribute. 
+
+An \emph{Armstrong relation} satisfies exactly a given set of FDs and no 
+others~\citep{DBLP:books/aw/AbiteboulHV95}. We artificially construct an Armstrong relation, beginning with a base tuple $t_0$, where all attributes are assigned a default value. For each maximal set $M \in \bigcup_{c \in \mathcal{C}}\mathcal{M}_c$, a unique tuple $t_{M}$ is added to the relation. In each tuple $t_{M}$, attributes belonging to the corresponding maximal set $M$ retain the default value, whereas attributes not in $M$ are assigned distinct real-world values. By substituting abstract identifiers with actual data values, the Armstrong relation mirrors the characteristics of input datasets.
+
+Within the Armstrong relation, rows are categorized as either \emph{positive} or \emph{negative examples}. Both are constructed by modifying a base 
+tuple~$t_0$ using real-world values so that the values of LHS attributes match $t_0$ while the values of RHS attributes differ. Positive examples collectively uphold exactly the FDs in the input dataset. In contrast, negative examples are artificially generated so that they violate FDs that may hold coincidentally and are likely fake.
+
+\begin{example}
+\pLabel{example:negativeExamples}
+\small
+Fig.~\pRef{fig:dataset} shows a sample from the real-world IMDB title dataset\footnote{\url{https://developer.imdb.com/non-commercial-datasets/}, accessed July 2025}. Fig.~\pRef{fig:armstrong} shows an Armstrong relation created from the sample. 
+% $DE \rightarrow A$, $A \rightarrow B$, , $E \rightarrow B$, $A \rightarrow C$, $DE \rightarrow C$, $A \rightarrow D$, $CE \rightarrow D$, $A \rightarrow E$, $CD \rightarrow E$
+The positive examples (marked with red squares) form an Armstrong relation that satisfies twelve minimal FDs (e.g., $CD \rightarrow A$, $CE \rightarrow A$, $C \rightarrow B$). By adding the negative example (yellow), the Armstrong relation violates the FD $C \rightarrow B$. Finally, Fig.~\pRef{fig:lattice} presents a lattice diagram for the class of $A$ (denoted by $c_A$), where elements of $\mathcal{M}_{c_A}$ are shown in solid red, their subsets as outlined red nodes, minimal FDs in solid blue, and derived FDs as outlined blue nodes. This visualization provides an intuitive map of the combinations of attributes that determine the RHS within each FD class.
+%\qed
+\end{example}
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[scale=0.8]{papers/vldb_2025-fdephunter/figures/VLDB-NEX-example-dataset.pdf}
+    \caption{Input dataset.}
+    \pLabel{fig:dataset}
+    % \Description{TODO - VOICE OVER DESCRIPTION}
+\end{figure}
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[scale=0.8]{papers/vldb_2025-fdephunter/figures/VLDB-NEX-armstrong-relation.pdf}
+    \caption{Positive (red) and negative (yellow) examples.}% Armstrong relation corresponding to real data (i.e., positive examples) and an example of negative example.}
+    \pLabel{fig:armstrong}
+    % \Description{TODO - VOICE OVER DESCRIPTION}
+\end{figure}
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[scale=0.7]{papers/vldb_2025-fdephunter/figures/VLDB-NEX-lattice.pdf}
+    \caption{An example of lattice for class $c_A$ (i.e., RHS: A).}% Armstrong relation corresponding to real data (i.e., positive examples) and an example of negative example.}
+    \pLabel{fig:lattice}
+    % \Description{TODO - VOICE OVER DESCRIPTION}
+\end{figure}
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=1.0\textwidth]{papers/vldb_2025-fdephunter/figures/VLDB-NEX-workflow.pdf}
+    \caption{A high-level overview of the FDepHunter workflow.}
+    \pLabel{fig:fdep:workflow}
+    % \Description{TODO - VOICE OVER DESCRIPTION}
+\end{figure}
+
+\section{Workflow}
+We now present the workflow of \emph{FDepHunter}, illustrated in Fig.~\pRef{fig:fdep:workflow}.
+
+
+
+%, which comprises two main phases:
+
+% \begin{enumerate}
+%     \item \textbf{Extraction of Functional Dependencies and MAX\_SETs.}  
+%     In this phase, we compute the set of functional dependencies along with the corresponding \emph{MAX\_SETs} (i.e., maximal sets of left-hand sides) for each class of functional dependencies.
+
+%     \item \textbf{Iterative Editing of MAX\_SETs.}  
+%     Subsequently, we incrementally refine the MAX\_SETs to reflect \emph{genuine} dependencies. Conceptually, this refinement emulates a scenario in which we have access to a dataset containing all possible real-world data samples, ensuring that fake dependencies are pruned and ghost dependencies are exposed.
+% \end{enumerate}
+
+% \begin{landscape}    
+\begin{figure}[!htb]
+    \centering
+    \includegraphics[width=1.0\linewidth]{papers/vldb_2025-fdephunter/figures/VLDB-NEX-iterative-elimination.pdf}
+    \caption{Iterative (top-down) editing of maximal sets and elimination of fake FDs utilizing negative examples.}
+    \pLabel{fig:enter-label}
+    % \Description{TODO - VOICE OVER DESCRIPTION}
+\end{figure}
+% \end{landscape}
+
+\paragraph{Initial Data Profiling.} 
+As part of the initial phase focusing on the extraction of FDs and maximal sets $\mathcal{M}_c$ for each class $c \in \mathcal{C}$, we apply a method that fits the properties of the input data. This work employs an approach inspired by Dep-Miner~\citep{DBLP:conf/edbt/LopesPL00}. For each class $c \in \mathcal{C}$, the method initially generates the maximal sets $\mathcal{M}_c$ and subsequently reconstructs the FDs. Alternatively, approaches such as HyFD~\citep{DBLP:conf/sigmod/PapenbrockN16} can be employed to extract FDs first, ensuring that even for large data volumes the system is reactive and prompt, allowing for fluent interaction. Maximal sets are then reconstructed by pruning attributes from minimal LHSs until only maximal subsets that do not form an FD remain.% For certain datasets, the latter approach demonstrates greater computational efficiency.
+
+
+\paragraph{Iterative Editing of Maximal Sets.}  
+In the second phase, the goal is to identify \emph{fake} FDs and to uncover \emph{ghost} FDs, by employing heuristics~\citep{DBLP:journals/pvldb/Berti-EquilleHN18} or by incrementally consulting users; we focus on the incremental approach. Fake FDs are examined by iterating from smaller to larger LHSs (as illustrated in Fig.~\pRef{fig:enter-label}), assuming pessimistically that the extracted dependencies (shown in blue) are fake. Consequently, an affected $\mathcal{M}_c$ is expanded to include a new element $M$ corresponding to the targeted FD (depicted in yellow), and all $M' \subset M$, $M' \in \mathcal{M}_c$, are removed to preserve maximality. This adjustment updates the Armstrong relation to contain one additional row for each newly added element $M \in \bigcup_{c \in C}\mathcal{M}_c$, forming a \emph{negative example} evaluated by the user.
+If accepted, the targeted FD is deemed fake; if rejected, it implies that at least one corresponding FD could be genuine, so the matching LHS is removed from affected $\mathcal{M}_c$. If confirmed that all FDs with that LHS are genuine, pruning of LHS stops; otherwise, the algorithm identifies genuine FDs, and continues the search for 
+supersets of LHS that fail to invalidate genuine FDs. If any genuine FD is identified, the $M$ corresponding to its LHS is removed from all affected $\mathcal{M}_c$, and previously removed $M'$ are restored. After all negative examples are processed, the algorithm proceeds to the next iteration, increasing the size of the LHS by one, and terminates when every extracted FD has been classified. With this strategy users do not need to validate the full transitive closure of FDs derived via Armstrong's axioms, but only those with LHSs that are a strict superset of a previously evaluated one.
+
+For ghost dependencies, the process focuses on the original (red) elements $M$ in each $\mathcal{M}_c$, proceeding in reverse (from those containing the largest number of columns to smaller ones). Here too, the user receives pairs of rows -- specifically, the first row and one with a red square -- to determine whether the latter truly represents a maximal set. %that does not yield an FD. 
+If the user accepts the pair, the currently evaluated element $M$ remains valid in each relevant~$\mathcal{M}_c$; if rejected, the algorithm presumes an undiscovered FD exists, marks the targeted element as an FD, and continues to target all its immediate predecessors (i.e., subsets of attributes of size one less), verifying them in subsequent iterations. The algorithm terminates once no $M$ (or its subsets) remains to be checked. 
+
+Both steps ultimately yield a collection of genuine FDs by incrementally eliminating fake FDs and uncovering ghost FDs.
+%
+While the worst-case number of examples a user must review is $2^n$ (lattice size), in our experience this remains manageable in practice, especially for small datasets with many genuine FDs.
+
+\begin{example}
+\small
+Fig.~\pRef{fig:enter-label} illustrates the iterative workflow for identifying genuine FDs from the dataset in Fig.~\pRef{fig:dataset}. The initial phase outputs maximal sets and FDs depicted as a lattice alongside the corresponding Armstrong relation. Each iteration eliminates FDs, from the smallest to the largest LHS. Negative examples targeting $LHS=A$ and $LHS=BCD$ are rejected as~$A$ is an identifier and $BCD \rightarrow E$ is genuine (e.g., two series episodes may share genre $E$ but have distinct identifiers $A$). Finally, the user accepts the remaining maximal sets, ensuring no ghost FDs are in the dataset.%\qed
+\end{example}
+
+\paragraph{Architecture and Implementation}
+
+\emph{FDepHunter} is implemented as a client-server application.
+%with a web-based graphical interface for intuitive user interaction and exploration. 
+On the server side, it relies on \emph{Java~21} %\footnote{\url{https://www.oracle.com/java/technologies/java-se-glance.html}} 
+and the \emph{Spring~Boot} %\footnote{\url{https://spring.io/projects/spring-boot}} 
+framework to provide a REST interface.
+%, while initial maximal sets construction and FD extractions are parallelized using \emph{Apache~Spark}.%\footnote{\url{https://spark.apache.org}}.%, and workflow state is stored in a \emph{Neo4j}\footnote{\url{https://neo4j.com}}.
+The client employs the \emph{React} library to provide a GUI that displays the current status of the entire workflow.%, enabling users to evaluate the authenticity of both negative and positive examples.
+
+\begin{figure}[!t]
+    \centering
+    \fbox{\includegraphics[width=\framedWidth]{papers/vldb_2025-fdephunter/figures/VLDB-fig_3.png}}
+    %\includegraphics[width=1.00\textwidth]{papers/vldb_2025-fdephunter/figures/VLDB-fig_3_clip.png}
+    \caption{Armstrong relation and workflow status.}
+    \pLabel{fig:screenshot:1}
+    % \Description{TODO - VOICE OVER DESCRIPTION}
+\end{figure}
+
+% \begin{figure}[!t]
+%     \centering
+%     \fbox{\includegraphics[width=\framedWidth]{papers/vldb_2025-fdephunter/figures/VLDB-fig_4.png}}
+%     %\includegraphics[width=1.00\textwidth]{papers/vldb_2025-fdephunter/figures/VLDB-fig_4_clip.png}
+%     \caption{Evaluation of negative example (Zoom 115\%).}
+%     \pLabel{fig:screenshot:2}
+%     \Description{TODO - VOICE OVER DESCRIPTION}
+% \end{figure}
+
+\section{Related Work}
+Several studies have evaluated the quality of discovered FDs using scoring functions. Chu et al.~\citep{DBLP:journals/pvldb/ChuIP13} introduce \emph{succinctness} and \emph{coverage} to assess the interestingness of denial constraints, a generalization of FDs. Chiang and Miller~\citep{DBLP:journals/pvldb/ChiangM08} propose similar ranking functions for conditional FDs. Andritsos et al.~\citep{DBLP:conf/sigmod/AndritsosMT04} rank FDs by their information content, while Wei and Link~\citep{DBLP:journals/is/WeiL23} use data redundancy as a heuristic to identify genuine FDs. Berti-Équille et al.~\citep{DBLP:journals/pvldb/Berti-EquilleHN18} study the impact of missing values on the discovery of genuine, ghost, and fake FDs under various NULL semantics and propose probabilistic scoring. %functions to estimate the genuineness of a discovered FD.
+%Jiang and Naumann employ ranking functions to identify primary keys among unique column combinations~\citep{DBLP:journals/jiis/JiangN20}
+
+A separate line of research uses Armstrong relations to identify meaningful FDs~\citep{DBLP:conf/adbt/SilvaM79}. This is highly related to our notion of positive examples. Langeveldt and Link~\citep{DBLP:journals/is/LangeveldtL10} evaluate the usefulness of Armstrong relations for identifying meaningful FDs. They conclude that Armstrong relations are helpful in identifying meaningful FDs that are incorrectly perceived as meaningless, but not vice versa.
+
+Our approach differs from existing work by iteratively refining Armstrong relations through user feedback, and also incorporating artificial negative examples to help eliminate fake FDs.
+
+\section{Demonstration Outline}
+In our interactive tool demo, users systematically identify genuine, fake, and ghost FDs through the following steps:
+(1)~Users begin by selecting from a curated collection of real-world datasets, which differ in size, attribute count, and exhibit varying numbers of fake FDs and outliers (e.g., IMDb datasets, or Metanome profiling datasets~\citep{hpi_fds}).
+Alternatively, users can provide their own dataset. 
+%
+(2)~Users iteratively refine maximal sets in ascending size by reviewing and validating examples. Each iteration generates an Armstrong relation in which negative examples target fake FDs (see Fig.~\pRef{fig:screenshot:1}). Negative examples appear sequentially (see Fig.~\pRef{fig:screenshot:2}), and are either accepted, removing a fake FD, or rejected with justification, as users act as domain experts. % After processing negative examples, users assess remaining positive examples, rejecting outliers to reveal ghost FDs.
+%
+(3)~In the final stage, users assess remaining positive examples and reject outliers to reveal ghost FDs.%analyze the remaining maximal sets to uncover ghost FDs, delving deeper into the dataset's underlying dependencies.
+
+%\textcolor{red}{This structured approach not only highlights \emph{FDepHunter}'s capability to handle complex data but also offers an engaging and informative user experience as users explore and understand the FDs within their datasets. Furthermore, the robustness of our approach is emphasized by its ability to efficiently and intuitively eliminate multiple fake FDs with a single negative example.}
+
+\section{Conclusion and Outlook}
+\emph{FDepHunter} introduces 
+%an innovative workflow for refining FDs. This demonstration presents 
+an interactive workflow to eliminate fake FDs using real-world-like negative examples and to uncover ghost FDs, hidden by outliers, by validating positive examples.
+
+Future work will focus on enhancing the scalability and effectiveness of \emph{FDepHunter}. Specifically, we plan to develop advanced strategies for constructing negative examples with maximal impact by leveraging heuristics to assess the genuineness of FDs. %, and to create more compact Armstrong relations.
+Additionally, we aim to conduct user studies with domain experts 
+to systematically evaluate the tool's usability and its effectiveness in practical applications. A key objective will be to assess the cognitive load perceived by domain experts when evaluating negative and positive examples and investigate whether showing additional context or metadata is perceived as helpful.
+%We also plan to analyze the broader impact of our approach on FD discovery.
+%Finally, we plan to better support users in managing the cognitive load of assessing the validity of examples. %, we plan to provide additional metadata to improve their intuition.
+
+\begin{figure}[!t]
+    \centering
+    \fbox{\includegraphics[width=\framedWidth]{papers/vldb_2025-fdephunter/figures/VLDB-fig_4.png}}
+    %\includegraphics[width=1.00\textwidth]{papers/vldb_2025-fdephunter/figures/VLDB-fig_4_clip.png}
+    \caption{Evaluation of negative example.}
+    \pLabel{fig:screenshot:2}
+    % \Description{TODO - VOICE OVER DESCRIPTION}
+\end{figure}
+
+
+% \begin{acks}
+% This work was supported by GA\v{C}R grant no.~23-07781S (P.\ Koupil), SVV project no.~260~821 (J. Bártík), DFG grant no.~\#385808805 (S.~Klessinger, A.\ Conrad, and S.\ Scherzinger), as well as BTHA grant~BTHA-AP-2023-21 (S.\ Scherzinger and P.\ Koupil).
+
+% %P.\ Koupil's, and J. B\'{a}rt\'{i}k's contributions were supported by GA\v{C}R grant no.~23-07781S, BTHA grant no.~BTHA-AP-2023-21, and SVV project no.~260~821.
+% %S.\ Klessinger's, A.\ Conrad's, and S.\ Scherzinger's contributions were supported by DFG grant no.~385808805.
+% % P.\ Koupil's, and J. B\'{a}rt\'{i}k's contributions were supported by GA\v{C}R grant no. 23-07781S, SVV project no. 260 821.
+% % S.\ Klessinger's, A.\ Conrad's, and S.\ Scherzinger's contributions were supported by DFG grant no.~385808805.
+% % The cooperation was supported by BTHA grant no. BTHA-AP-2023-21.
+% % PK's, and JB's contributions were supported by GA\v{C}R grant no.~23-07781S, and SVV project no.~260~821.
+% % SK's, AC's, and SS's contributions were supported by DFG grant no.~385808805.
+% % The cooperation was supported by BTHA grant no. BTHA-AP-2023-21.
+% \end{acks}
+
+% \bibliographystyle{ACM-Reference-Format}
+% \bibliography{sample-base}
+
+% \end{document}

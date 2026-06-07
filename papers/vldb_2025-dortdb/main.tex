@@ -1,0 +1,478 @@
+% \documentclass[sigconf, nonacm, pdfa]{acmart}
+% \usepackage[a-2u]{pdfx}
+
+% \usepackage{subcaption}
+% \usepackage{booktabs}
+% \usepackage{array}
+% \usepackage{listings}
+% \usepackage{caption}
+% \usepackage{soul}
+% \usepackage{xcolor}
+% \usepackage{tcolorbox}
+% \usepackage{multirow}	% for multirow
+% \usepackage{graphicx} 	% for rotatebox
+
+% \newcommand\vldbdoi{10.14778/3750601.3750665}
+% \newcommand\vldbpages{5335-5338}
+% \newcommand\vldbvolume{18}
+% \newcommand\vldbissue{12}
+% \newcommand\vldbyear{2025}
+% \newcommand\vldbauthors{\authors}
+% \newcommand\vldbtitle{\shorttitle} 
+% \newcommand\vldbavailabilityurl{https://github.com/filipjezek/dortdb}
+% \newcommand\vldbpagestyle{empty} 
+
+\todo{listings}
+
+\lstdefinelanguage{CustomJS}{
+  keywords={const, new, return, SELECT, FROM, JOIN, ON, WHERE, GROUP, BY, HAVING, AS, LATERAL, MATCH},
+  keywordstyle=\textbf,
+  sensitive=true,
+  morecomment=[l]{//},
+  morestring=[b]',
+  morestring=[b]"
+}
+
+\lstset{
+  language=CustomJS,
+  basicstyle=\scriptsize\ttfamily,
+  showstringspaces=false,
+  keepspaces=true
+}
+
+\tcbset{
+  mylisting/.style={
+    colback=lightgray!20,
+    boxrule=0pt,
+    arc=0pt,
+    outer arc=0pt,
+    top=4pt,
+    bottom=4pt,
+    left=6pt,
+    right=6pt
+  }
+}
+
+% \begin{document}
+% \title{DortDB: Bridging Query Languages for Multi-Model Data Ponds}
+
+% % \author{, Pavel Koupil, , Jáchym Bártík, and }
+% % \affiliation{%
+% %   \institution{Department of Software Engineering\\Charles University, Prague, Czech Republic}
+% % }
+% % \email{firstname.lastname@matfyz.cuni.cz}
+
+
+% \author{Filip Ježek}
+% \affiliation{%
+%   \institution{Department of Software Engineering\\Charles University}
+%   \city{Prague}
+%   \country{Czech Republic}}
+% \email{filip.jezek@gmail.com}
+
+% \author{Pavel Koupil}
+% \affiliation{%
+%   \institution{Department of Software Engineering\\Charles University}
+%   \city{Prague}
+%   \country{Czech Republic}}
+% \email{pavel.koupil@matfyz.cuni.cz}
+
+% \author{Michal Kopeck\'{y}}
+% \affiliation{%
+%   \institution{Department of Software Engineering\\Charles University}
+%   \city{Prague}
+%   \country{Czech Republic}}
+% \email{michal.kopecky@matfyz.cuni.cz}
+
+% \author{J\'{a}chym B\'{a}rt\'{i}k}
+% \affiliation{%
+%   \institution{Department of Software Engineering\\Charles University}
+%   \city{Prague}
+%   \country{Czech Republic}}
+% \email{jachym.bartik@matfyz.cuni.cz}
+
+% \author{Irena Holubov\'{a}}
+% \affiliation{%
+%   \institution{Department of Software Engineering\\Charles University}
+%   \city{Prague}
+%   \country{Czech Republic}}
+% \email{irena.holubova@matfyz.cuni.cz}
+
+% \begin{abstract}
+
+\section*{Abstract}
+
+Multi-model data encompasses structurally distinct data, including relational, document, graph, key/value, columnar,  etc., managed within a single system, such as a multi-model database or a data lake. Querying multi-model data requires strategies that balance unification and integration across diverse models and query languages. This paper presents DortDB, an extensible framework enabling cross-model queries combining well-known query languages and offering intuitive flexibility %, format transformation, 
+and optimization via a unified algebra. Though a small-scale in-memory prototype is to be demonstrated, its principles can be extended to distributed systems.
+% \end{abstract}
+
+% \maketitle
+
+
+% \pagestyle{\vldbpagestyle}
+% \begingroup\small\noindent\raggedright\textbf{PVLDB Reference Format:}\\
+% \vldbauthors. \vldbtitle. PVLDB, \vldbvolume(\vldbissue): \vldbpages, \vldbyear.\\
+% \href{https://doi.org/\vldbdoi}{doi:\vldbdoi}
+% \endgroup
+% \begingroup
+% \renewcommand\thefootnote{}\footnote{\noindent
+% This work is licensed under the Creative Commons BY-NC-ND 4.0 International License. Visit \url{https://creativecommons.org/licenses/by-nc-nd/4.0/} to view a copy of this license. For any use beyond those covered by this license, obtain permission by emailing \href{mailto:info@vldb.org}{info@vldb.org}. Copyright is held by the owner/author(s). Publication rights licensed to the VLDB Endowment. \\
+% \raggedright Proceedings of the VLDB Endowment, Vol. \vldbvolume, No. \vldbissue\ %
+% ISSN 2150-8097. \\
+% \href{https://doi.org/\vldbdoi}{doi:\vldbdoi} \\
+% }\addtocounter{footnote}{-1}\endgroup
+% %%% VLDB block end %%%
+
+% %%% do not modify the following VLDB block %%
+% %%% VLDB block start %%%
+% \ifdefempty{\vldbavailabilityurl}{}{
+% \vspace{.3cm}
+% \begingroup\small\noindent\raggedright\textbf{PVLDB Artifact Availability:}\\
+% %The source code, data, and/or other artifacts have been made a
+% Available at \url{\vldbavailabilityurl}.
+% \endgroup
+% }
+% %%% VLDB block end %%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Introduction}
+
+Multi-model data refers to different types of data -- relational, document, graph, key/value, columnar, etc. -- being managed as a whole. They can be stored in a multi-model database management system (DBMS)~\citep{CSUR-Jiaheng} designed to handle diverse data formats while ensuring optimized performance and querying capabilities. An alternative approach represents data lakes~\citep{AWSDataLake}, which store raw data in its native format without requiring a predefined schema.
+
+Choosing between multi-model DBMSs and data lakes depends primarily on particular business needs -- structured querying and performance favour DBMSs, while large-scale, unstructured data analysis benefits from data lakes. But, data lakes, of course, also offer various querying and data extraction approaches, including SQL-based query engines (e.g., Apache Presto\footnote{\url{https://prestodb.io/}}), data lakehouses utilising the analytical queries of a data warehouse (e.g., Delta Lake\footnote{\url{https://delta.io/}}), or search engines (e.g., Elasticsearch\footnote{\url{https://www.elastic.co/elasticsearch}}). Some approaches (e.g., AWS Athena\footnote{\url{https://aws.amazon.com/athena/}})  enable federated queries over data lakes and relational or NoSQL DBMSs. 
+However, in all these cases, we must consider the multi-model aspect of data, i.e., integration of data with highly contradictory features and thus data-access methods, such as e.g. flat relational data vs. hierarchical JSON documents or table joins vs. graph traversals. 
+
+A common strategy for multi-model querying, often employed in polystores~\citep{conf/bigdataconf/TanCGM17}, follows the principle of \textit{unification at front-end and integration at back-end}. This approach presents a unified view of multi-model data while maintaining mappings to the original structures. Users then interact with this unified view using a single-model-specific language. The queries are translated into the underlying models' query languages, whereas an integration module combines the intermediate results into the final result.
+
+Conversely, multi-model DBMSs~\citep{Jiaheng2023Survey} typically extend the query language of the original model with constructs supporting additional models (e.g., PostgreSQL's SQL extension for accessing JSON documents). This can be seen as an approximation of the inverse strategy, i.e., \textit{integration at front-end and unification at back-end}. Several approaches exist that enable the combination of two query languages (e.g., SQL/XML or SPARQL embedding in SQL in Virtuoso). However, this approach could be generalized to allow users to flexibly combine multiple query languages, each suitable for a particular data model, with recursive embedding as needed.
+
+\begin{example}
+\small
+Consider the example in Fig.~\pRef{fig:dataAndquery}a, which illustrates data integration from heterogeneous sources. Customer information is obtained from a Neo4j database representing a social network, address data is stored locally in CSV format as relational tables, and order data is retrieved from a remote web service in XML. %Each source uses a distinct data model -- graph, relational, and document.
+
+A sample query might \uv{\textit{retrieve the most frequently ordered products that appear first in the orders of customers' friends, limited to friends residing in Prague and products ordered by more than two such friends}}. The result is returned as a relational table in CSV format to support, e.g.,  personalized recommendations and targeted advertising. Intuitively, the query requires integration of Cypher for graph traversal, SQL for relational aggregation, and XQuery for filtering hierarchical data -- see Fig.~\pRef{fig:dataAndquery}b.
+\qed
+\end{example}
+
+\begin{figure}[!ht]
+    \centering
+    %\begin{subfigure}{.5\textwidth}
+    \subfloat[]%Sample multi-model data]
+    {\includegraphics[width=0.45\textwidth]{papers/vldb_2025-dortdb/figures/dortDB-data.pdf}}
+    %\caption{Sample multi-model data}
+    %\pLabel{fig:data}
+    %\Description{TODO - VOICE OVER DESCRIPTION}
+%\end{subfigure}%
+%\begin{subfigure}{.5\textwidth}
+    \hfill
+    \subfloat[]%Sample cross-model query]
+    {\includegraphics[width=0.45\textwidth]{papers/vldb_2025-dortdb/figures/dortDB-query.pdf}}
+    \caption{Sample multi-model data (a), cross-model query (b)}
+    %\Description{TODO}
+    \pLabel{fig:dataAndquery}
+%    \end{subfigure}%
+\end{figure}
+
+
+
+
+% three leevels - ruzne jazyky vhodne pro modely, muzu cokoli na cokoli s ohledem na intuici a s ohledem na výkon
+
+This paper introduces DortDB\footnote{Inspired by Josef Čapek's fairy tale \uv{How Doggie and Kitty were making a cake}.}, an extensible framework that enables querying multi-model data using virtually any combination of query languages. Its main advantages are as follows:
+\begin{itemize}
+    \item  Users can seamlessly combine various data formats without the need to predefine schemas, providing unmatched flexibility in data integration.
+    \item Users can intuitively switch between query languages based on their preferences or the specific data fragments they are working with, ensuring ease of use. 
+    \item By selecting the top-level language, the user specifies the output data format. He/she can thus transform the given data to any supported format (or a combination of formats).
+    \item Queries are translated into a unified algebra, allowing cross-model optimization to enhance query performance.
+\end{itemize}
+
+Currently, DortDB is a small-scale prototype designed for use within a web browser as a multi-model in-memory \textit{data pond}. However, the underlying concept can be extended to large-scale environments, such as distributed systems utilizing shared RAM.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Basic Concepts}
+
+
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{papers/vldb_2025-dortdb/figures/dortDB-workflow.pdf}
+    \caption{Data import and query evaluation workflow in DortDB.}
+    \pLabel{fig:workflow}
+   %\Description{TODO - VOICE OVER DESCRIPTION}
+\end{figure}
+
+
+
+%\subsection{Workflow}
+% - popsat data flow (načíst data, transformace... )
+% - javascript (objekty)
+% - kešování multi-modelových dat (model-agnostic)
+% - příklady dataflow = dotaz - strom (podbarvit) - optimalizace (cross-model) - vyhodnocení - postavení výsledku
+
+The primary objective of DortDB is to offer a flexible and optimized query execution mechanism for in-memory multi-model data. %DortDB employs a structured workflow for query execution, encompassing the following stages: data import, query formulation, query parsing, logical plan generation and optimization, query execution, and result retrieval.
+%
+%\paragraph{Data Import} 
+Data can be imported from various sources, including web services, DBMSs, or local/remote file systems. %However, DortDB currently does not support data modification operations. 
+% like updates or deletions. 
+Once imported, data is represented as an object model, which can be serialized into JSON. DortDB adopts a schema-free approach, enabling dynamic and flexible data management without the constraints of predefined schemas. Users can define secondary indexes in advance using expression-based specifications to optimise query performance.
+
+%Vkládání souborů - funguje skrze import z nějakých databázových souborů, např. file system. Úložištěm souborů může být cokoliv.
+%Webová aplikace, z backendu natáhne GB dat, v paměti pak na straně klienta s tím pracuje - caching na straně klienta, aby se nemuselo volat requesty.
+
+%Nelze aktualizovat ani mazat data.
+
+%Data jsou reprezentována jako objektový model, jde to serializovat do jsonu - objektový návrh, stejné jako kategorie, complex vs simple.  v plánu přidat indexy nad daty - indexy obecně na zrychlení dotazů (sekundární indexy) - uživatel si musí indexy registrovat předem na základě expression.
+
+%Schema free přístup.
+
+%\paragraph{Querying} 
+DortDB queries are constructed using multiple query languages, currently SQL, XQuery, and Cypher (see Fig.~\pRef{fig:dataAndquery}b). These languages can be repeatedly nested within one another, allowing for the creation of complex and sophisticated queries. 
+Once a query is formulated, the system parses it to generate a \textit{syntactic tree} that captures the structure of the query. It is then transformed into a \textit{logical plan}, represented as a directed graph. Its nodes correspond to algebraic operators (see Section~\pRef{sec:algebra}). Its edges define the execution order and dependencies between operations, with a bottom-up orientation indicating data flow from sources to the final query result.
+
+%Vyhodnocení - první je parsování, výstupem parsování vypadne syntaktický strom a ten se přetvoří na logický plán (strom), synt. strom se nevizualizuje, je vidět až logický plán.
+%log. plán je graf, uzly jsou operátory v algebře, kterou používá - selekce, projekce, join (pošle seznam operátorů).
+%Hrany určují poŘadí operací a závislosti (dependencies), orientované ze spoda nahoru.
+
+%\paragraph{Optimization} 
+The logical plan undergoes optimization, such as %query rewriting, 
+operator reordering or index utilization. %Optimizations aim to reduce computation complexity and improve execution efficiency by leveraging predefined indexes and minimizing redundant computations.
+%
+%
+%Logický strom určuje sekvenci operací, která es pak vyhodnotí nad tím objektovou reprezentací dat.
+%
+%\paragraph{Query Execution} 
+Then, it is executed over the object data representation following the structure defined by the logical tree and ensuring that operations are performed in the correct sequence. Data streams are processed in memory, benefiting from client-side caching to reduce redundant data retrieval from storage. The query output consists of a list of objects (e.g., a list of dictionaries or simple values). The result remains in object representation within memory. DortDB does not enforce a specific output format but allows users to transform the results into desired formats.
+
+\begin{example}
+\small
+A sample workflow of DortDB is depicted in Fig.~\pRef{fig:workflow}. The user first imports data into DortDB from various sources (e.g., a web service providing invoice data, a local Neo4j database with person and friendship data, and a local file containing address data -- see Fig.~\pRef{fig:dataAndquery}a). Heterogeneous data formats are normalized into a unified TypeScript object representation, where data types are denoted by letters (\texttt{O} = object, \texttt{S} = string, \texttt{N} = number, \texttt{E} = array element). %\hl{FJ: V javascriptu jsou všechna čísla double, jazyk je označuje jako Number.} 
+The user then submits a query, which is parsed and transformed into the unified algebraic form, visualized as a simplified tree (consisting of operators and data sources), and subsequently optimized. The query is executed over the object-based data, and the result is returned. The result can be serialized into a desired format (e.g., CSV).
+\qed 
+\end{example}
+
+%Výstup je pole jednotlivých položek (pole slovníkůpole nespecifikovaných hodnot, např. řetězců) - v paměti výstup objektově reprezentovaný.
+
+%Transfomrace výsledku pak pro uživatele musí sám, např. do CSV nebo JSON. Aplikace pracuje s objektovou reprezentací dat, neserializuje se to do JSON (ale může)
+
+\subsection{Unified Algebra}
+\pLabel{sec:algebra}
+
+% - selekce, projekte, join, aggregace skip, limit, order... ()
+% - unifikace
+% - cross-model optimalizace
+% \citep{SQL vs NoSQL: Six Systems Compared}
+% hlavní je algebra pro xquery: https://ieeexplore.ieee.org/abstract/document/1617382
+% dále pak přepisy v NRA: https://dl.acm.org/doi/10.1145/2882903.2915241
+% a algebra nad cestami v grafech: https://arxiv.org/abs/2407.04823
+
+% z čeho se skládá algebra, gramatická pravidla algebry
+
+% algebra a logické stromy jsou totéž, uzel logického stormu odpovídá algebře
+
+The \textit{Unified Algebra} (see Table~\pRef{tab:operators:tuple}) defines a formal and extensible framework for query processing, supporting both structured (e.g., relational) and semi-structured (e.g., graph or hierarchical) data. It integrates relational and XQuery algebras~\citep{DBLP:conf/icde/ReSF06}, path algebras for graphs~\citep{DBLP:conf/edbt/AnglesBGV25}, and optimizations for nested queries~\citep{DBLP:conf/sigmod/HolschGS16}.
+
+
+\begin{table}[htp!]
+%\centering
+\caption{Operators of the Unified Algebra}
+\pLabel{tab:operators:tuple}
+\scriptsize
+%\def\arraystretch{1.20}
+\begin{tabular}{
+lll
+    %>{\raggedright\arraybackslash}p{5.00mm}
+    %>{\raggedright\arraybackslash}p{20.00mm}
+    %>{\raggedright\arraybackslash}p{50.00mm}
+    }
+\toprule
+\textbf{Class} & \textbf{Name} & \textbf{Signature} \\
+%\midrule
+%& \multicolumn{2}{l}{\textbf{Class: Tuple Operators}} \\
+\midrule
+%\textbf{TO} 
+\multirow{13}{*}{\textbf{Tuple}}
+& \textbf{distinct}           & $\delta(\texttt{atts}, \texttt{src})$ \\
+& \textbf{groupBy}            & $\gamma(\texttt{keys},\texttt{aggs},\texttt{src})$ \\
+& \textbf{cartesianProduct}   & $\times(\texttt{left},\texttt{right})$ \\
+& \textbf{join}               & $\bowtie(\texttt{left},\texttt{right},\texttt{leftOuter},\texttt{rightOuter},\texttt{condition})$ \\
+& \textbf{orderBy}            & $\tau(\texttt{orders},\texttt{src})$ \\
+& \textbf{projection}         & $\pi(\texttt{attrs},\texttt{src})$ \\
+& \textbf{projectionConcat}   & $\stackrel{\bowtie}{\rightarrow}(\texttt{mapping}, \texttt{outer}, \texttt{src})$ \\
+& \textbf{projectionIndex}    & $\text{index}(\texttt{name}, \texttt{src})$ \\
+& \textbf{selection}          & $\sigma(\texttt{expr}, \texttt{src})$ \\
+& \textbf{recursion}          & $\phi(\texttt{min}, \texttt{max}, \texttt{condition}, \texttt{src})$  \\
+& \textbf{tupleSource}        & $\textbf{name}$ \\
+& \textbf{tupleFnSource}      & $\textbf{name}(\texttt{params})$ \\
+& \textbf{mapFromItem}        & $\text{fromItem}(\texttt{key}, \texttt{src})$  \\
+%\midrule
+%& \multicolumn{2}{l}{\textbf{Class: Item Operators}} \\
+\midrule
+%\textbf{IO} 
+\multirow{8}{*}{\textbf{Item}}
+& \textbf{calculation}        
+& $\text{calc}(\texttt{args})$ \\
+& \textbf{conditional}        & $\text{cond}(\texttt{expr}, \texttt{whenthens}, \texttt{default})$ \\
+& \textbf{fnCall}             & $\text{fn}(\texttt{args})$ \\
+& \textbf{literal}            & $\text{literal}(\texttt{value})$ \\
+& \textbf{quantifier}         & $\text{quant}(\texttt{type}, \texttt{query})$ \\
+& \textbf{itemSource}         & $\text{name}(\texttt{params})$ \\
+& \textbf{tupleFnSource}	    & $\text{name}(\texttt{params})$ \\
+& \textbf{mapToItem}	        & $\text{toItem}(\texttt{key},\texttt{source})$ \\
+\midrule
+%& \multicolumn{2}{l}{\textbf{Class: Ambivalent Operators}} \\
+%\midrule
+%\textbf{AO}               
+\multirow{5}{*}{\textbf{Ambivalent}}
+& \textbf{union}
+& $\cup(\texttt{left}, \texttt{right})$ \\
+& \textbf{intersection}       & $\cap(\texttt{left}, \texttt{right})$ \\
+& \textbf{difference}         & $\setminus(\texttt{left}, \texttt{right})$ \\
+& \textbf{limit}	            & $\text{limit}(\texttt{skip},\texttt{limit})$ \\
+& \textbf{nullSource}	        & $[]$\\
+\midrule
+%& \multicolumn{2}{l}{\textbf{Class: XQuery Specific Operators}} \\
+%\midrule
+%\textbf{XSO} 
+\multirow{2}{*}{\textbf{XQuery}}
+& \textbf{projectionSize}     & $\text{size}(\texttt{name}, \texttt{source})$  \\
+& \textbf{treeJoin}           & $\text{treeJoin}(\texttt{expr}, \texttt{source})$  \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+
+\textit{Tuple operators} manipulate \textit{streams of named tuples}, which are analogous to, e.g., relational tuples. Core operators include \textit{selection}~($\sigma$), \textit{projection}~($\pi$), \textit{join}~($\bowtie$), \textit{cartesianProduct}~($\times$), \textit{groupBy}~($\gamma$), \textit{orderBy}~($\tau$), and \textit{recursion}~($\phi$). Additional operators, such as \textit{projectionConcat} and \textit{projectionIndex}, facilitate advanced tuple transformations. Furthermore, \textit{tupleSource} and \textit{tupleFnSource} generate streams of tuples dynamically.
+\textit{Item operators} process values as \textit{opaque items}, supporting expression evaluation, function calls, and SQL-style quantifiers. The \textit{calculation} ($\text{calc}$) operator represents general expressions, while, e.g.,  \textit{conditional}, \textit{fnCall}, and \textit{literal} operators construct complex computations.
+\textit{Ambivalent operators} operate on both tuple and item streams. The \textit{union} ($\cup$), \textit{intersection} ($\cap$), and \textit{difference} ($\setminus$) operators enable set operations. The \textit{limit} operator constrains output size, while \textit{nullSource} emits a null value.
+Finally, \textit{XQuery-specific operators} extend tuple operations to hierarchical data structures. The \textit{treeJoin} operator generalizes dependent joins by incorporating hierarchical context, whereas \textit{projectionSize} computes the cardinality of tuple streams.
+
+%\paragraph{Visualization of the Algebra}
+
+In DortDB’s GUI, the algebra is visualized as a tree, where each inner node represents a logical plan operator. The root of the tree corresponds to the final query, while the leaves represent the individual data sources. Tuple operators display their output schema at their respective nodes. The tree structure uses two types of edges: a \textit{solid edge}, which indicates that the parent operator is bound to an existing data stream, and a \textit{dashed edge}, which signifies that the child operator is dynamically created or reevaluated multiple times.
+
+% For instance, consider the following SQL query:
+
+% \begin{verbatim}
+% SELECT foo, (
+%   SELECT bar FROM bars WHERE bars.id = foos.foo
+% ) FROM foos
+% \end{verbatim}
+
+% If no optimizations are applied, the corresponding logical plan, in a simplified form, is represented as:
+
+% \begin{verbatim}
+% projection([
+%     "foo",
+%     projection(["bar"], selection(..., "bars"))
+% ], "foos")
+% \end{verbatim}
+
+% In this visualization, the edges connecting the outer projection to \texttt{foos} and the inner projection to the selection are solid, as they operate on static data streams. Conversely, the edge between the outer and inner projection is dashed, indicating that the inner projection stream must be reevaluated for each row based on the \texttt{foo} column.
+
+
+
+\section{Architecture and Implementation}
+
+DortDB is a three-layer library for querying multi-model data (in formats like, e.g., CSV, XML, JSON) directly within a web browser. It is implemented entirely on the client side as a browser module, with no server communication, assuming all data resides in memory. Its architecture comprises an \textit{in-memory storage} layer, a \textit{services} layer, and a \textit{user-space} layer (see Fig.~\pRef{fig:workflow}), accessible via a unified API for data import and query execution.
+
+The \textit{in-memory storage} layer provides a uniform TypeScript object representation for heterogeneous data formats, enabling model-independent processing. The \textit{service} layer is responsible for data acquisition and query processing. It supports loading data from external sources such as web services, file systems, and local or remote DBMSs. It performs internal transformations of source-specific models to the unified object model. For querying, it accommodates multiple languages through translation wrappers that convert input queries into a unified algebraic form, which is subsequently optimized and executed. Query results are returned as TypeScript objects, with optional serialization to standard formats such as JSON. Finally, the \textit{user-space} layer includes graphical and programmatic interaction. A~graphical interface facilitates the construction and validation of queries. %, while the API allows for customized data querying in browser-based applications.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Related Work}
+
+%DortDB is currently intended to be a small read-only in-memory database. So, it can not be compared with other full-featured in-memory databases like Redis \citep{redis-online} in transaction support or distributed data processing. On the other hand, it provides a more flexible query language that supports more data models natively.
+Embedding one query language within another is commonly used but remains limited in scope. A survey of query languages for multi-model DBMSs~\citep{Jiaheng2023Survey} highlights a typical pattern -- a primary language, typically SQL, embeds (often restricted) subqueries from other data models. This approach is widely adopted by relational DBMSs such as MS SQL Server, Oracle, and PostgreSQL through SQL/XML, SQL/JSON, and SQL/PGQ. It is also employed by key/value systems like Redis and multi-model DBMSs such as Myria~\citep{conf/cidr/WangBBHHHHJMMMM17} or Apache Drill~\citep{Hausenblas2013ApacheDI}, which extend SQL to access non-relational sources.
+Similarly, CloudMdsQL~\citep{Kolev2016TheCM}, a polystore, represents data as tables and accesses NoSQL sources via named table expressions.
+%
+%Survey \citep{Jiaheng2023Survey} compares existing query languages designed for multi-model database querying. The most common approach corresponds to the one chosen, e.g., by the in-memory database Redis: Choose one primary language into which it is possible to embed a sub-query written in a language specific to the different data models. 
+%SQL is then typically used as the primary query language. Among originally relational RDBMSs such as MS SQL Server, Oracle or PostgreSQL that implement ANSI SQL extension SQL/XML \citep{SQLXML}, SQL/JSON for \citep{SQLJSON} and/or SQL/PGQ \citep{SQLPGQ}, a similar approach can be found also in other MMDBs like Myria \citep{conf/cidr/WangBBHHHHJMMMM17} or Apache Drill \citep{Hausenblas2013ApacheDI}. In both cases, the SQL query language is extended to allow sub-queries accessing other NO-SQL data sources. 
+%
+%Similarly, the CloudMdsQL \citep{Kolev2016TheCM}, a polystore system \citep{conf/bigdataconf/TanCGM17} presents data as tables while enabling access to NO-SQL data sources through named table expressions. 
+%
+Apache AGE\footnote{\url{https://age.apache.org/}}, a PostgreSQL extension, enables Cypher queries via the embedded \texttt{cypher()} function. However, it only supports translation from Cypher to SQL, without bidirectional interoperability. %DortDB supports bidirectional nesting with arbitrary depth.
+
+
+%
+%In contrast, the DortDB query language allows any supported query language to be nested within any other one. The ability to use any topmost query language is similar to the BigDAWG \citep{journals/sigmod/DugganESBHKMMMZ15} approach.
+%
+%Combining SQL with particularly Cypher query language can also be found in Apache AGE \citep{web:apacheage} \citep{github:apacheage}. This extension of PostgreSQL database allows storing and query graph data using embedded function \texttt{cypher()}. Of course, while Apache AGE supports only Cypher-to-SQL nesting, the proposed query language allows also SQL-to-Cypher nesting and does not limit the user to only one level of nesting. 
+%
+
+In contrast, DortDB allows any supported query language to be nested within any other, removing the constraint of a fixed top-level language (as seen in polystore BigDAWG~\citep{journals/sigmod/DugganESBHKMMMZ15}). Furthermore, nesting is not restricted to a single level but can extend to arbitrary depths.
+Unlike, e.g.,  OrientDB and ArangoDB, which rely on custom syntax extensions, DortDB supports multiple query languages natively, enabling seamless reuse and reducing the learning curve. Additionally, DortDB does not restrict specific query languages to particular data models, allowing users to choose based on their preferences -- whether for efficiency, backward compatibility, or familiarity.
+
+%Nesting existing languages together with the translation of the query to the expression in algebra capable of covering all needed operations from relational, hierarchical, and graph data models brings advantages over languages and databases that extend one language by constructs for accessing data in non-native data models. Instead of learning a particular extension like in the case of OrientDB \citep{doc/orientdb} or ArangoDB \citep{doc/arangodb} databases, the user can use or learn the native language. By future enabling more concurrent query languages for the same data model, the user will get the opportunity to choose the language he or she already knows. 
+
+\begin{figure}[!t]
+    \centering
+    %\fbox{\includegraphics[width=\framedWidth]{papers/vldb_2025-dortdb/figures/screenshot-1.png}}
+    \fbox{\includegraphics[width=\framedWidth]{papers/vldb_2025-dortdb/figures/screenshot-1b.png}}
+    \caption{Scenario A -- testing and validation GUI for DortDB}
+    \pLabel{fig:screenshot:1}
+    %\Description{TODO - VOICE OVER DESCRIPTION}
+\end{figure}
+
+\section{Demonstration Outline}
+
+In the DortDB demonstration, the users will engage in querying multi-model data using the representation and query language they consider intuitive and/or most efficient. The system supports iterative refinement %, allowing users to adapt their queries or switch languages 
+to improve performance and expressiveness.
+
+\textbf{Scenario A:} Users can interact with a GUI designed for testing and validation (see Fig.~\pRef{fig:screenshot:1}). They can create their own queries by combining SQL, Cypher, and XQuery or select predefined queries from the UniBench benchmark~\citep{unibench} for benchmarking multi-model applications, executed on preloaded UniBench datasets. Upon submission, DortDB parses the query and generates a logical execution plan visualised as a tree, allowing users to inspect and verify its correctness without executing the query. This scenario emphasizes syntactic and structural validation in a multi-model context.
+
+\textbf{Scenario B:}  The second scenario offers a programmatic interface through the TypeScript API (see Fig.~\pRef{fig:screenshot:2}). Users may work with the UniBench dataset or upload and query a dataset of their choice imported from external web services, remote databases, or local files. After data import, users construct and execute queries using the API, which internally translates them into a unified algebra and applies query optimization. The results are returned in an object-oriented format, enabling further processing or serialization.% into a preferred output format.
+
+
+\begin{figure}[!t]
+  \centering
+  \begin{minipage}{\linewidth}
+  \begin{tcolorbox}[mylisting]
+    \begin{lstlisting}[language=CustomJS]
+const db = new DortDB({
+  mainLand: SQL(),
+  additionalLangs: [
+    Cypher( { defaultGraph 'defaultGraph' } ), XQuery(),
+  ],
+});
+
+db.registerSource(['addresses'], addressCSV);
+db.registerSource(['invoices'], invoicesService.firstChild);
+db.registerSource(['friends'], friends);
+
+const result = db.query(`
+SELECT product.name, count(*) AS pCount
+FROM addresses
+JOIN ( LANG cypher
+  MATCH ({id: $myId})-[:hasFriend]->(friend)
+  RETURN friend.id AS id, friend.address AS address
+) friends ON friends.address = addresses.id
+JOIN LATERAL ( LANG xquery
+  $invoices/Invoice[PersonId=$friends:id]/Orderline[0]/productId
+) products
+WHERE addresses.city = 'Prague'
+GROUP BY products.name
+HAVING pCount > 2`);\end{lstlisting}\end{tcolorbox}
+        %\captionsetup{type=figure}
+        \end{minipage}
+        \vspace{1mm}
+    \caption{Scenario B -- TypeScript API for DortDB}
+    \pLabel{fig:screenshot:2}
+    %\Description{TODO - VOICE OVER DESCRIPTION}
+\end{figure}
+
+% \section{Conclusion and Outlook}
+
+% DortDB is a software prototype of an extensible framework for querying multi-model data using a combination of popular single-model query languages currently comprising SQL, XQuery, and Cypher. Like data lakes, it imposes no schema restrictions, yet it supports complex query languages, similar to DBMSs. Instead of relying on proprietary or limited extensions of standard query languages for multi-model support, DortDB enables their seamless integration and embedding.
+% Currently, DortDB operates on small-scale data (\uv{data ponds}), but our future work aims to extend it to distributed systems with shared RAM. Additionally, we are enhancing its unified query algebra to incorporate the core constructs of most major query languages and integrating advanced optimization techniques, such as cross-model query rewriting.
+
+% \begin{acks}
+% Supported by grants: GAČR no. 23-07781S, and GAUK no. 292323.
+% \end{acks}
+
+% %\clearpage
+
+% \bibliographystyle{ACM-Reference-Format}
+% \bibliography{sample}
+
+% \end{document}
+% \endinput
