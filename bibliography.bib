@@ -5,7 +5,7 @@
     isbn = {9781450397094},
     publisher = {Association for Computing Machinery},
     address = {New York, NY, USA},
-    url = {https://doi.org/10.1145/3548785.3548810},
+    _url = {https://doi.org/10.1145/3548785.3548810},
     doi = {10.1145/3548785.3548810},
     booktitle = {Proceedings of the 26th International Database Engineered Applications Symposium},
     pages = {9-15},
@@ -15,7 +15,85 @@
     series = {IDEAS '22}
 }
 
-% #region cikm_2022
+@article{dke_2026,
+    title = {Refining storage strategy through index selection methods in multi-model database systems: A survey},
+    author = {Filip Miháľ and Jáchym Bártík and Pavel Koupil},
+    journal = {Data \& Knowledge Engineering},
+    volume = {164},
+    pages = {102582},
+    year = {2026},
+    issn = {0169-023X},
+    doi = {https://doi.org/10.1016/j.datak.2026.102582},
+    _url = {https://www.sciencedirect.com/science/article/pii/S0169023X26000297},
+    keywords = {Multi-model data, Index selection, Database management systems, Querying, Reinforcement learning, Survey},
+    abstract = {Multi-Model database systems combine the advantages of traditional and NoSQL database systems. However, the management of these systems is challenging, as users have to design an appropriate storage strategy for their data. One of the most influential factors in the storage strategy is the selection of indexes. Indexes can significantly improve query performance, but they require additional storage space and maintenance overhead. Index selection problem is well-studied in the context of single-model Database Management Systems (DBMSs), but there is a lack of research in the context of multi-model database systems. We address this problem by conducting a survey of current state-of-the-art index selection algorithms and evaluating their applicability to other DBMSs. The results reveal the strengths and weaknesses of existing algorithms and highlight the need for specialised algorithms for multi-model database systems. Moreover, we formulate open questions and suggest future research directions in this field. Our research provides a foundation for the development of efficient index selection algorithms for multi-model DBMSs.}
+}
+
+@inproceedings{edbt_2025,
+    title = {TransforMMer: A Universal Multi-Model Data Generator},
+    author = {Koupil, Pavel and Mazourek, Bedřich and Bártík, Jáchym and Holubová, Irena},
+    booktitle = {Proc. of {EDBT} 2025},
+    publisher = {OpenProceedings.org},
+    pages = {1150--1153},
+    year = {2025},
+    doi = {10.48786/edbt.2025.111}
+}
+
+@inproceedings{edbt_2026,
+    title = {MM-mapsearch: Workload-Aware Mapping Selection},
+    author = {Bártík, Jáchym and Šrůtková, Alžběta and Holubová, Irena},
+    booktitle = {Proc. of {EDBT} 2026},
+    publisher = {OpenProceedings.org},
+    _pages = {736--739},
+    year = {2026},
+    doi = {10.48786/edbt.2026.68}
+}
+
+@inproceedings{enase_2025,
+    title = {Reshaping Reality: Creating Multi-Model Data and Queries from Real-World Inputs},
+    author = {Holubová, Irena and Šrůtková, Alžběta and Bártík, Jáchym},
+    year = {2025},
+    month = {01},
+    pages = {174-184},
+    doi = {10.5220/0013395300003928}
+}
+
+@article{vldb_2025_dortdb,
+    title = {DortDB: Bridging Query Languages for Multi-Model Data Ponds},
+    author = {Ježek, Filip and Koupil, Pavel and Kopecký, Michal and Bártík, Jáchym and Holubová, Irena},
+    year = {2025},
+    issue_date = {August 2025},
+    publisher = {VLDB Endowment},
+    volume = {18},
+    number = {12},
+    issn = {2150-8097},
+    _url = {https://doi.org/10.14778/3750601.3750665},
+    doi = {10.14778/3750601.3750665},
+    abstract = {Multi-model data encompasses structurally distinct data, including relational, document, graph, key/value, columnar, etc., managed within a single system, such as a multi-model database or a data lake. Querying multi-model data requires strategies that balance unification and integration across diverse models and query languages. This paper presents DortDB, an extensible framework enabling cross-model queries combining well-known query languages and offering intuitive flexibility and optimization via a unified algebra. Though a small-scale in-memory prototype is to be demonstrated, its principles can be extended to distributed systems.},
+    journal = {Proc. VLDB Endow.},
+    month = 8,
+    pages = {5335--5338},
+    numpages = {4}
+}
+
+@article{vldb_2025_fdephunter,
+    title = {FDepHunter: Harnessing Negative Examples to Expose Fakes and Reveal Ghosts},
+    author = {Koupil, Pavel and Bártík, Jáchym and Klessinger, Stefan and Conrad, André and Scherzinger, Stefanie},
+    year = {2025},
+    issue_date = {August 2025},
+    publisher = {VLDB Endowment},
+    volume = {18},
+    number = {12},
+    issn = {2150-8097},
+    _url = {https://doi.org/10.14778/3750601.3750612},
+    doi = {10.14778/3750601.3750612},
+    abstract = {Functional dependency (FD) discovery is fundamental in data profiling. Inevitably, existing approaches can return fake FDs that hold only coincidentally. Moreover, these approaches fall short of identifying ghost FDs that would be observable in a clean dataset, but that remain undetected because of outliers in the data. We introduce an interactive method for dependency discovery that augments an Armstrong relation with additional tuples. We rely on artificially generated negative examples that emulate real-world tuples to help expose fake FDs. In addition, we rely on domain experts to confirm that positive examples indeed reflect the characteristics of the original dataset. Our tool prototype FDepHunter thus provides a novel human-in-the-loop workflow where the set of discovered FDs can be iteratively refined.},
+    journal = {Proc. VLDB Endow.},
+    month = 8,
+    pages = {5227--5230},
+    numpages = {4}
+}
+
 
 @inproceedings{10.1145/2539150.2539159,
     title        = {{DaemonX: Design, Adaptation, Evolution, and Management of Native XML (and More Other) Formats}},
@@ -61,7 +139,7 @@
     volume = {52},
     number = {3},
     issn = {0360-0300},
-    url = {https://doi.org/10.1145/3323214},
+    _url = {https://doi.org/10.1145/3323214},
     doi = {10.1145/3323214},
     journal = {ACM Comput. Surv.},
     month = 6,
@@ -74,7 +152,7 @@
     title        = {MM-infer: A Tool for Inference of Multi-Model Schemas},
     author       = {Pavel Koupil and Sebastián Hricko and Irena Holubová},
     year         = 2022,
-    booktitle    = {Proc. of {EDBT} '22},
+    booktitle    = {Proc. of {EDBT} 2022},
     publisher    = {OpenProceedings.org},
     pages        = {2:566--2:569},
 }
@@ -229,9 +307,6 @@
     issn         = {0304-3975},
 }
 
-% #endregion
-% #region dke_2026
-
 @inproceedings{AI4DB,
     title     = {AI Meets Database: AI4DB and DB4AI},
     author    = {Li, Guoliang and Zhou, Xuanhe and Cao, Lei},
@@ -246,7 +321,7 @@
     location  = {Virtual Event, China},
     numpages  = {8},
     series    = {SIGMOD '21},
-    url       = {https://doi.org/10.1145/3448016.3457542}
+    _url       = {https://doi.org/10.1145/3448016.3457542}
 }
 
 @misc{Anytime20,
@@ -277,7 +352,7 @@
     pages        = {589--600},
     publisher    = {{IEEE} Computer Society},
     year         = {2010},
-    url          = {https://doi.org/10.1109/ICDE.2010.5447916},
+    _url          = {https://doi.org/10.1109/ICDE.2010.5447916},
     doi          = {10.1109/ICDE.2010.5447916},
     timestamp    = {Thu, 23 Mar 2023 23:59:59 +0100},
     biburl       = {https://dblp.org/rec/conf/icde/BrunoGJ10.bib},
@@ -354,7 +429,7 @@
     doi       = {10.1007/978-3-030-65847-2\_16},
     series    = {Lecture Notes in Computer Science},
     timestamp = {Sat, 09 Jan 2021 14:14:41 +0100},
-    url       = {https://doi.org/10.1007/978-3-030-65847-2\_16}
+    _url       = {https://doi.org/10.1007/978-3-030-65847-2\_16}
 }
 
 @inproceedings{DBLP:conf/sigmod/WangYGJXLWGLXYY21,
@@ -365,7 +440,7 @@
     pages        = {2614--2627},
     publisher    = {{ACM}},
     year         = {2021},
-    url          = {https://doi.org/10.1145/3448016.3457550},
+    _url          = {https://doi.org/10.1145/3448016.3457550},
     doi          = {10.1145/3448016.3457550},
     timestamp    = {Wed, 22 Mar 2023 15:55:04 +0100},
     biburl       = {https://dblp.org/rec/conf/sigmod/WangYGJXLWGLXYY21.bib},
@@ -408,7 +483,7 @@
     number       = {4},
     pages        = {539--553},
     year         = {2023},
-    url          = {https://doi.org/10.1007/s11633-022-1398-0},
+    _url          = {https://doi.org/10.1007/s11633-022-1398-0},
     doi          = {10.1007/S11633-022-1398-0},
     timestamp    = {Wed, 31 Jul 2024 21:35:21 +0200},
     biburl       = {https://dblp.org/rec/journals/ijautcomp/LinGGZZL23.bib},
@@ -427,7 +502,7 @@
     biburl    = {https://dblp.org/rec/journals/jbd/KoupilHH22.bib},
     doi       = {10.1186/s40537-022-00645-9},
     timestamp = {Wed, 07 Dec 2022 23:03:17 +0100},
-    url       = {https://doi.org/10.1186/s40537-022-00645-9}
+    _url       = {https://doi.org/10.1186/s40537-022-00645-9}
 }
 
 @misc{DRL,
@@ -438,7 +513,7 @@
     copyright = {arXiv.org perpetual, non-exclusive license},
     doi       = {10.48550/ARXIV.1801.05643},
     keywords  = {Databases (cs.DB), Artificial Intelligence (cs.AI), FOS: Computer and information sciences, FOS: Computer and information sciences},
-    url       = {https://arxiv.org/abs/1801.05643}
+    _url       = {https://arxiv.org/abs/1801.05643}
 }
 
 @inproceedings{Drop,
@@ -495,7 +570,7 @@
     issue_date = {August 2009},
     month      = 8,
     numpages   = {12},
-    url        = {https://doi.org/10.14778/1687627.1687766}
+    _url        = {https://doi.org/10.14778/1687627.1687766}
 }
 
 @article{IndexSurvey20,
@@ -512,7 +587,7 @@
     issue_date = {August 2020},
     month      = 7,
     numpages   = {14},
-    url        = {https://doi.org/10.14778/3407790.3407832}
+    _url        = {https://doi.org/10.14778/3407790.3407832}
 }
 
 @misc{JSON,
@@ -540,7 +615,7 @@
     keywords   = {Memory Buffer, Access Rate, Leaf Node, Disk Component, Leaf Level},
     month      = 6,
     numpages   = {35},
-    url        = {https://doi.org/10.1007/s002360050048}
+    _url        = {https://doi.org/10.1007/s002360050048}
 }
 
 @inproceedings{MCTS,
@@ -557,7 +632,7 @@
     location  = {Philadelphia, PA, USA},
     numpages  = {14},
     series    = {SIGMOD '22},
-    url       = {https://doi.org/10.1145/3514221.3526128}
+    _url       = {https://doi.org/10.1145/3514221.3526128}
 }
 
 @phdthesis{mihal2023,
@@ -654,7 +729,7 @@
     issue_date = {January 1983},
     month      = 1,
     numpages   = {4},
-    url        = {https://doi.org/10.1145/984523.984530}
+    _url        = {https://doi.org/10.1145/984523.984530}
 }
 
 @article{NPHardApproximation,
@@ -720,9 +795,6 @@
     month  = 11,
     day    = 26,
 }
-
-% #endregion
-% #region edbt_2024
 
 @article{10.1007/s00778-021-00676-3,
     title = {Data Dependencies for Query Optimization: A Survey},
@@ -807,6 +879,7 @@
     title        = {{MM-evocat: A Tool for Modelling and Evolution Management of Multi-Model Data}},
     author       = {Koupil, Pavel and Bártík, Jáchym and Holubová, Irena},
     year         = 2022,
+    doi          = {10.1145/3511808.3557180},
     booktitle    = {Proc. of CIKM '22},
     location     = {Atlanta, GA, USA},
     publisher    = {{ACM}},
@@ -822,7 +895,7 @@
     title        = {{MM-quecat: A Tool for Unified Querying of Multi-Model Data}},
     author       = {Pavel Koupil and Daniel Crha and Irena Holubová},
     year         = 2023,
-    booktitle    = {Proc. of {EDBT} '23},
+    booktitle    = {Proc. of {EDBT} 2023},
     publisher    = {OpenProceedings.org},
     pages        = {831--834},
     timestamp    = {Thu, 07 Apr 2022 16:20:55 +0200},
@@ -863,9 +936,6 @@
     _bibsource   = {dblp computer science bibliography, https://dblp.org}
 }
 
-
-% #endregion
-% #region edbt_2025
 
 @inproceedings{unibench,
     title        = {{UniBench: A Benchmark for Multi-model Database Management Systems}},
@@ -957,9 +1027,6 @@
     month        = 10,
     day          = 12,
 }
-
-% #endregion
-% #region edbt_2026
 
 @article{10.1007/s10844-022-00762-0,
     title        = {{Parameters tuning of multi-model database based on deep reinforcement learning}},
@@ -1053,7 +1120,7 @@
     pages        = {389--395}
 }
 
-@inproceedings{DBLP:conf/rcis/KoupilBH25,
+@inproceedings{rcis_2025,
     title        = {Model-Agnostic Evolution Management},
     author       = {Pavel Koupil and Jáchym Bártík and Irena Holubová},
     _editor      = {Janis Grabis and Tanja E. J. Vos and María José Escalona and Oscar Pastor},
@@ -1064,7 +1131,7 @@
     publisher    = {Springer},
     year         = {2025},
     _url         = {https://doi.org/10.1007/978-3-031-92474-3\_15},
-    _doi         = {10.1007/978-3-031-92474-3\_15},
+    doi         = {10.1007/978-3-031-92474-3\_15},
     _timestamp   = {Wed, 04 Jun 2025 16:46:34 +0200},
     _biburl      = {https://dblp.org/rec/conf/rcis/KoupilBH25.bib},
     _bibsource   = {dblp computer science bibliography, https://dblp.org}
@@ -1087,9 +1154,6 @@
     publisher    = {OpenProceedings.org},
     year         = {2020}
 }
-
-% #endregion
-% #region enase_2025
 
 @inproceedings{10.1145/2463676.2465296,
     title        = {{LinkBench: a database benchmark based on the Facebook social graph}},
@@ -1184,9 +1248,10 @@
     title        = {{MM-evoque: Query Synchronisation in Multi-Model Databases}},
     author       = {Pavel Koupil and Jáchym Bártík and Irena Holubová},
     year         = 2024,
-    booktitle    = {Proc. of {EDBT} '24},
+    booktitle    = {Proc. of {EDBT} 2024},
     publisher    = {OpenProceedings.org},
-    pages        = {818--821}
+    pages        = {818--821},
+    doi          = {10.48786/edbt.2024.78},
 }
 
 @book{sparql,
@@ -1218,9 +1283,6 @@
     author       = {ISO},
     year         = 2011
 }
-
-% #endregion
-% #region rcis_2025
 
 @article{10.1145/2903726,
     title        = {{Synchronization of Queries and Views Upon Schema Evolutions: A Survey}},
@@ -1310,9 +1372,6 @@
     number       = 3,
     pages        = {856--886},
 }
-
-% #endregion
-% #region vldb_2024
 
 @inproceedings{DBLP:conf/cidr/IdreosDQAHRLJGL19,
     title        = {{Design Continuums and the Path Toward Self-Designing Key-Value Stores that Know and Learn}},
@@ -1423,9 +1482,6 @@
     year         = {2024}
 }
 
-% #endregion
-% #region vldb_2025-dortdb
-
 @article{AWSDataLake,
     title = {What is a Data Lake? - Introduction to Data Lakes and Analytics},
     author = {{Amazon Web Services}},
@@ -1451,7 +1507,7 @@
     publisher    = {OpenProceedings.org},
     year         = {2025},
     _url          = {https://doi.org/10.48786/edbt.2025.63},
-    _doi          = {10.48786/EDBT.2025.63},
+    doi          = {10.48786/EDBT.2025.63},
     _timestamp    = {Mon, 10 Mar 2025 16:32:46 +0100},
     _biburl       = {https://dblp.org/rec/conf/edbt/AnglesBGV25.bib},
     _bibsource    = {dblp computer science bibliography, https://dblp.org}
@@ -1466,7 +1522,7 @@
     publisher    = {{IEEE}},
     year         = {2006},
     _url          = {https://doi.org/10.1109/ICDE.2006.6},
-    _doi          = {10.1109/ICDE.2006.6},
+    doi          = {10.1109/ICDE.2006.6},
     _timestamp    = {Fri, 24 Mar 2023 00:00:00 +0100},
     _biburl       = {https://dblp.org/rec/conf/icde/ReSF06.bib},
     _bibsource    = {dblp computer science bibliography, https://dblp.org}
@@ -1481,7 +1537,7 @@
     publisher    = {{ACM}},
     year         = {2016},
     _url          = {https://doi.org/10.1145/2882903.2915241},
-    _doi          = {10.1145/2882903.2915241},
+    doi          = {10.1145/2882903.2915241},
     _timestamp    = {Mon, 04 Nov 2024 22:25:43 +0100},
     _biburl       = {https://dblp.org/rec/conf/sigmod/HolschGS16.bib},
     _bibsource    = {dblp computer science bibliography, https://dblp.org}
@@ -1532,7 +1588,7 @@
     volume = {44},
     number = {2},
     issn = {0163-5808},
-    url = {https://doi.org/10.1145/2814710.2814713},
+    _url = {https://doi.org/10.1145/2814710.2814713},
     doi = {10.1145/2814710.2814713},
     journal = {SIGMOD Rec.},
     month = 8,
@@ -1571,9 +1627,6 @@
     url          = {https://age.apache.org/overview/},
     urldate      = {2025-03-10}
 }
-
-% #endregion
-% #region vldb_2025-fdephunter
 
 @inproceedings{DBLP:conf/edbt/LopesPL00,
     title        = {Efficient Discovery of Functional Dependencies and Armstrong Relations},
@@ -1625,7 +1678,7 @@
     _publisher    = {{ACM}},
     year         = {2016},
     _url          = {https://doi.org/10.1145/2882903.2915203},
-    _doi          = {10.1145/2882903.2915203},
+    doi          = {10.1145/2882903.2915203},
     timestamp    = {Mon, 04 Nov 2024 22:25:43 +0100},
     biburl       = {https://dblp.org/rec/conf/sigmod/PapenbrockN16.bib},
     bibsource    = {dblp computer science bibliography, https://dblp.org}
@@ -1726,7 +1779,7 @@
     pages        = {439--461},
     year         = {2020},
     _url          = {https://doi.org/10.1007/s10844-019-00562-z},
-    _doi          = {10.1007/S10844-019-00562-Z},
+    doi          = {10.1007/S10844-019-00562-Z},
     timestamp    = {Sun, 19 Jan 2025 14:42:07 +0100},
     biburl       = {https://dblp.org/rec/journals/jiis/JiangN20.bib},
     bibsource    = {dblp computer science bibliography, https://dblp.org}
@@ -1756,7 +1809,7 @@
     pages        = {352--374},
     year         = {2010},
     _url          = {https://doi.org/10.1016/j.is.2009.11.002},
-    _doi          = {10.1016/J.IS.2009.11.002},
+    doi          = {10.1016/J.IS.2009.11.002},
     timestamp    = {Tue, 06 Jun 2017 22:22:01 +0200},
     biburl       = {https://dblp.org/rec/journals/is/LangeveldtL10.bib},
     bibsource    = {dblp computer science bibliography, https://dblp.org}
@@ -1770,5 +1823,3 @@
     isbn      = {0-201-53771-0},
     bibsource = {DBLP, http://dblp.uni-trier.de}
 }
-
-% #endregion

@@ -348,7 +348,6 @@ Subsequently, we applied SMOs \emph{deleteMapping()} and \emph{createMapping()} 
 \pLabel{sec:propagation}
 Regarding propagation to data, introduced in~\citep{mm_evocat}, the SMOs can be further divided into heavy and light. A \textit{heavy operation} is an SMO propagated from the conceptual level to the mapping, the logical level, and the data instances. Conversely, a \textit{light operation} only triggers propagation to the mapping. Each SMO can be heavy. Operations that do not consist of \textit{delete(O)} or \textit{delete(m)} can be also light, e.g., SMOs \textit{createProperty()}, \textit{asArray()}, or \textit{asMap()}.
 
-% % TODO comment this out if we don't have enough space
 There are multiple strategies for heavy SMO propagation, namely \textit{eager}, \textit{lazy}, and \textit{hybrid}. In the first case, we update all the data instances at once. In the second case, we update them one by one only when we need them. The last option is a combination of the first two \citep{DBLP:journals/jbd/KoupilH22,storl2022darwin}. Our approach~\citep{mm_evocat} is compatible with all of them; however, we focus only on the eager strategy at the moment.
 
 \subsection{Propagation to Queries}
@@ -464,7 +463,6 @@ AI-based approaches can be used to select an appropriate strategy, e.g., conside
 %
 %In other words, it is an optimization problem where we look for the best propagation strategy in the context of already used strategies (historically) concerning the performance of new versions of queries and getting closer to the query result at the lowest possible cost (time and memory).
 %
-% TODO - Navrhuji nahradit to od "in other words" výše.
 In other words, it is an optimization problem where the AI agent operates in a state space defined by the system's current resource availability (e.g., memory, CPU usage, etc.) and the historical performance of previously used strategies. The actions then correspond to selecting specific propagation strategies.
 
 A promising solution is to use reinforcement learning because we do not know which actions to take, but we can easily measure their outcome (e.g., consumption of resources during and after the propagation). Another option is to use simpler methods (e.g., heuristics). The advantages of this approach include a lower need for training data, less training time, and better explainability of the resulting policy. %We plan to try multiple AI methods and then compare the results.

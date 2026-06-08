@@ -157,7 +157,7 @@
 % Maximum number of authors of a single work. If exceeded, "et al." is used.
 %\ExecuteBibliographyOptions{maxnames=2}
 % The same setting specific to citations using \citet{...}
-\ExecuteBibliographyOptions{maxcitenames=2}
+% \ExecuteBibliographyOptions{maxcitenames=2}
 % The same settings specific to the list of literature
 %\ExecuteBibliographyOptions{maxbibnames=2}
 
@@ -190,7 +190,7 @@
 \newcounter{Paper}
 
 % label, title, authors, publication, [doi]
-\newcommand{\paperChapter}[5]{%
+\newcommand{\paperChapter}[4]{%
 \refstepcounter{chapter}%
 \addcontentsline{toc}{chapter}{#2}%
 \refstepcounter{Paper}%
@@ -215,7 +215,8 @@
 
 \bigbreak\bigbreak
 
-{\it #4\ifx&#5&\else,\par doi: \href{https://doi.org/#5}{#5}\fi}
+#4
+% {\it #4\ifx&#5&\else,\par doi: \href{https://doi.org/#5}{#5}\fi}
 
 \vfill
 \hspace{0pt}
@@ -227,6 +228,8 @@
 
 \newcounter{autoFootnoteLabel}
 \def\lastFootnoteLabel{}
+
+\newcommand{\publishedAs}[1]{\noindent\textbf{Published as} \fullcite{#1}}
 
 % Usage: \labeledFootnote[<label>]{<text>} to create a footnote with a specific label. If the label is not provided, it will be generated automatically.
 \NewDocumentCommand{\labeledFootnote}{O{} m}{%

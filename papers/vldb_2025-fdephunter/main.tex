@@ -24,7 +24,6 @@
 % % whether page numbers should be shown or not, use 'plain' for review versions, 'empty' for camera ready
 % \newcommand\vldbpagestyle{empty}
 
-% \usepackage[]{todonotes}
 % \usepackage{etoolbox}
 
 
@@ -154,7 +153,7 @@ Contributions of this paper include the following:
 
 In this section, we introduce and illustrate the core concepts.
 
-For a relational schema $R$ and sets of attributes $X, Y\subseteq R$, a FD $X \rightarrow Y$ holds if, whenever two tuples agree on $X$ they also agree on $Y$; c.f. Abiteboul et al.~\citep{DBLP:books/aw/AbiteboulHV95} for further details. We call $X$ the left-hand side (LHS) and $Y$ the right-hand side (RHS) of the FD. A FD $X \rightarrow Y$ is \emph{minimal} if there is no strict superset $X' \subseteq R$ of $X$ for which $X' \rightarrow Y$ holds.%~\citep{DBLP:conf/sigmod/PapenbrockN16}}.\compacttodo{cite Alice book?}
+For a relational schema $R$ and sets of attributes $X, Y\subseteq R$, a FD $X \rightarrow Y$ holds if, whenever two tuples agree on $X$ they also agree on $Y$; c.f. Abiteboul et al.~\citep{DBLP:books/aw/AbiteboulHV95} for further details. We call $X$ the left-hand side (LHS) and $Y$ the right-hand side (RHS) of the FD. A FD $X \rightarrow Y$ is \emph{minimal} if there is no strict superset $X' \subseteq R$ of $X$ for which $X' \rightarrow Y$ holds.%~\citep{DBLP:conf/sigmod/PapenbrockN16}}.
 % This assertion is fundamental to understanding the structural relationships within the data.
 %Moreover, we distinguish three types of FDs based on their reliability: \emph{genuine} FDs remain valid across all realistic extensions of the dataset, \emph{fake} FDs hold only within the current dataset but fail when additional valid tuples are introduced, and \emph{ghost} FDs would hold in a more complete or representative dataset but remain undetected due to outliers or anomalies.
 
@@ -182,7 +181,6 @@ The positive examples (marked with red squares) form an Armstrong relation that 
     \includegraphics[scale=0.8]{papers/vldb_2025-fdephunter/figures/VLDB-NEX-example-dataset.pdf}
     \caption{Input dataset.}
     \pLabel{fig:dataset}
-    % \Description{TODO - VOICE OVER DESCRIPTION}
 \end{figure}
 
 \begin{figure}[ht]
@@ -190,7 +188,6 @@ The positive examples (marked with red squares) form an Armstrong relation that 
     \includegraphics[scale=0.8]{papers/vldb_2025-fdephunter/figures/VLDB-NEX-armstrong-relation.pdf}
     \caption{Positive (red) and negative (yellow) examples.}% Armstrong relation corresponding to real data (i.e., positive examples) and an example of negative example.}
     \pLabel{fig:armstrong}
-    % \Description{TODO - VOICE OVER DESCRIPTION}
 \end{figure}
 
 \begin{figure}[ht]
@@ -198,7 +195,6 @@ The positive examples (marked with red squares) form an Armstrong relation that 
     \includegraphics[scale=0.7]{papers/vldb_2025-fdephunter/figures/VLDB-NEX-lattice.pdf}
     \caption{An example of lattice for class $c_A$ (i.e., RHS: A).}% Armstrong relation corresponding to real data (i.e., positive examples) and an example of negative example.}
     \pLabel{fig:lattice}
-    % \Description{TODO - VOICE OVER DESCRIPTION}
 \end{figure}
 
 \begin{figure}[ht]
@@ -206,7 +202,6 @@ The positive examples (marked with red squares) form an Armstrong relation that 
     \includegraphics[width=1.0\textwidth]{papers/vldb_2025-fdephunter/figures/VLDB-NEX-workflow.pdf}
     \caption{A high-level overview of the FDepHunter workflow.}
     \pLabel{fig:fdep:workflow}
-    % \Description{TODO - VOICE OVER DESCRIPTION}
 \end{figure}
 
 \section{Workflow}
@@ -230,7 +225,6 @@ We now present the workflow of \emph{FDepHunter}, illustrated in Fig.~\pRef{fig:
     \includegraphics[width=1.0\linewidth]{papers/vldb_2025-fdephunter/figures/VLDB-NEX-iterative-elimination.pdf}
     \caption{Iterative (top-down) editing of maximal sets and elimination of fake FDs utilizing negative examples.}
     \pLabel{fig:enter-label}
-    % \Description{TODO - VOICE OVER DESCRIPTION}
 \end{figure}
 % \end{landscape}
 
@@ -271,7 +265,6 @@ The client employs the \emph{React} library to provide a GUI that displays the c
     %\includegraphics[width=1.00\textwidth]{papers/vldb_2025-fdephunter/figures/VLDB-fig_3_clip.png}
     \caption{Armstrong relation and workflow status.}
     \pLabel{fig:screenshot:1}
-    % \Description{TODO - VOICE OVER DESCRIPTION}
 \end{figure}
 
 % \begin{figure}[!t]
@@ -280,7 +273,6 @@ The client employs the \emph{React} library to provide a GUI that displays the c
 %     %\includegraphics[width=1.00\textwidth]{papers/vldb_2025-fdephunter/figures/VLDB-fig_4_clip.png}
 %     \caption{Evaluation of negative example (Zoom 115\%).}
 %     \pLabel{fig:screenshot:2}
-%     \Description{TODO - VOICE OVER DESCRIPTION}
 % \end{figure}
 
 \section{Related Work}
@@ -319,7 +311,6 @@ to systematically evaluate the tool's usability and its effectiveness in practic
     %\includegraphics[width=1.00\textwidth]{papers/vldb_2025-fdephunter/figures/VLDB-fig_4_clip.png}
     \caption{Evaluation of negative example.}
     \pLabel{fig:screenshot:2}
-    % \Description{TODO - VOICE OVER DESCRIPTION}
 \end{figure}
 
 
