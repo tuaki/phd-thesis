@@ -291,5 +291,19 @@
 \fi
 }
 
+% A solution for the nested labels and refs.
 \newcommand{\pLabel}[1]{\label{\inputPrefix#1}}
 \newcommand{\pRef}[1]{\ref{\inputPrefix#1}}
+
+\newcounter{question}[section]
+\renewcommand{\thequestion}{\arabic{section}.\arabic{question}}
+
+\newcommand{\question}[2]{%
+  \refstepcounter{question}%
+  \par\medskip
+  \noindent\textbf{Q\thequestion}\label{#1}
+  #2
+  \par\medskip
+}
+
+\newcommand{\questionRef}[1]{\hyperref[#1]{Q\ref{#1}}}
