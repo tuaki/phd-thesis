@@ -12,7 +12,7 @@ Choosing the optimal tool for the particular use case is highly challenging, con
 
 In response to this problem, we propose a solution that enables the creation of virtually any possible multi-model data set together with the respective operations. To ensure the data sets have realistic characteristics, we do not utilize the classical approach of exploitation of generators, providing values with a required distribution. Instead, this paper proposes a framework for transforming given single- (or multi-) model data and queries to any possible combination of multi-model data and queries.
 
-Our approach is based on utilizing the toolset we have developed in our research group for various aspects of multi-model data management based on the unifying categorical representation of multi-model data -- the so-called \textit{schema category}~\citep{DBLP:journals/jbd/KoupilH22}. 
+Our approach is based on utilizing the toolset we have developed in our research group for various aspects of multi-model data management based on the unifying categorical representation of multi-model data -- the so-called \textit{schema category}~\citep{mm_cat_journal}. 
 This abstract graph representation backed by the formalism of category theory enabled us to propose and develop tools for categorical schema modeling~\citep{mm_evocat}, categorical schema inference~\citep{mm_infer}, querying using SPARQL-based query language MMQL~\citep{koupil2023universal}, or query rewriting~\citep{mm_evoque}. We show that selected features of the tools, when appropriately extended and integrated, can form a framework whose outputs enable the simulation of virtually any multi-model use case.
 
 \paragraph{Outline} In Section~\pRef{sec:rel} we overview related work.
@@ -73,7 +73,7 @@ Integrating different data models within a larger system, such as a polystore or
 
 First, to unify the terminology from different models, we use the following terms: A \textit{kind} corresponds to a class of items (e.g., a relational table or a collection of JSON documents), and a \textit{record} corresponds to one item of a kind (e.g., a table row or a JSON document). A record consists of simple or complex \textit{properties} having their \textit{domains}.
 
-To grasp the popular models' specific features, we utilize the so-called \textit{schema category}~\citep{DBLP:journals/jbd/KoupilH22}, a unifying abstract categorical representation of multi-model data to manage any possible combination of known models.
+To grasp the popular models' specific features, we utilize the so-called \textit{schema category}~\citep{mm_cat_journal}, a unifying abstract categorical representation of multi-model data to manage any possible combination of known models.
 
 Let us first remember the basic notions of category theory.
 A \textit{category} $\mathbf{C} = (\mathcal{O}, \mathcal{M}, \circ)$ consists of a set of objects $\mathcal{O}$, set of morphisms $\mathcal{M}$, and a composition operation $\circ$ over the morphisms ensuring transitivity and associativity. Each morphism is modelled as an arrow $f : A \rightarrow B$, where $A, B \in \mathcal{O}$, $A = dom(f), B = cod(f)$. And there is an \textit{identity} morphism $1_A \in \mathcal{M}$ for each object $A$.

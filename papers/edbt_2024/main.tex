@@ -111,7 +111,7 @@ To cover all the popular models and their combinations, \textit{MM-evoque} is ba
 Unlocking the power of multi-model database management systems (DBMSs)\footnote{\url{https://db-engines.com/en/ranking}} is not just about keeping pace with the present majority; it is a strategic leap into the future of data complexity.
 Regrettably, our extensive survey~\citep{CSUR-Jiaheng} reveals significant variations in multi-model database management systems (DBMSs) even in the core aspects -- the supported models, the way they are combined, as well as the multi-model query languages.
 %This diversity arises from three main factors: (1) these DBMSs are grounded in different core single models, each tailored for specific application domains; (2) the combined models often present conflicting features; and (3) a lack of an acknowledged standard results in varied approaches to supporting model combinations, cross-model querying, or multi-model indices.
-This situation brings many new challenges to multi-model data management. We have already proposed several solutions based on the categorical representation of multi-model data, the so-called \textit{schema category}~\citep{DBLP:journals/jbd/KoupilH22}. This abstract graph representation backed by the formalism of category theory enabled us to build a family of tools for modelling and transformations~\citep{mm_cat}, schema inference~\citep{mm_infer}, data migration under evolving schema~\citep{mm_evocat}, or querying using SPARQL-like query language MMQL~\citep{koupil2023universal}. 
+This situation brings many new challenges to multi-model data management. We have already proposed several solutions based on the categorical representation of multi-model data, the so-called \textit{schema category}~\citep{mm_cat_journal}. This abstract graph representation backed by the formalism of category theory enabled us to build a family of tools for modelling and transformations~\citep{mm_cat}, schema inference~\citep{mm_infer}, data migration under evolving schema~\citep{mm_evocat}, or querying using SPARQL-like query language MMQL~\citep{koupil2023universal}. 
 
 
 In this paper, we further extend our toolset with a new complementary member called \textit{MM-evoque}\footnote{\url{https://www.ksi.mff.cuni.cz/~koupil/mm-evoque/} (including a demo video)}. It extends the functionalities we already provide with an important novel feature -- propagation of changes in the multi-model schema to respective queries. The main contributions can be summarised as follows:
@@ -165,12 +165,12 @@ The key aspect is that a category can be visualised as a multigraph, where objec
 
 
 \paragraph{Schema Category}
-The \textit{schema category}~\citep{DBLP:journals/jbd/KoupilH22} forms the core of conceptual modelling in all our tools. 
+The \textit{schema category}~\citep{mm_cat_journal} forms the core of conceptual modelling in all our tools. 
 %To simplify the understanding, we explain it using the terms known from the ER model, though we do not need to distinguish them, as they are all treated in the same way.
 %
 It is defined as a tuple $\mathbf{S} = (\mathcal{O}_\mathbf{S}, \mathcal{M}_\mathbf{S}, \circ_\mathbf{S})$. Objects in $\mathcal{O}_\mathbf{S}$ correspond to the domains of the ER model's entity types, attributes, and relationship types. Morphisms (of semantics \uv{has a property}, \uv{has an identifier}, \uv{has a role}, or \uv{is a}) in $\mathcal{M}_\mathbf{S}$ connect appropriate pairs of objects. The explicitly defined morphisms are denoted as \textit{base}, obtained via the composition $\circ$ as \textit{composite}.
 
-Since the terminology within the particular models differs, we use a unification of respective model-specific terms~\citep{DBLP:journals/jbd/KoupilH22}. A \textit{kind} corresponds to a class of items represented in each model, e.g., a relational table or a collection of JSON documents. A \textit{record} corresponds to one item of a kind, e.g., a table row or a JSON document. Depending on a particular model, a record consists of simple or complex \textit{properties} having their \textit{domains}.
+Since the terminology within the particular models differs, we use a unification of respective model-specific terms~\citep{mm_cat_journal}. A \textit{kind} corresponds to a class of items represented in each model, e.g., a relational table or a collection of JSON documents. A \textit{record} corresponds to one item of a kind, e.g., a table row or a JSON document. Depending on a particular model, a record consists of simple or complex \textit{properties} having their \textit{domains}.
 %
 % \def\myConcat{\!\cdot\!}
 %
@@ -178,7 +178,7 @@ Since the terminology within the particular models differs, we use a unification
 %
 %An \textit{instance category} $I = (\mathcal{O}_\mathbf{I}, \mathcal{M}_\mathbf{I}, \circ_\mathbf{I})$ is defined to represent data instances in a unified way. This category structurally corresponds to the schema category, i.e., a functor $F : I \rightarrow S$ assigns a schema to the data, similar to~\citep{tuijn1996}, but it bears the particular data instances. 
 %
-%(For precise formal definitions with technical details see~\citep{DBLP:journals/jbd/KoupilH22}.)
+%(For precise formal definitions with technical details see~\citep{mm_cat_journal}.)
 %
 % \begin{example}
 % \small
@@ -207,7 +207,7 @@ Since the terminology within the particular models differs, we use a unification
 %
 %\paragraph{Mapping}
 
-The decomposition of a schema category $\mathbf{S}$, eventually partial or overlapping, is defined via a set of \textit{mappings}~\citep{DBLP:journals/jbd/KoupilH22}. %Each mapping describes where and how data instances of a subgraph of $\mathbf{S}$ (following specific conditions) are stored in a selected single-/multi-model DBMS.
+The decomposition of a schema category $\mathbf{S}$, eventually partial or overlapping, is defined via a set of \textit{mappings}~\citep{mm_cat_journal}. %Each mapping describes where and how data instances of a subgraph of $\mathbf{S}$ (following specific conditions) are stored in a selected single-/multi-model DBMS.
 %
 % \begin{example}
 % \small
@@ -215,7 +215,7 @@ The decomposition of a schema category $\mathbf{S}$, eventually partial or overl
 % \qed
 % \end{example}
 %
-%Since the terminology within the particular models differs, we use a unification of respective model-specific terms~\citep{DBLP:journals/jbd/KoupilH22}. For instance, a \textit{kind} corresponds to a class of items represented in each model, e.g., a relational table or a collection of JSON documents. % A \textit{record} corresponds to one item of a kind, e.g., a table row or a JSON document. Depending on a particular model, a record consists of simple or complex \textit{properties} having their \textit{domains}.
+%Since the terminology within the particular models differs, we use a unification of respective model-specific terms~\citep{mm_cat_journal}. For instance, a \textit{kind} corresponds to a class of items represented in each model, e.g., a relational table or a collection of JSON documents. % A \textit{record} corresponds to one item of a kind, e.g., a table row or a JSON document. Depending on a particular model, a record consists of simple or complex \textit{properties} having their \textit{domains}.
 For each kind, the mapping specifies where and how its records are stored in a selected single-/multi-model DBMS using a so-called \textit{access path}, which recursively describes the structure of a kind. %The description is rich enough to cover various specifics of the underlying models and their combinations, such as properties with user-defined, anonymous, or dynamically-derived names; properties \textit{inlined} from more distant parts of the categorical graph (via composite morphisms); auxiliary properties used, e.g., for logical grouping of a set of properties; order-preserving/order-ignoring sets of sub-properties, etc.
 
 \begin{example}

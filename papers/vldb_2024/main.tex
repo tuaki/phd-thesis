@@ -115,7 +115,7 @@ In Section~\pRef{section:future}, we describe our planned steps. In Section~\pRe
 
 In our research group, we have proposed several solutions to selected aspects of unified and efficient multi-model data management. We have also implemented tools for their experimental verification. This toolset represents the initial framework we currently intend to enhance by exploiting AI to automate data management.
 
-First, we needed a sufficiently abstract approach to handle all the conflicting requirements because we deal with varied data models and database systems. Therefore, we proposed a system-independent representation based on category theory~\citep{DBLP:journals/jbd/KoupilH22}.
+First, we needed a sufficiently abstract approach to handle all the conflicting requirements because we deal with varied data models and database systems. Therefore, we proposed a system-independent representation based on category theory~\citep{mm_cat_journal}.
 We can view a \emph{category} as a directed multigraph for simplicity. The nodes (called \emph{objects}) represent entities, and the edges (called \emph{morphisms}) represent relationships between them. For example, object $A$ represents a User and object $B$ represents a Name. Then, we can have a morphism $f: A \rightarrow B$, meaning that a User has a Name. We can create structures representing arrays, sets, weak-entity types, etc. In our framework, we call such category a \emph{schema category}.
 
 This unifying representation enables us to \uv{grasp} any combination of models and to process it in a system-independent manner. When a particular operation has to be done at this abstract level, it is propagated to the underlying database system.
@@ -146,7 +146,7 @@ Our toolset involves two tools that enable the creation of a schema category: \t
 \subsection{Transformations}
 As indicated in the introduction, not only do we need to be able to model the multi-model data using a unified representation, but we also need to be able to transform them. In particular, we need a support for transforming any combination of the (sub-)models to any other combination of (sub-)models.
 
-For this purpose, as a part of \textit{MM-cat}, we have developed algorithms that leverage mapping between the schema category and the logical models to transform data between them~\citep{DBLP:journals/jbd/KoupilH22}.
+For this purpose, as a part of \textit{MM-cat}, we have developed algorithms that leverage mapping between the schema category and the logical models to transform data between them~\citep{mm_cat_journal}.
 To work with each database system in the same way, we have to create wrappers for each of them. Then, we can use the same algorithm to transform data between any two database systems.
 
 This is an important distinction from other approaches. For example, the ETL (\emph{Extract-Transform-Load}) process is usually tightly coupled with the underlying database systems. In our solution, we can use the same algorithm to transform data between any two database systems, even multi-model ones. Another example are \emph{data lakehouses} which can store data in multiple (single-model) formats, but they do not provide a unified way to work with them.

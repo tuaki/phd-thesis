@@ -38,6 +38,12 @@ As advertised in \Cref{sec:vision_automation}, the process of evolution propagat
 
 \question{automation}{Very few changes can be propagated deterministically. Most of the changes require some kind of decision-making, hovewer, they should still be automated as much as possible. The user should be able to intervene the process at any point, but the system should be able to decide where to explicitly ask for user input, and where to automatically choose the best option.}
 
+\question{query-propagation}{Propagation of changes to queries is notoriously hard, as it often requires rewriting the queries in a way that preserves their semantics, which is not always possible. Also, queries are usually written in database-specific query languages, different from languages used to model the data, therefore lacking a straightforward way to link them to the conceptual schema.}
+
+\todo{
+    Nejsem si jistý tou druhou částí této otázky, můžu to takhle napsat? Můj point je, že query v SQL nemusí být možné jednoduše namapovat na nějaké ER schéma.
+}
+
 In theory, the entire process could be fully automated with a sufficiently advanced AI system that can understand the semantics of the data and queries, predict the impact of changes, and make the best decisions about how to propagate them. In practice, we are still far from achieving this level of automation, and there are many challenges to overcome before we can get there. Therefore, we automate the process gradually following three distinct levels~\citep{ideas2022vision}.
 
 \subsubsection{Rule-based Adaptation}
@@ -61,8 +67,3 @@ Approaches like this rely heavily on detailed insights about the workload and da
 Instead of reacting to changes by \uv{repairing} parts of the system whenever other parts change, the system now proactively tries to optimize its overall performance. This involve finding the right balance between the cost of and performance benefits of transforming the data to a different model, and rewriting the queries to take advantage of the new model. This is a very complex task that requires a deep understanding of the workload and data characteristics, as well as the ability to predict the impact of changes on the system's performance. These concepts are further explored in the following section.
 
 Another form of self-adaptation is to anticipate changes before they even happen. For example, a certain set of queries might not be frequently used now, but the changes of this frequency might suggest much higher usage in the future, so the system can adapt itself in advance. This is a very ambitious goal that we are still far from achieving, but it is an exciting direction for future research.
-
-\subsection{Propagation to Queries}
-
-
-

@@ -56,7 +56,7 @@ In the sample $\mathbf{S_{ini}}$ in Fig.~\pRef{figure:sc-initial}, we identify a
 Further improvements in the schema category involve the integration of various more complex constructs. One of them is replacing (huge) clusters of properties with maps. 
 According to our analyses of real-world data, they may often contain multiple properties which have the same structure but different names (such as the property \textit{attributes} of kind \textit{Business} depicted in Fig.~\pRef{figure:sc-initial}). They make the schema unnecessarily complex, so \textit{TransforMMer} allows the user to transform them into a single set of key-value pairs. The user must just select all the properties to be represented as a map.  
 
-The result is depicted in Fig.~\pRef{figure:sc-final}. As we can see, the direction of morphism between objects \textit{Business} and \textit{attributes} changed. This is because initially, the object \textit{attributes} corresponded to a complex property containing all the attributes, but now, it represents an array of key-value pairs. So, the cardinality specified by the morphism changed, and the morphism had to be updated (for details, see~\citep{DBLP:journals/jbd/KoupilH22}).
+The result is depicted in Fig.~\pRef{figure:sc-final}. As we can see, the direction of morphism between objects \textit{Business} and \textit{attributes} changed. This is because initially, the object \textit{attributes} corresponded to a complex property containing all the attributes, but now, it represents an array of key-value pairs. So, the cardinality specified by the morphism changed, and the morphism had to be updated (for details, see~\citep{mm_cat_journal}).
 
 \begin{figure}[ht]
     \centering

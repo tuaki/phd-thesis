@@ -167,7 +167,7 @@ The natural solution -- automatically suggesting or adapting data representation
 To address these challenges, we introduce \textit{MM-mapsearch}, a tool that analyses multi-model workloads and recommends performance-oriented schema or mapping changes. Its main contributions are:
 
 \begin{itemize}
-    \item A simplified categorical layer~\citep{DBLP:journals/jbd/KoupilH22} that provides a uniform representation of relational, document, and graph structures and enables principled cross-model reorganization.
+    \item A simplified categorical layer~\citep{mm_cat_journal} that provides a uniform representation of relational, document, and graph structures and enables principled cross-model reorganization.
     \item Automatic analysis of weighted multi-model workloads, with schema and mapping changes derived directly from query patterns, removing the need for manual inspection.
     \item Systematic exploration of model assignments and embedding variants via Monte Carlo Tree Search (MCTS), with a reward function balancing predicted latency and migration effort
     \item Performance estimation for each candidate representation using an extended plan-structured neural predictor~\citep{10.14778/3342263.3342646}, steering the search toward high-quality schema variants.
@@ -220,7 +220,7 @@ $\mathcal{S} = (O, M, \circ, 1)$,
 where $O$ is the set of objects representing data properties,
 $M$ is the set of morphisms describing connections between properties,
 $\circ$ denotes morphism composition, and $1$ is the identity morphism.
-In the general form~\citep{DBLP:journals/jbd/KoupilH22},
+In the general form~\citep{mm_cat_journal},
 morphisms capture a rich set of structural relationships, such as
 \emph{\uv{has an identifier}}, \emph{\uv{has a property}}, \emph{\uv{has a role}},
 or \emph{\uv{is a}}. The categorical schema $\mathcal{S}$ can be created manually~\citep{mm_cat} or inferred automatically from sample data instances~\citep{mm_infer}.

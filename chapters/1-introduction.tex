@@ -1,4 +1,115 @@
-\section{Management of Multi-model Data}
+\section{Multi-model Data Management}
+
+Relational data has been extensively studied and used for decades. There are many tools and techniques for managing it, and it is well understood in both research and industry. NoSQL data is a much more recent phenomenon, but its management is actually not that different from relational data---most of the techniques and tools developed for relational data can be adapted to NoSQL data with minor modifications.
+
+Multi-model data, on the other hand, is a completely different beast. Its challenges come not from the individual data models, but from the fact that we have to manage multiple data models at the same time, while they often have very different and even contradictory features.
+
+\todo{
+    Example of MM data.
+}
+
+\subsection{State of the Art}
+\label{sec:state_of_the_art}
+
+Traditionally, relational data is modeled using \acrshort{er} or \acrshort{uml} diagrams. Even though they are not expressive enough to capture all the semantics of multi-model data\footnotei{For example, key-value maps representing a number of dynamic attributes of an entity/class.}{,} they are still widely used in practice so we can at least use them as an inspiration. Other aspects of data management (evolution, querying, etc.) are usually specific to a particular database system, and therefore they are not directly applicable to multi-model data.\\
+
+\term{U-schema}~\citep{DBLP:journals/is/CandelRM22} offers a unified representation for multi-model data. It is a foundation for the \term{Orion} language~\citep{DBLP:conf/er/ChillonRM21a, 10.1109/TKDE.2024.3362273}, enabling evolution, and \term{SkiQL}~\citep{skiql}, enabling querying the schema. Although these capabilities might sound very similar to the ones we propose in this thesis, there are a few important differences.
+
+First, U-schema tries to unify the data models on the \emph{logical} rather than the \emph{conceptual} level. This leads either to an inability to tailor the representation to the specific features of each data model (if we use one logical model for multiple databases), or to a redundancy and a loss of semantics (if we use multiple disconnected logical models). We try to avoid this issue by using a unified conceptual schema that is independent of the underlying data models, and then mapping it to the specialized logical models. Similarly, the evolution only happens on the logical level, so the evolution propagation to data is much more straightforward.
+
+A biggest difference is in the querying capabilities. SkiQL is a \emph{schema} query language, which means that it can only query the structure of the data, but not its content. This is a very important distinction, as our focus is on the opposite---we only query the contents of the data, not its structure. However, this is not a limitation of our approach, as we can still get the structure either from our internal model or from the data (i.e., by inference).\\
+
+There is also a more theoretical approach~\citep{DBLP:journals/corr/abs-2201-04905}. It describes multi-model data and their transfomations in the terms of category theory, but it does not provide any practical tools for managing multi-model data. A recently published version~\citep{lu2025part1, lu2025part2} is much more rigorous and comprehensive while also exploring querying multi-model data. It introduces categorical algebra and calculus as an extension of relational algebra and calculus via multi-model predicates.
 
 \subsection{Category Theory}
 
+Category theory is a very abstract branch of mathematics that studies the properties of mathematical structures and their relationships. It provides a powerful framework for modeling and reasoning about complex systems, including data management systems. As discussed in \Cref{sec:state_of_the_art}, our approach is not the first one to be based on category theory.
+
+The most important concept in the theory is the \term{category}. The full definition is in \Cref{cikm_2022:sec:conceptual-model}, but for the purpose of this introduction, we can think of a category as a directed multigraph---there is a set of nodes (called \term{objects}) and a set of directed edges (called \term{morphisms}) between them. Morphisms consisting of a single edge (we call them \term{base morphisms}) can be composed to more complex ones (we call them \term{composite morphisms}).
+
+\todo{
+    Example of a category.
+}
+
+The basic idea is then to use a categories to model various components of a the system, such as the conceptual schema or the logical models. For example, entities and attributes in the conceptual schema can be represented as objects, while relationships between them can be represented as morphisms. Logical models can be described in a similar way. This allows us to use another categorical concept, \term{functor}, which is defined as a mapping between categories that preserves their structure, to model the mappings between the conceptual schema and the logical models. Preserving the structure means that the functor maps objects to objects and morphisms to morphisms in a way that respects the composition of morphisms. This is crucial for ensuring that the semantics of the data is preserved when it is transformed between different models.
+
+The previous paragraphs are obviously a gross oversimplification of the actual theory and its application in our research. Yet, if we want an approach to be actually useful, it is necessary to be able to explain it in a simple and intuitive way.
+
+\subsection{MM-cat Framework}
+
+As the related work shows, even though there are multiple approaches to multi-model data management, we are not aware of any comprehensive framework that would cover all the aspects of it. This leads us to the following open questions:
+
+\question{mm-access}{A system for managing multi-model data should provide a unified way to access the data, regardless of the underlying models. It should shield users from the low-level details of the specific models while still allowing them to use \emph{all} the unique features of each model when needed. Current approaches to multi-model data management are often focused on a specific subset of the problem (e.g., data modeling and evolution), they don't cover all models, or they are not scalable to (possible) new models that might emerge in the future.}
+
+\question{unification}{The unified access to multi-model data should be based on a unified representation of the data, i.e., a model that is expressive enough to capture the semantics of all the different models. Current approaches either use a single model to emulate all others (which leads to a loss of semantics and performance), or they use a separate model for each underlying model (which leads to inconsistencies and increased complexity).}
+
+The MM-cat framework~\citep{mm_cat_journal} tries to answer these questions by providing a unified representation of multi-model data based on category theory. At its core, there are two layers: platform-independent conceptual schema and platform-specific logical models. An example of such is shown in \Cref{fig:todo} \todo{figure}.
+
+The conceptual schema is a category called \term{schema category}. Its objects represent the concepts in the domain of interest---\term{entities} and their \term{properties}, while its morphisms represent \term{relationships} between these concepts.
+
+\todo{
+    Vysvětlit, co znamená kind (ideálně v tabulce)
+}
+
+A logical model is also a schema category, but it is defined over a specific data model and database system. Therefore, its objects and columns have a very specific semantics, e.g., in a relational model, there would be an object representing a table, objects representing its columns, and morphisms between them meaning that the columns belong to the table. There are also specific constraints, e.g., cardinalities of such morphisms (in the direction from the table to the columns) must be at most one\footnotei{We use special types of morphisms like \term{isomorphism} to denote concepts of cardinality and uniqueness.}{,} as each row in the table can have at most one value for each column. Because the underlying \term{kinds} are always trees, the schema categories of logical models are also trees with a distinguished \term{root object}.
+
+\todo{
+    Různé barvy pro různé modely? Jakože makro "table" (ale asi jinak než "table", to už bude zabrané).
+}
+
+Finally, each logical model is connected to the conceptual schema via a \term{mapping}, which is a functor that maps objects and morphisms between both schema categories (from the logical model to the conceptual schema) while preserving their structure. For example, \todo{obrázek} imagine a conceptual schema with entities \texttt{User} and \texttt{Order}, and a property \texttt{email}. A logical model for a table \texttt{order} cannot have a column \texttt{user}, because user is an entity and relational model does not support nested structures. However, we can \term{inline} the \texttt{email} property into the \texttt{order} table by using a logical model with objects \texttt{order} and \texttt{email} (mapped to the same objects from conceptual schema), and a morphism between them (mapped to the composite morphism from \texttt{Order} to \texttt{email} in the conceptual schema). 
+
+\todo{Ukázat funktor na obrázku.} 
+
+\subsubsection{Tools}
+
+MM-cat framework is an umbrella term for a family of tools based on the above-described unified representation. The first one, also called \term{MM-cat}~\citep{mm_cat}, enables multi-model data modeling, as well as transformation of data between different models. The second one, \term{MM-evocat} (\paperRef{cikm_2022}), adds the ability to evolve the conceptual schema. \term{MM-infer}~\citep{mm_infer}, later extended in \paperRef{enase_2025, edbt_2025}, allows to infer the conceptual schema and logical models from the data. \term{MM-quecat}~\citep{mm_quecat} resp. \term{MM-evoque} (\paperRef{edbt_2024}) enables querying multi-model data using a unified query language resp. propagating changes from the conceptual schema to the queries. Finally, \term{MM-mapsearch} (\paperRef{edbt_2026}) explores the concept of self-adaptation. \Cref{fig:todo} \todo{figure} shows how these tools fit together in the overall architecture of the system.
+
+A proof-of-concept implementation of the MM-cat framework is available at
+\todo{
+    Mám sem dát url na repozitář?
+    \url{https://github.com/mmcatdb/mmcat}
+    Nebo na appku?
+    \url{https://mmcatdb.com/}
+    Nebo ani jedno?
+}\\
+
+\todo{
+    Mám tu lehce popsat implementaci? Jakože na úrovni "je to backend (nástroje) ve Spring Boot (Java) + frontend (jednotné rozhraní) v Reactu (TypeScript) + Python pro MM-mapsearch"? Má být kód jako příloha? Nebo je toto čistě teoretická práce a implementace nikoho nezajímá?
+}
+
+
+\subsection{Level of Automation}
+\label{sec:vision_automation}
+
+All of the above-described capabilities can be achieved with a different amount of automation. More automation is generally better, as it reduces the amount of manual work and expertise required of users. It also allows the system to find solutions that might not be obvious to users, or that would be too time-consuming to do manually. The price for this is increased complexity of the system and potentially reduced control over the process. Therefore, we automate the capabilities gradually following three distinct levels~\citep{ideas2022vision}. In this chapter, we focus only on the \emph{source of a change}, not on the \emph{way it is propagated}, as the latter is covered in the next chapter.
+
+\begin{itemize}
+    \item \term{User-specified changes} -- E.g., the user adds an attribute \texttt{deletedAt} to an entity \texttt{Order}, allowing us to track when orders are deleted. Or, the user decides to transform the data from a relational model to a graph model, as the latter is more suitable for the current workload.
+    \item \term{Data-driven changes} -- The system detects that the data has changed its structure, e.g., by observing that a new attribute \texttt{deletedAt} has been added to the \texttt{Order} entity, and updates the conceptual schema. Or, it finds out that labels (matching existing tables in a relational database) are now present in a graph database, and creates the corresponding mappings.
+    \item \term{Self-adaptation} -- The system proactively analyzes the workload and data characteristics, and decides to transform the data from a relational model to a graph model (similarly how a database expert would do), without any user intervention.
+\end{itemize}
+
+\subsection{Querying}
+
+Each database system has its own query language, tailored to the specific data model. From SQL to XQuery, these languages have vast differences in both syntax and semantics. Even within the same data model, query languages (e.g., SPARQL and Cypher for the graph model) offer very diverse features.
+
+\question{querying}{Mastering multiple query languages takes a lot of time and effort, and it is not realistic to expect users to be proficient in all of them. This is a huge barrier for using multi-model data efficiently. Therefore, we want to be able to query multi-model data using a single, unified query language.}
+
+\question{unified-query-language}{A unified query language should be expressive enough to cover all queries across all data models. It needs to recognize all possible data structures that can be returned by these queries, and provide a way to manipulate them.}
+
+\question{query-efficiency}{One of the primary motivations for using multi-model data is the performance benefits from using the best model for the given job. Therefore, the overhead of using a unified query language should be minimal, ideally negligible compared to a native solution.}
+
+These requirements led to the development of \term{MMQL} (\textbf{M}ulti-\textbf{m}odel \textbf{q}uery \textbf{l}anguage)~\citep{mm_quecat, koupil2023universal}. MMQL is a query language over the schema category, making it independent both of the underlying data models and of the specific databases. After parsing, the query engine splits the query into maximal subqueries that can be executed on a single database, translates them to the native query languages, executes them, and finally combines the results together.
+
+The syntax of MMQL is based on SPARQL, as it is a well-known and widely used query language for graph data (and schema category can be represented as a multigraph). Each triple pattern in the query corresponds to a morphism in the schema category, together with its domain and codomain objects. However, the similarity to SPARQL is just syntactic, as both objects and morphisms in the schema category can have very different semantics dependent on the underlying data models and databases. For example, a one morphism can represent a join in a relational database, a relationship kind in a property graph database, or a nested document in a document database.
+
+An example of ...
+
+\todo{
+    Příklad dotazu v MMQL.
+}
+
+A single \term{query plan} is created by matching the patterns in the query to the available logical models (via the mappings from the schema category). In case of multiple possible combinations (i.e., if the same data is stored in multiple databases), multiple query plans are created and the best one is chosen based on the estimated cost.
+
+Optimizations play a crucial role in this process. Generally, we try to push as much of the query processing as possible to the underlying databases, as they are optimized for their specific data models and query languages. Not all operations can be pushed to the databases (e.g., cross-database joins), so they are executed in the query engine. In some cases, the databases do not support certain operations (e.g., aggregation), or they might not be very efficient (e.g., lookups in MongoDB), so we have to execute them by ourselves as well. Although we have already implemented several optimizations (e.g., dependent joins), the optimization of MMQL queries is still very much an open question.

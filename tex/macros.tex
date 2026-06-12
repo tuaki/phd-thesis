@@ -223,7 +223,27 @@
 \end{center}
 }
 
-\newcommand{\paperRef}[1]{Paper~\hyperref[#1]{\ref{#1@display}}}
+\newcount\paperRefCount
+
+\newcommand{\paperRef}[1]{%
+  \edef\trimmedArguments{\zap@space#1 \@empty}%
+  \paperRefCount=0\relax
+  \@for\paper:=\trimmedArguments\do{\advance\paperRefCount by 1}%
+  \ifnum\paperRefCount=1
+    Paper~%
+  \else
+    Papers~%
+  \fi
+  \paperRefCount=0\relax
+  \@for\paper:=\trimmedArguments\do{%
+    \advance\paperRefCount by 1
+    \ifnum\paperRefCount>1
+      ,\penalty0\ %
+    \fi
+    \hyperref[\paper]{\ref{\paper @display}}%
+  }%
+}
+
 \makeatother
 
 \newcounter{autoFootnoteLabel}
