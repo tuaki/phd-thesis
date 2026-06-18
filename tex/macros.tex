@@ -185,6 +185,10 @@
 \newcommand{\uv}[1]{``#1''}
 \newcommand{\term}[1]{\textbf{#1}}
 \newcommand{\code}[1]{{\normalfont{\texttt{#1}}}}
+% Object from a schema category.
+\newcommand{\object}[1]{\code{#1}}
+% A signature of a morphism.
+\newcommand{\signature}[1]{\code{#1}}
 
 \makeatletter
 \newcounter{Paper}
@@ -316,14 +320,11 @@
 \newcommand{\pRef}[1]{\ref{\inputPrefix#1}}
 
 \newcounter{question}[section]
-\renewcommand{\thequestion}{\arabic{section}.\arabic{question}}
 
-\newcommand{\question}[2]{%
-  \refstepcounter{question}%
-  \par\medskip
-  \noindent\textbf{Q\thequestion}\label{#1}
-  #2
-  \par\medskip
+\newcommand{\question}[3]{%
+\refstepcounter{question}%
+\par\medskip
+\noindent\textbf{Q\arabic{section}.\arabic{question}}\label{#1} \ \emph{#2} \ #3\par\medskip
 }
 
 \newcommand{\questionRef}[1]{\hyperref[#1]{Q\ref{#1}}}

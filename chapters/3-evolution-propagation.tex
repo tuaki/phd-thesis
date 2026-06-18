@@ -1,0 +1,114 @@
+\section{Evolution Propagation}
+\label{sec:evolution-propagation}
+
+Everything is subject to change, and multi-model data is no exception. Changes can occur in any part of the system, such as the conceptual schema, mappings, the data itself, or the queries. When a change occurs, it is important to propagate it to all the affected components so that we can maintain consistency and correctness of the system. This process is called \term{evolution propagation}.
+
+Based on our previous work (see \Cref{sec:mm-cat}) and the related work (\Cref{sec:evolution-related-work}), we identified the following open questions:
+
+\question{ep:smos}{Unified evolution}{There is a categorical approach to modeling multi-model data, offering a unified repesentation of all popular data models and their combinations. However, real-life datasets are rarely ever static. We should be able to evolve one model to another in an efficient way (i.e., without having to redefine the whole model from scratch). In order to do that, the change should be expressed as a set of atomic operations with clear preconditions and postconditions. Crucially, the evolution should work for all models in a uniform way despite their different features and semantics.}
+
+\question{ep:smo-intent}{High-level operations}{Users usually interact with the system at a higher level of abstraction than atomic operations. For example, while moving a property from one entity to another can be decomposed to a sequence of basic operations, it is often beneficial to express it as a single high-level operation. This better captures the user's intent, allows for better optimization (a complex operation can usually be decomposed in several ways, some of which are more efficient than others), and also offers better error handling (if one atomic operations fails, we can roll back the whole complex operation, instead of having to deal with a partially applied change).}
+
+\question{ep:data-propagation}{Propagation to data}{Once a model of a data is changed, the data must be changed as well to maintain consistency. A most straightforward approach would be to load all data to some universal representation, apply the change, and then transform it back to the original model. However, this is not efficient, especially for large datasets. Instead, we should be able to modify the data directly in the database via a sequence of \acrshort{ddl}/\acrshort{dml} statements. Ideally, we would find the most efficient sequence of statements for the given change.}
+
+\question{ep:evolution-inference}{Evolution inference}{High variance and dynamicity is a common characteristic of modern data. We should be able to detect changes in the data and keep the models up-to-date. Additionally, multi-model data naturally supports redundancy, both intra-model (i.e., some NoSQL databases promote denormalization) and inter-model (i.e., same data can be represented in multiple models). Modifications to the data in one model (or part of it) should be reflected in the other models (or parts of them) to maintain consistency.}
+
+\question{ep:query-propagation}{Propagation to queries}{A dataset consists not only of data, but also of queries defined over the data. When the schema changes, the queries must be adapted to ensure they still return the intended results. This is particularly challenging in a multi-model environment where queries may span multiple data models and their relationships can be complex.}
+
+\question{ep:evolution-automation}{Evolution automation}{Not all changes can be propagated deterministically. Some of them require specific domain knowledge to correctly interpret the user's intent. However, they should still be automated as much as possible. The user must be able to intervene the process at any point, but the system should be able to decide where to explicitly ask for user input, and where to automatically choose the best option.}
+
+\question{ep:migration-strategy}{Migration strategy}{There are multiple strategies for propagating changes to the data (e.g., eager, lazy, hybrid) and queries (e.g., different rewriting strategies). The best strategy depends on the specific situation, such as the size of the data, the frequency of queries, the expected performance impact, etc. The system should support multiple strategies to accomodate a wide range of use cases, and it should also be able to choose the most appropriate strategy based on the current workload and data characteristics.}
+
+\todo{reference open questions (evolution)}
+
+\todo{
+    Někde zmínit migrační strategie (eager, lazy, hybrid, (predictive?)).
+
+    - Možná až v related work? Protože my je vlastně neřešíme, takže bychom je popsali jako něco, co bychom teoreticky mohli umět (kdybychom fakt chtěli), akorát jsme zatím nechtěli.
+}
+
+\subsection{Evolution Hierarchy}
+
+A change in one component that is propagated to another component is also a change, so it may require further propagation, leading to a cascade of changes that can be difficult to manage. This is especially true in a multi-model data world, where there are many different components and relationships between them. This leads us to the following questions:
+
+Our approach starts by defining a clear hierarchy of components and a set of rules for how changes should be propagated between them. On the top of the hierarchy (see \Cref{fig:evolution_hierarchy}), there is the \term{conceptual schema}. The schema can be edited via atomic operations (\acrshort{smo}s, see \paperRef{rcis_2025}), coming either directly from the user, or being automatically inferred from changes in the data (as mentioned in \Cref{sec:vision-automation}).
+
+Next, there are \term{mappings} between the conceptual schema and the \term{logical models}. They can be edited via a subset of \acrshort{smo}s, which are automatically generated by propagating changes from the conceptual schema. They can be also created by any of the three steps from \Cref{sec:vision-automation}.
+
+From there, changes can be propagated to the \term{data} and to the \term{queries}. The former is done via \acrshort{ddl} and \acrshort{dml} statements. Changes in data are not directly propagated back; instead, the system observes the data, infers what \acrshort{smo}s would have caused those changes, and then applies those \acrshort{smo}s to the conceptual schema and mappings.
+
+The latter is done by directly rewriting the queries---since the queries are defined over the conceptual schema and only translated to the native database queries at execution time, they depend solely on the conceptual schema (see \paperRef{edbt_2024}). There is, again, no direct propagation from queries to other parts of the system. However, shifts in the workload (e.g., the frequency of certain queries) can be observed and used to trigger \term{self-adaptation}. Changes in query contents are not observed as the queries are considered to be dependant on the conceptual schema and not the other way around.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=\textwidth]{img/commentary-evolution_hierarchy.drawio.pdf}
+    \caption{Hierarchy of components for evolution propagation. All changes are mediated by atomic operations (\acrshort{smo}, \acrshort{ddl}, \acrshort{dml}) and are propagated downwards. Direct changes originating outside of the system (i.e., data, query workloads) are observed and propagated upwards by inferring the corresponding atomic operations.}
+    \label{fig:evolution_hierarchy}
+\end{figure}
+
+Because we use atomic operations as the basis for change propagation, we do not have to execute all of them at once. This allows us to interleave the propagation with additional user input, which is necessary for some types of operations. It also allows us to postpone the propagation until the most appropriate time, e.g., when the system is underutilized, or when the changes are expected to have the least impact on the performance of the system. By default, the data migration is done \term{eagerly}, i.e., for all data that is affected by the change. Although we did not explore \term{lazy} approaches in our research, our framework should be able to support them as well by using previous versions of conceptual schema, mappings, and queries to access the data that has not been migrated yet.
+
+\subsection{Level of Automation}
+\label{sec:evolution-automation}
+
+As advertised in \Cref{sec:vision-automation}, the process of evolution propagation can be automated to different degrees. The more automation, the less manual work and expertise is required from users, but also the less control they have over the process.
+
+\todo{
+    Nejsem si jistý tou druhou částí této otázky, můžu to takhle napsat? Můj point je, že query v SQL nemusí být možné jednoduše namapovat na nějaké ER schéma.
+}
+
+In theory, the entire process could be fully automated with a sufficiently advanced AI system that can understand the semantics of the data and queries, predict the impact of changes, and make the best decisions about how to propagate them. In practice, we are still far from achieving this level of automation, and there are many challenges to overcome before we can get there. Therefore, we automate the process gradually following three distinct levels~\citep{ideas2022vision}.
+
+\subsubsection{Rule-based Adaptation}
+
+In the first level, we define the \acrshort{smo}s and their propagation rules. For example, we can use the \code{createProperty} operation to add a property \object{date} to an entity \object{Review} in the conceptual schema. This, in turn, will trigger the creation of the corresponding attribute in the logical models via the \code{editMapping} operation, and the addition of the attribute to the data via the corresponding \acrshort{ddl} statements.
+
+Or, we can use the \code{createMapping} operation to define a new mapping to a graph model, triggering the transformation of the data from an existing relational model.
+
+The above-described operations are deterministic and have strict preconditions and postconditions, so we can be sure that they will always lead to a consistent state of the system. However, this means there is a lot of situations that cannot be handled by the system. E.g., if a property is deleted and a certain query depends on it, there are several ways to rewrite the query, but none of them is strictly correct or incorrect. In such cases, a manual intervention is required to choose the preferred option. This approach was implemented in the tool \term{MM-evoque}, see \paperRef{edbt_2024} for further details.
+
+\subsubsection{Learning-based Adaptation}
+
+This level builds on top of the previous one by leveraging the deterministic operations and rules, but also using AI techniques to decide \emph{which} operations to apply in situations where there are multiple options. These techniques range from simple heuristics to more complex machine learning models that can learn from past examples and make informed decisions about how to propagate changes.
+
+For example, \paperRef{rcis_2025} discusses several query propagation strategies that can be applied when a property is deleted, and evaluates their performance on a real-world dataset. The system can learn from the observed workload and data characteristics to choose the most appropriate strategy for each situation.
+
+Approaches like this rely heavily on detailed insights about the workload and data. In the case of query propagation, functional dependencies between attributes are particularly useful, as they can help to identify which attributes are likely to be affected by a change and how to rewrite the queries accordingly. This is the main motivation behind the tool \term{FDepHunter}, see \paperRef{vldb_2025_fdephunter}, which is designed to not only discover functional dependencies, but also to distinguish between genuine, fake, and ghost dependencies.
+
+\subsubsection{Self-adaptation}
+
+Instead of reacting to changes by \uv{repairing} parts of the system whenever other parts change, the system now proactively tries to optimize its overall performance. This involve finding the right balance between the cost of and performance benefits of transforming the data to a different model, and rewriting the queries to take advantage of the new model. This is a very complex task that requires a deep understanding of the workload and data characteristics, as well as the ability to predict the impact of changes on the system's performance. These concepts are further explored in the following section.
+
+Another form of self-adaptation is to anticipate changes before they even happen. For example, a certain set of queries might not be frequently used now, but the changes of this frequency might suggest much higher usage in the future, so the system can adapt itself in advance. This is a very ambitious goal that we are still far from achieving, but it is an exciting direction for future research.
+
+\subsection{Related Work}
+\label{sec:evolution-related-work}
+
+\todo{RELATED WORK}
+
+\subsection{Contributions}
+
+We proposed a novel approach to evolution propagation in multi-model data management systems. It is based on a unified categorical representation of multi-model data, which allows us to include all popular data models and their combinations in a single framework. Thanks to the shared abstraction over logical models, we can express analogous modifications uniformly instead of redefining them separately for each model, which improves both the expressiveness and the compactness of the overall operation set.
+
+We defined a comprehensive set of atomic operations for modifying the conceptual schema, mappings, data, and queries. These operations can be propagated between all components of the system in a systematic way (ensuring consistency and correctness) and with different levels of automation (reducing manual work and expertise required from users).
+
+Besides the atomic operations, we also defined a set of \term{composite} and \term{complex} operations~\Cref{rcis_2025:sec:operations}, which are built from the atomic ones and allow for more user-friendly and higher-level modifications. These operations can be used to express common changes in a more natural way, while still being propagated through the system in a consistent manner.
+
+Another contribution is the extension of our evolution-management approach to query synchronization. When schema changes are propagated through the system, the corresponding queries must also be adapted so that they preserve their intended results whenever possible. We focused especially on situations with decreasing information capacity, where some information may be removed or become unavailable after the change. For these cases, we investigated several rewriting and synchronization strategies in the multi-model context and show how they fit into the broader evolution propagation process.
+
+Finally, we validated the proposed ideas through a proof-of-concept implementation and experimental evaluation. The implementation demonstrated that a substantial part of the evolution process can be handled systematically, reducing manual and error-prone intervention when propagating changes across schemas, mappings, data, and queries. The experiments then compared the efficiency of the considered synchronization strategies and provided initial evidence of the practical feasibility of the approach.
+
+
+
+\todo{rewrite
+
+- We present FDepHunter, a data profiling tool designed to support domain experts. The tool provides a novel interactive workflow to detect fake FDs and to facilitate the discovery of ghost FDs.
+
+- FDepHunter incrementally constructs an Armstrong relation~\citep{DBLP:books/aw/AbiteboulHV95}, augmented with so-called negative and positive examples, to approximate the properties of a complete dataset.
+
+- Users iteratively refine the set of FDs: they identify genuine FDs, expose fake FDs through negative examples, and uncover ghost FDs via positive examples.
+
+- Negative and positive examples are generated to target multiple fake or ghost FDs simultaneously. This allows to efficiently refine multiple dependencies in a single step.
+}
+
+

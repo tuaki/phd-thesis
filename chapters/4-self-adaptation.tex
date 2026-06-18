@@ -1,0 +1,66 @@
+\section{Self-adaptation}
+
+With the categorical representation of multi-model data (see \Cref{sec:mm-cat}) and the capabilities of querying and evolution (\Cref{sec:querying,sec:evolution-propagation}), we have a solid foundation for managing multi-model data. Now we can focus on optimizing it.
+
+In its most basic form, the problem we are trying to solve can be described as follows: given a fixed conceptual schema and a workload of queries, what set of logical models minimizes the overall query latency? And this is just a starting point, as many constraints (e.g., fixed schema and workload) can be relaxed. To define the problem more precisely, we derived the following open questions:
+
+\question{sa:search-space}{Search space}{In general, there is inifinitely many ways to map the same conceptual schema to different logical models. We should find a deterministic way to limit the search space to a manageable size while still covering the best alternatives. Since the number of meaningful combinations grows exponentially with the size of the conceptual schema, the alternatives must be generated systematically and efficiently.}
+    
+\question{sa:embedding-inlining}{Embedding, inlining}{Document model allows embedding related data together, which reduces the number of joins. Relational model allows inlining columns from one table to another. Evenso, some databases support embedding one model into another (e.g., PostgreSQL allows JSON columns in a relational table). The system should be able to identify opportunities for embedding and inlining, and to evaluate their benefits and costs. This includes not only the expected query-performance improvement, but also the effort required to reach (and maintain) the new state.}
+
+\question{sa:redundancy}{Redundancy}{Denormalization is a common technique for optimizing \acrshort{nosql} databases. It involves storing the same data in multiple places to avoid expensive joins. In a multi-model world, we can also consider redundancy across different models. Similarly to embedding and inlining, these techniques can significantly improve query performance, but they also introduce additional complexity and maintenance overhead.}
+
+\question{sa:latency-estimator}{Latency estimator}{To evaluate a state, the system has to at least estimate the latency of the queries in the workload. A naive solution (executing the queries) is extremely expensive. A much more efficient approach is required to make the search process feasible. Specifically, this solution cannot require actual materialization of the candidate state, as that is, by itself, too expensive.}
+
+\question{sa:cross-model}{Cross-model queries}{Given the nature of the multi-model environment, some queries may require data from multiple models. Therefore, the system has to be able to estimate latency of cross-model queries, taking into account the cost of data transfer and transformation between models.}
+
+\question{sa:search-strategy}{Search strategy}{Even once a manageable state space is defined, the number of candidate representations grows too quickly for exhaustive evaluation. The system has to explore the space systematically, favor promising regions, and balance short-term exploitation with longer-term exploration.}
+
+\question{sa:local-maxima}{Local maxima}{Cross-model queries are generally more expensive than single-model queries. Therefore, the search process may get stuck in local maxima, where any small change to the current state would lead to an increase in latency. Only larger changes (e.g., moving a whole subgraph to another model) would lead to a significant improvement. The search strategy should be able to escape local maxima and find better states that are not reachable by small incremental changes.}
+
+\question{sa:migration-cost}{Migration cost}{Migration to the final representation is usually very expensive, as it may involve large data transfers and downtime. The performance gain of the new representation must be significant enough to justify the migration cost. The system has to be able to estimate the cost of migrating to (and maintaining) a candidate state.}
+    
+\question{sa:adaptation-timing}{Adaptation timing}{After a better representation is identified and the cost of migration is estimated, it is still unclear when the adaptation should be executed. Immediate adaptation may react quickly to workload changes but incur excessive migration overhead, while delayed adaptation may miss important optimization opportunities. The system should therefore decide when the expected long-term benefit outweighs the large one-time migration cost.}
+
+\question{sa:workload-prediction}{Workload prediction}{In practice, workloads are not static. They evolve over time and may contain periodic trends, bursts, or one-off anomalies. A truly autonomous system should reason not only about the present workload, but also about its likely future development, so that it can avoid overfitting to transient patterns and prepare for upcoming changes in advance.}
+
+\question{sa:richer-state-space}{Richer state space}{Database applications offer a wide range of physical-design choices beyond the logical model, such as indexes, materialized views, partitioning schemes, replication strategies, knob tuning, etc. These choices are not covered by the current categorical representation, but they can have a significant impact on query performance.}
+
+\todo{reference open questions (self-adaptation)}
+
+\subsection{TODO}
+
+\todo{Co zatím máme - \paperRef{dke_2026} pro optimalizaci indexů, \paperRef{edbt_2026} pro otestování MCTS. Následně popsat celý proces + podrobně nastínit future work (MODELS 2026):
+
+- High-level pohled (jak to interaguje se zbytkem systému, že vlastně potřebujeme všechny předchozí části).
+
+- Samotný optimizér:
+
+    - Co chceme podporovat (mapování, embeddingy, ISA, ...)
+
+    - Reprezentace stavu (přes dotazy vs. přes kindy + embeddingy)
+
+    - MCTS (co, jak, kdo a proč)
+
+    - Latency estimator (neuronka)
+
+- Future work
+}
+
+
+In our representation, logical model is a tree (see \Cref{fig:mapping}). There are infinitely many ways 
+
+\subsection{Related Work}
+
+\todo{RELATED WORK}
+
+\subsection{Contributions}
+
+\todo{rewrite - minulý čas a další věci
+
+We formulate self-adaptation as a workload-aware optimization problem over explicit mappings and logical representations. Instead of treating cross-model redesign as a sequence of isolated manual interventions in individual databases, our approach represents alternative placements and structural variants of the same conceptual schema in a common search space. This makes it possible to compare heterogeneous designs systematically and to reason about adaptation at the level of the whole multi-model system rather than one store at a time.
+
+On top of this representation, we introduce an automated optimization process that derives candidate changes from weighted workloads and explores them using Monte Carlo Tree Search. The search considers different model assignments and embedding variants, while its objective balances the expected reduction in query latency against the cost of migrating to the new representation. In this way, adaptation decisions are no longer based only on expert intuition, but on a repeatable search procedure guided by an explicit objective.
+
+Because evaluating every candidate representation directly on the databases would be too expensive, we complement the search with learned performance estimation. In particular, we extend a plan-structured neural predictor~\citep{10.14778/3342263.3342646} so that candidate schema variants can be scored before they are materialized. We also implemented these ideas in a prototype that integrates workload analysis, generation of schema variants, neural latency prediction, and an interactive interface for inspecting the recommended alternatives. Together, these results provide an initial practical foundation for automatic adaptation of multi-model data layouts under evolving workloads.
+}
