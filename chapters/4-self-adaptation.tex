@@ -2,53 +2,83 @@
 
 With the categorical representation of multi-model data (see \Cref{sec:mm-cat}) and the capabilities of querying and evolution (\Cref{sec:querying,sec:evolution-propagation}), we have a solid foundation for managing multi-model data. Now we can focus on optimizing it.
 
-In its most basic form, the problem we are trying to solve can be described as follows: given a fixed conceptual schema and a workload of queries, what set of logical models minimizes the overall query latency? And this is just a starting point, as many constraints (e.g., fixed schema and workload) can be relaxed. To define the problem more precisely, we derived the following open questions:
+In its most basic form, the problem we are trying to solve can be described as follows. We assume a fixed conceptual schema, a \term{workload} (a set of weighted queries), and a set of all available databases. Let us define \term{configuration} as a set of logical models of these databases that is capable of answering all queries in the workload. The goal is to find a configuration that minimizes the overall query latency. To define the problem more precisely, we derived the following open questions:
 
-\question{sa:search-space}{Search space}{In general, there is inifinitely many ways to map the same conceptual schema to different logical models. We should find a deterministic way to limit the search space to a manageable size while still covering the best alternatives. Since the number of meaningful combinations grows exponentially with the size of the conceptual schema, the alternatives must be generated systematically and efficiently.}
+\question{sa:search-space}{Search space}{In general, there is inifinitely many configurations. We should find a deterministic way to limit the search space to a manageable size while still covering the best alternatives. Since even the number of \emph{meaningful}\footnote{I.e., configurations that are not redundant (up to renaming) or strictly worse than others.} configurations grows exponentially with the size of the conceptual schema, the alternatives must be generated systematically and efficiently.}
     
-\question{sa:embedding-inlining}{Embedding, inlining}{Document model allows embedding related data together, which reduces the number of joins. Relational model allows inlining columns from one table to another. Evenso, some databases support embedding one model into another (e.g., PostgreSQL allows JSON columns in a relational table). The system should be able to identify opportunities for embedding and inlining, and to evaluate their benefits and costs. This includes not only the expected query-performance improvement, but also the effort required to reach (and maintain) the new state.}
+\question{sa:embedding-inlining}{Embedding, inlining}{Document model allows embedding related data together, which reduces the number of joins. Relational model allows inlining columns from one table to another. Evenso, some databases support embedding one model into another (e.g., PostgreSQL allows JSON columns in a relational table). The system should be able to identify opportunities for embedding and inlining, and to evaluate their benefits and costs. This includes not only the expected query performance improvement, but also the effort required to reach (and maintain) the new configuration.}
 
 \question{sa:redundancy}{Redundancy}{Denormalization is a common technique for optimizing \acrshort{nosql} databases. It involves storing the same data in multiple places to avoid expensive joins. In a multi-model world, we can also consider redundancy across different models. Similarly to embedding and inlining, these techniques can significantly improve query performance, but they also introduce additional complexity and maintenance overhead.}
 
-\question{sa:latency-estimator}{Latency estimator}{To evaluate a state, the system has to at least estimate the latency of the queries in the workload. A naive solution (executing the queries) is extremely expensive. A much more efficient approach is required to make the search process feasible. Specifically, this solution cannot require actual materialization of the candidate state, as that is, by itself, too expensive.}
+\question{sa:latency-estimator}{Latency estimator}{To evaluate a configuration, the system has to at least estimate the latency of the queries in the workload. A naive solution (executing the queries) is too  expensive. A much more efficient approach is required to make the search process feasible. Specifically, this solution cannot require actual materialization of the configuration, as that is, by itself, too expensive.}
 
 \question{sa:cross-model}{Cross-model queries}{Given the nature of the multi-model environment, some queries may require data from multiple models. Therefore, the system has to be able to estimate latency of cross-model queries, taking into account the cost of data transfer and transformation between models.}
 
-\question{sa:search-strategy}{Search strategy}{Even once a manageable state space is defined, the number of candidate representations grows too quickly for exhaustive evaluation. The system has to explore the space systematically, favor promising regions, and balance short-term exploitation with longer-term exploration.}
+\question{sa:search-strategy}{Search strategy}{Even once a manageable search space is defined, the number of configurations grows too quickly for exhaustive evaluation. The system has to explore the space systematically, favor promising regions, and balance short-term exploitation with longer-term exploration.}
 
-\question{sa:local-maxima}{Local maxima}{Cross-model queries are generally more expensive than single-model queries. Therefore, the search process may get stuck in local maxima, where any small change to the current state would lead to an increase in latency. Only larger changes (e.g., moving a whole subgraph to another model) would lead to a significant improvement. The search strategy should be able to escape local maxima and find better states that are not reachable by small incremental changes.}
+\question{sa:local-maxima}{Local maxima}{Cross-model queries are generally more expensive than single-model queries. Therefore, the search process may get stuck in local maxima, where any small change to the configuration would lead to an increase in latency. Only larger changes (e.g., moving a whole subgraph to another model) would lead to a significant improvement. The search strategy should be able to escape local maxima and find better configurations that are not reachable by small incremental changes.}
 
-\question{sa:migration-cost}{Migration cost}{Migration to the final representation is usually very expensive, as it may involve large data transfers and downtime. The performance gain of the new representation must be significant enough to justify the migration cost. The system has to be able to estimate the cost of migrating to (and maintaining) a candidate state.}
+\question{sa:migration-cost}{Migration cost}{Migration to the final configuration is usually very expensive, as it may involve large data transfers and downtime. The performance gain of the new configuration must be significant enough to justify the migration cost. The system has to be able to estimate the cost of migrating to (and maintaining) a configuration.}
     
-\question{sa:adaptation-timing}{Adaptation timing}{After a better representation is identified and the cost of migration is estimated, it is still unclear when the adaptation should be executed. Immediate adaptation may react quickly to workload changes but incur excessive migration overhead, while delayed adaptation may miss important optimization opportunities. The system should therefore decide when the expected long-term benefit outweighs the large one-time migration cost.}
+\question{sa:adaptation-timing}{Adaptation timing}{After a better configuration is identified and the cost of migration is estimated, it is still unclear when the adaptation should be executed. Immediate adaptation may react quickly to workload changes but incur excessive migration overhead, while delayed adaptation may miss important optimization opportunities. The system should therefore decide when the expected long-term benefit outweighs the large one-time migration cost.}
 
 \question{sa:workload-prediction}{Workload prediction}{In practice, workloads are not static. They evolve over time and may contain periodic trends, bursts, or one-off anomalies. A truly autonomous system should reason not only about the present workload, but also about its likely future development, so that it can avoid overfitting to transient patterns and prepare for upcoming changes in advance.}
 
-\question{sa:richer-state-space}{Richer state space}{Database applications offer a wide range of physical-design choices beyond the logical model, such as indexes, materialized views, partitioning schemes, replication strategies, knob tuning, etc. These choices are not covered by the current categorical representation, but they can have a significant impact on query performance.}
+\question{sa:richer-state-space}{Richer search space}{Database applications offer a wide range of physical design choices beyond the logical model, such as indexes, materialized views, partitioning schemes, replication strategies, knob tuning, etc. These choices are not covered by the current categorical representation, but they can have a significant impact on query performance.}
 
 \todo{reference open questions (self-adaptation)}
 
-\subsection{TODO}
+\subsection{MM-mapsearch}
 
-\todo{Co zatím máme - \paperRef{dke_2026} pro optimalizaci indexů, \paperRef{edbt_2026} pro otestování MCTS. Následně popsat celý proces + podrobně nastínit future work (MODELS 2026):
+Based on the open questions above, we propose the following principles:
 
-- High-level pohled (jak to interaguje se zbytkem systému, že vlastně potřebujeme všechny předchozí části).
+\begin{itemize}
+    \item A \term{state} is a an element of a finite vector space that maps the conceptual schema and the databases to a configuration. \term{State space} is a graph of all possible states connected by available transitions.
+    \item The state space is explored using an algorithm that evaluates the states both directly (by estimating the latency of the corresponding configurations) and indirectly (by the values of neighboring states).
+    \item There is a model that, given a state and a workload, can cheaply estimate the total latency of the corresponding configuration without actually materializing it.
+\end{itemize}
 
-- Samotný optimizér:
+It is important to note that, while these principles are general and most likely applicable in other approaches to the problem of self-adaptation, they can be only enabled by a sufficiently robust representation of multi-model data.
+
+In our approach, the categorical representation provides a unified view of the conceptual schema, the logical models, and the mappings between them. It allows us to describe queries (and thus the workload) independently of the actual configurations, as well as to reason about cross-model queries. It also defines a set of \acrshort{smo}s that offer a natural way to transform one configuration into another, which is crucial for defining the transitions between states. Lastly, we can use it to migrate the data to the final configuration.
+
+\todo{
+    \paperRef{edbt_2026}
+
+
+}
+
+\subsubsection{State Space}
+
+\todo{
+    In our representation, logical model is a tree (see \Cref{fig:mapping}). There are infinitely many ways ...
 
     - Co chceme podporovat (mapování, embeddingy, ISA, ...)
 
-    - Reprezentace stavu (přes dotazy vs. přes kindy + embeddingy)
-
-    - MCTS (co, jak, kdo a proč)
-
-    - Latency estimator (neuronka)
-
-- Future work
+    - Reprezentace stavu (přes kindy + embeddingy vs. přes dotazy (to ale vyžaduje alternativní definici stavu))
 }
 
+\subsubsection{MCTS}
 
-In our representation, logical model is a tree (see \Cref{fig:mapping}). There are infinitely many ways 
+\todo{
+    So far, we have tried \acrshort{mcts}.
+
+    MCTS (co, jak, kdo a proč)
+}
+
+\subsubsection{Latency Estimation}
+
+\todo{
+    Neuronka
+
+    - taky query evaluation (obrázek z MODELS 2026)
+}
+
+\subsection{Index Optimization}
+
+\todo{
+    \paperRef{dke_2026}
+}
 
 \subsection{Related Work}
 
@@ -57,6 +87,8 @@ In our representation, logical model is a tree (see \Cref{fig:mapping}). There a
 \subsection{Contributions}
 
 \todo{rewrite - minulý čas a další věci
+
+- use "configuration" instead of "variant", "candidate", "state" (not so much?), "representation", and maybe others
 
 We formulate self-adaptation as a workload-aware optimization problem over explicit mappings and logical representations. Instead of treating cross-model redesign as a sequence of isolated manual interventions in individual databases, our approach represents alternative placements and structural variants of the same conceptual schema in a common search space. This makes it possible to compare heterogeneous designs systematically and to reason about adaptation at the level of the whole multi-model system rather than one store at a time.
 
