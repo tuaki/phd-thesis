@@ -19,13 +19,13 @@ Based on our previous work (see \Cref{sec:mm-cat}) and the related work (\Cref{s
 
 \question{ep:migration-strategy}{Migration strategy}{There are multiple strategies for propagating changes to the data (e.g., eager, lazy, hybrid) and queries (e.g., different rewriting strategies). The best strategy depends on the specific situation, such as the size of the data, the frequency of queries, the expected performance impact, etc. The system should support multiple strategies to accomodate a wide range of use cases, and it should also be able to choose the most appropriate strategy based on the current workload and data characteristics.}
 
-\todo{reference open questions (evolution)}
-
 \todo{
     Někde zmínit migrační strategie (eager, lazy, hybrid, (predictive?)).
 
     - Možná až v related work? Protože my je vlastně neřešíme, takže bychom je popsali jako něco, co bychom teoreticky mohli umět (kdybychom fakt chtěli), akorát jsme zatím nechtěli.
 }
+
+\todo{příklady a obrázky}
 
 \subsection{Evolution Hierarchy}
 
@@ -86,18 +86,18 @@ Another form of self-adaptation is to anticipate changes before they even happen
 
 \todo{RELATED WORK}
 
+
 \subsection{Contributions}
 
 We proposed a novel approach to evolution propagation in multi-model data management systems. It is based on a unified categorical representation of multi-model data, which allows us to include all popular data models and their combinations in a single framework. Thanks to the shared abstraction over logical models, we can express analogous modifications uniformly instead of redefining them separately for each model, which improves both the expressiveness and the compactness of the overall operation set.
 
-We defined a comprehensive set of atomic operations for modifying the conceptual schema, mappings, data, and queries. These operations can be propagated between all components of the system in a systematic way (ensuring consistency and correctness) and with different levels of automation (reducing manual work and expertise required from users).
+We defined a comprehensive set of atomic operations for modifying the conceptual schema, mappings, data, and queries (\questionRef{ep:smos}). These operations can be propagated between all components of the system in a systematic way (ensuring consistency and correctness) and with different levels of automation (reducing manual work and expertise required from users) (\questionRef{ep:evolution-automation}).
 
-Besides the atomic operations, we also defined a set of \term{composite} and \term{complex} operations~\Cref{rcis_2025:sec:operations}, which are built from the atomic ones and allow for more user-friendly and higher-level modifications. These operations can be used to express common changes in a more natural way, while still being propagated through the system in a consistent manner.
+Besides the atomic operations, we also defined a set of \term{composite} and \term{complex} operations~\Cref{rcis_2025:sec:operations}, which are built from the atomic ones and allow for more user-friendly and higher-level modifications (\questionRef{ep:smo-intent}). These operations can be used to express common changes in a more natural way, while still being propagated through the system in a consistent manner.
 
-Another contribution is the extension of our evolution-management approach to query synchronization. When schema changes are propagated through the system, the corresponding queries must also be adapted so that they preserve their intended results whenever possible. We focused especially on situations with decreasing information capacity, where some information may be removed or become unavailable after the change. For these cases, we investigated several rewriting and synchronization strategies in the multi-model context and show how they fit into the broader evolution propagation process.
+Another contribution is the extension of our evolution-management approach to query synchronization (\questionRef{ep:query-propagation}). When schema changes are propagated through the system, the corresponding queries must also be adapted so that they preserve their intended results whenever possible. We focused especially on situations with decreasing information capacity, where some information may be removed or become unavailable after the change. For these cases, we investigated several rewriting and synchronization strategies in the multi-model context and show how they fit into the broader evolution propagation process.
 
 Finally, we validated the proposed ideas through a proof-of-concept implementation and experimental evaluation. The implementation demonstrated that a substantial part of the evolution process can be handled systematically, reducing manual and error-prone intervention when propagating changes across schemas, mappings, data, and queries. The experiments then compared the efficiency of the considered synchronization strategies and provided initial evidence of the practical feasibility of the approach.
-
 
 
 \todo{rewrite
