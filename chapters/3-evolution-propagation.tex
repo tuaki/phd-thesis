@@ -75,6 +75,8 @@ For example, \paperRef{rcis_2025} discusses several query propagation strategies
 
 Approaches like this rely heavily on detailed insights about the workload and data. In the case of query propagation, functional dependencies between attributes are particularly useful, as they can help to identify which attributes are likely to be affected by a change and how to rewrite the queries accordingly. This is the main motivation behind the tool \term{FDepHunter}, see \paperRef{vldb_2025_fdephunter}, which is designed to not only discover functional dependencies, but also to distinguish between genuine, fake, and ghost dependencies.
 
+Rather than treating dependency discovery as a fully automatic black-box task, FDepHunter provides an interactive workflow in which domain experts iteratively refine the discovered dependencies. Technically, it incrementally builds an Armstrong relation~\citep{DBLP:books/aw/AbiteboulHV95} enriched with positive and negative examples, which approximate the relevant properties of the complete dataset while allowing several questionable dependencies to be refined at once. This gives the system a practical way to obtain higher-quality semantic information in situations where purely automatic profiling would be too unreliable for downstream adaptation tasks.
+
 \subsubsection{Self-adaptation}
 
 Instead of reacting to changes by \uv{repairing} parts of the system whenever other parts change, the system now proactively tries to optimize its overall performance. This involve finding the right balance between the cost of and performance benefits of transforming the data to a different model, and rewriting the queries to take advantage of the new model. This is a very complex task that requires a deep understanding of the workload and data characteristics, as well as the ability to predict the impact of changes on the system's performance. These concepts are further explored in the following section.
@@ -97,18 +99,6 @@ Besides the atomic operations, we also defined a set of \term{composite} and \te
 
 Another contribution is the extension of our evolution-management approach to query synchronization (\questionRef{ep:query-propagation}). When schema changes are propagated through the system, the corresponding queries must also be adapted so that they preserve their intended results whenever possible. We focused especially on situations with decreasing information capacity, where some information may be removed or become unavailable after the change. For these cases, we investigated several rewriting and synchronization strategies in the multi-model context and show how they fit into the broader evolution propagation process.
 
-Finally, we validated the proposed ideas through a proof-of-concept implementation and experimental evaluation. The implementation demonstrated that a substantial part of the evolution process can be handled systematically, reducing manual and error-prone intervention when propagating changes across schemas, mappings, data, and queries. The experiments then compared the efficiency of the considered synchronization strategies and provided initial evidence of the practical feasibility of the approach.
+Finally, we validated the proposed ideas through a proof-of-concept implementation and experimental evaluation. The implementation demonstrated that a substantial part of the evolution process can be handled systematically, reducing manual and error-prone intervention when propagating changes across schemas, mappings, data, and queries. The experiments then compared the efficiency of the considered synchronization strategies and provided initial evidence of the practical feasibility of the approach.\\
 
-
-\todo{rewrite
-
-- We present FDepHunter, a data profiling tool designed to support domain experts. The tool provides a novel interactive workflow to detect fake FDs and to facilitate the discovery of ghost FDs.
-
-- FDepHunter incrementally constructs an Armstrong relation~\citep{DBLP:books/aw/AbiteboulHV95}, augmented with so-called negative and positive examples, to approximate the properties of a complete dataset.
-
-- Users iteratively refine the set of FDs: they identify genuine FDs, expose fake FDs through negative examples, and uncover ghost FDs via positive examples.
-
-- Negative and positive examples are generated to target multiple fake or ghost FDs simultaneously. This allows to efficiently refine multiple dependencies in a single step.
-}
-
-
+Another, more focused contribution is \term{FDepHunter}, which strengthens the learning-based part of our approach by providing better information about functional dependencies in real-world data. Although this is only a partial solution, it fits the broader evolution framework naturally---such dependencies provide exactly the kind of semantic insight needed for ambiguous query synchronization tasks and other situations where purely rule-based propagation is no longer sufficient. In this sense, FDepHunter is not a standalone side result, but a supporting component that improves the system's ability to make informed adaptation decisions.
