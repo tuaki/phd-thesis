@@ -181,9 +181,7 @@ Since the terminology within the particular models differs, we use a unification
 %(For precise formal definitions with technical details see~\citep{mm_cat_journal}.)
 %
 % \begin{example}
-% \small
 % Figure~\pRef{fig:schema-er} depicts the schema category of sample data from Figure~\pRef{fig:data} and the instance category of its respective part. 
-% \qed
 % \end{example}
 %
 %
@@ -210,18 +208,14 @@ Since the terminology within the particular models differs, we use a unification
 The decomposition of a schema category $\mathbf{S}$, eventually partial or overlapping, is defined via a set of \textit{mappings}~\citep{mm_cat_journal}. %Each mapping describes where and how data instances of a subgraph of $\mathbf{S}$ (following specific conditions) are stored in a selected single-/multi-model DBMS.
 %
 % \begin{example}
-% \small
 % The colors in Figure~\pRef{fig:schema-er} depict the decomposition into distinct models indicated in Figure~\pRef{fig:data}.
-% \qed
 % \end{example}
 %
 %Since the terminology within the particular models differs, we use a unification of respective model-specific terms~\citep{mm_cat_journal}. For instance, a \textit{kind} corresponds to a class of items represented in each model, e.g., a relational table or a collection of JSON documents. % A \textit{record} corresponds to one item of a kind, e.g., a table row or a JSON document. Depending on a particular model, a record consists of simple or complex \textit{properties} having their \textit{domains}.
 For each kind, the mapping specifies where and how its records are stored in a selected single-/multi-model DBMS using a so-called \textit{access path}, which recursively describes the structure of a kind. %The description is rich enough to cover various specifics of the underlying models and their combinations, such as properties with user-defined, anonymous, or dynamically-derived names; properties \textit{inlined} from more distant parts of the categorical graph (via composite morphisms); auxiliary properties used, e.g., for logical grouping of a set of properties; order-preserving/order-ignoring sets of sub-properties, etc.
 
 \begin{example}
-\small
 In Figure~\pRef{fig:query:workflow3B} on the left, we can see a schema category describing customers, their friendships, products, and orders. It is decomposed and mapped to relational (violet) and document (green) models.
-\qed
 \end{example}
 
 
@@ -230,10 +224,8 @@ The MMQL~\citep{koupil2023universal} is a SPARQL-like model-agnostic query langu
 The MMQL expression consists of a projection (\texttt{SELECT}) that defines the structure of the result and a selection (\texttt{WHERE}) where graph patterns can be defined along with filter conditions (\texttt{FILTER}). We also support common constructs such as \texttt{ORDER BY}, \texttt{LIMIT}, or aggregation functions. Graph patterns are expressed using triples $p : s \rightarrow o$, where $o$, $s$ (e.g., variables or constants) correspond to objects from $\mathcal{O}_\mathbf{S}$ and $p$ maps to morphisms in $\mathcal{M}_\mathbf{S}$. For query $q$, patterns in selection form a \textit{selection category} $\mathbf{S}_q^{\sigma}$ (a subcategory of $\mathbf{S}$) and patterns in projection form a \textit{projection category} $\mathbf{S}_{q}^{\pi}$ (a  subcategory of $\mathbf{S}_q^{\sigma}$). 
 
 \begin{example}
-\small
 \pLabel{ex:queries}
 Figure~\pRef{fig:query:workflow3B} on the right shows two MMQL queries $q_1$: \uv{\textit{For each pair of friends, return their names and surnames}} and $q_2$: \uv{\textit{Find the most expensive order ordered by Anne and return its price}}.
-\qed
 \end{example}
 
 \paragraph{Multi-Model Schema Evolution Language (MMSEL)}
@@ -364,7 +356,6 @@ In Figure~\pRef{fig:screen}, we provide a screenshot of \textit{MM-evoque}. On t
 \end{figure}
 
 \begin{example}
-\small
 Consider Figures~\pRef{fig:query:workflow1}--\pRef{fig:query:workflow3B} and queries $q_1$, $q_2$ from Example~\pRef{ex:queries}.
 
 Figure~\pRef{fig:query:workflow1} shows a naive relational schema with several redundant values in table \textit{Orders} (version 1). We also depict the mapping of $\mathbf{S}$ to the relational model, where the violet objects represent kinds (tables), and their neighbours represent their properties (columns). The efficiency of $q_1$ and $q_2$ is satisfactory for low numbers of customers and products.
@@ -387,7 +378,6 @@ In Figure~\pRef{fig:query:workflow3A} (version 3A), we try to use the document m
 %Ve třetí verzi zkusíme query-optimised design pro query 2 a použijeme MongoDB pro ukládání dat. NEprovedeme sice strukturální změnu dat, ale provedeme migraci/transformaci dat z relačního do d0umentového modelu. V tomto případě je MMQL pouze přeroutováno - grafový vzor je upraven tak, aby v něm byl root nějakého kind (Důvod je ten, že máme v MMQL restrikci, že každý vzor musí vycházet z kořene nějakého kind - kvůli zamezení redundance ve výsledku dotazu u jinak "vnořeného" kind). Do prvního MMQL je přidáno ?order s cestou do friendA,friendB a druhý MMQL obsahuje upravení cest. A protože Customer ani items v MongoDB nejsou kolekcí, tak musíme vycházet z Order (obojí v dotazu odpovídá proměnné ?orders, ale mohli bychom ji přejmenovat na ?order v obrázku). Výsledkem propagace této změny jsou dva výrazy v MongoDB QL. Problémem verze 3 ovšem je, že opět máme spoustu potenciálně duplicitních dat - duplikované zákazníky (jako přátele zákazníků) a produkty a tato data jsou náročná na správu / aktualizaci a udržení konzistence.
 
 In Figure~\pRef{fig:query:workflow3B} (version 3B), we utilise the multi-model paradigm and migrate the data to a combination of relational (violet) and document (green) models. $q_1$ and $q_2$ are synchronised, respectively, and we gain a good performance for both. 
-\qed
 
 %verze 3B - rel-to-doc transformace v predchozim kroce byla nevhodna, a tak provedeme migraci/transformaci rel-to-rel+doc (tj. vycházíme z verze 2 a zkusíme novou migraci dat), cimz získáme dobrý výkon dotazování pro query 1 i query 2; dekompozice dotazu a přepsání do SQL + MongoDB QL (kombinujeme výhody verze 2 a 3A).
 
@@ -595,9 +585,7 @@ The propagation of $\textit{addMapping}()$ / $\textit{deleteMapping}()$ depends 
 
 % %Note that by decomposing the data, we can evaluate the query in different ways. We have the customer information stored in both the graph and relational database/model, and therefore have the option of choosing the more efficient option.
 % \begin{example}
-% \small
 % In Figure~\pRef{fig:query:alternative} we provide an alternative evaluation of the graph (blue) query part from Figure~\pRef{fig:query:workflow} Phase II using the relational (purple) model. Its cost is higher due to the need to evaluate two joins.
-% \qed
 % \end{example}
 
 

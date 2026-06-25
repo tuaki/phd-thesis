@@ -687,7 +687,6 @@ Afterwards, the following is calculated: (1) cost for each of the candidate comb
 \end{table}
 
 Finally, a BIP is constructed according to the model shown in Figure~\pRef{fig:CoPhyBIP}, minimising the implementation cost while satisfying the budget constraint. Assuming we set the same weights for each query, the optimal solution would be:\texttt{\{price\}}. Although \texttt{profit} helps for multiple queries, \texttt{price} reduces the cost most for $q_3$, which is the most expensive query.
-\qed
 \end{example}
 
 \subsubsection{Summary}
@@ -754,7 +753,6 @@ The Drop algorithm starts with an exhaustive set of all index candidates, i.e., 
 \end{table}
 
 This configuration is then used by the \texttt{calculate\_cost} function. The algorithm greedily discards the least useful index. In this case, it is \texttt{revenue}. As the algorithm reaches the desired number of indices, it stops and returns the resulting index configuration, that is \texttt{\{\texttt{profit, price}\}}.
-\qed
 \end{example}
 
 \subsubsection{AutoAdmin}
@@ -980,7 +978,6 @@ The algorithm starts by finding suitable candidates for the single-column index.
 Next, a union of all candidates is formed to obtain the set of candidates $\FIndexSet$, which is \texttt{\{profit, revenue, price\}}. Afterwards, a greedy algorithm is executed to select the best indices from $\FIndexSet$. To compute the total cost of each index, the cost values from Table~\pRef{table:a1}, Table~\pRef{table:a2} and Table~\pRef{table:a3} are used. Here, the index \texttt{profit} achieves a cost of $2008$, the index \texttt{revenue} achieves a cost of $>100000$ and the index \texttt{price} achieves a cost of $1703$. The best candidate index, i.e., \texttt{price}, is selected by AutoAdmin. After that, the greedy algorithm is re-executed to select the second index. In this case, the index \texttt{profit} is selected as the total cost of \texttt{\{price, profit\}} is $1255$ according to Table~\pRef{table:dropConfig}.
 
 Finally, the algorithm generates two-column candidates. In this particular case, we have a single two-column candidate \texttt{(profit, revenue)}. As the next algorithm iteration does not lead to any greedy improvement, the algorithm yields the final solution, that is \texttt{\{price, profit\}}.
-\qed
 \end{example}
 
 \subsubsection{Anytime Database Tuning Advisor}
@@ -1055,7 +1052,6 @@ As the current price of $\FIndexConfigurationSet_{j}$ is $2008$ and the current 
 \end{table}
 
 Although \texttt{\{profit, price\}} has the highest relative benefit ratio, it exceeds the storage budget. Therefore, \texttt{\{profit, revenue\}} is selected as the next index. This leads to a sub-optimal solution, as \texttt{\{price\}} would have been a better choice.
-\qed
 \end{example}
 
 \subsection{Reinforcement Learning based algorithms}

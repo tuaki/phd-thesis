@@ -145,11 +145,9 @@ A common strategy for multi-model querying, often employed in polystores~\citep{
 Conversely, multi-model DBMSs~\citep{Jiaheng2023Survey} typically extend the query language of the original model with constructs supporting additional models (e.g., PostgreSQL's SQL extension for accessing JSON documents). This can be seen as an approximation of the inverse strategy, i.e., \textit{integration at front-end and unification at back-end}. Several approaches exist that enable the combination of two query languages (e.g., SQL/XML or SPARQL embedding in SQL in Virtuoso). However, this approach could be generalized to allow users to flexibly combine multiple query languages, each suitable for a particular data model, with recursive embedding as needed.
 
 \begin{example}
-\small
 Consider the example in Fig.~\pRef{fig:dataAndquery}a, which illustrates data integration from heterogeneous sources. Customer information is obtained from a Neo4j database representing a social network, address data is stored locally in CSV format as relational tables, and order data is retrieved from a remote web service in XML. %Each source uses a distinct data model -- graph, relational, and document.
 
 A sample query might \uv{\textit{retrieve the most frequently ordered products that appear first in the orders of customers' friends, limited to friends residing in Prague and products ordered by more than two such friends}}. The result is returned as a relational table in CSV format to support, e.g.,  personalized recommendations and targeted advertising. Intuitively, the query requires integration of Cypher for graph traversal, SQL for relational aggregation, and XQuery for filtering hierarchical data -- see Fig.~\pRef{fig:dataAndquery}b.
-\qed
 \end{example}
 
 \begin{figure}[!ht]
@@ -239,10 +237,8 @@ operator reordering or index utilization. %Optimizations aim to reduce computati
 Then, it is executed over the object data representation following the structure defined by the logical tree and ensuring that operations are performed in the correct sequence. Data streams are processed in memory, benefiting from client-side caching to reduce redundant data retrieval from storage. The query output consists of a list of objects (e.g., a list of dictionaries or simple values). The result remains in object representation within memory. DortDB does not enforce a specific output format but allows users to transform the results into desired formats.
 
 \begin{example}
-\small
 A sample workflow of DortDB is depicted in Fig.~\pRef{fig:workflow}. The user first imports data into DortDB from various sources (e.g., a web service providing invoice data, a local Neo4j database with person and friendship data, and a local file containing address data -- see Fig.~\pRef{fig:dataAndquery}a). Heterogeneous data formats are normalized into a unified TypeScript object representation, where data types are denoted by letters (\texttt{O} = object, \texttt{S} = string, \texttt{N} = number, \texttt{E} = array element). %\hl{FJ: V javascriptu jsou všechna čísla double, jazyk je označuje jako Number.} 
 The user then submits a query, which is parsed and transformed into the unified algebraic form, visualized as a simplified tree (consisting of operators and data sources), and subsequently optimized. The query is executed over the object-based data, and the result is returned. The result can be serialized into a desired format (e.g., CSV).
-\qed 
 \end{example}
 
 %Výstup je pole jednotlivých položek (pole slovníkůpole nespecifikovaných hodnot, např. řetězců) - v paměti výstup objektově reprezentovaný.

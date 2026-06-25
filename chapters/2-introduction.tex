@@ -1,6 +1,11 @@
 \section{Foundations}
 
-Our contributions are based on a preexisting approach to multi-model data modeling~\citep{mm_cat}. In this section, we introduce its main concepts and describe how it evolved into a comprehensive multi-model data management framework called \term{MM-cat}. But first, we need to explain the basic theory and terminology we will use throughout the thesis.
+Our contributions are based on a preexisting approach to multi-model data modeling~\citep{mm_cat,mm_cat_journal}. In this section, we introduce its main concepts and describe how it evolved into a comprehensive multi-model data management framework called \term{MM-cat}. But first, we need to explain the basic theory and terminology we will use throughout the thesis.
+
+\todo{Víc popsat zbytek této sekce.
+
+!navázat modeling a querying
+}
 
 \subsubsection{Common terminology}
 
@@ -33,48 +38,67 @@ A category can be mapped to another category via a \term{functor}, which is a ma
 
 The previous paragraphs are obviously a gross oversimplification of the actual theory and its application in our research. There are many nuances and technical details that we do not cover here. Yet, if we want an approach to be actually useful, it is necessary to be able to explain it in a simple and intuitive way.
 
-\subsection{MM-cat Framework}
-\label{sec:mm-cat}
+\subsection{Modeling}
+\label{sec:modeling}
 
-The basic idea of our approach is to create a \emph{unified model} of multi-model data on both conceptual and logical levels, and to use it as the basis for all the operations on the data, including querying and evolution. This unified model is based on category theory, which allows us to capture the semantics of all existing data models in a consistent way. The \term{MM-cat} framework is an implementation of this approach.
+The basic idea of our approach is to create a \emph{unified model} of multi-model data on both conceptual and logical levels, and to use it as the basis for all the operations on the data, including querying and evolution. This unified model is based on category theory, which allows us to capture the semantics of all existing data models in a consistent way.
 
-The conceptual schema is a category called \term{schema category}. Its objects represent the concepts in the domain of interest---entities and their properties, while its morphisms represent relationships between these concepts. An example of such category is shown in \Cref{fig:schema_category}. Each object has an internal identifier (not shown in the figure) and a label. By convention, entities have their labels capitalized (e.g., \object{User}) while properties have not (e.g., \object{id}). Morphisms can also have labels, but they are not displayed in the figure for simplicity. Instead, we distinguish them with \term{signatures} (in this case, integers). A signature like \signature{3.4} represents a composite morphism, which is a composition of the base morphisms with signatures \signature{3} and \signature{4}.
+The conceptual schema is a category called \term{schema category}. Its objects represent the concepts in the domain of interest---entities and their properties, while its morphisms represent relationships between these concepts.
 
-An older version of schema category~\citep{mm_cat_journal} required that each morphism had a counterpart in the opposite direction (called \term{dual morphism}) and allowed each morhism to specify a \term{cardinality} in the same way as an \acrshort{er} would (e.g., \code{0..*}). The current version does have the concept of dual morphisms. Also, the cardinalities are limited to \code{0..1} and \code{1..1} in the direction of the morphism. For example, in \Cref{fig:schema_category}, we can immediatelly see that each instance of \object{User} can have at most one instance of \object{name} (even without providing any further information). This limitation is crucial to ensure that the conceptual schema can be mapped to any data model, because it requires each N:N relationship to be decomposed to an intermediate entity with two N:1 relationships. A more fine-grained cardinality control is achieved via categorical concepts like \term{monomorphism} and \term{epimorphism}.\\
+\todo{some more stuff?}
+
+\begin{example}
+\label{ex:schema-category}
+\Cref{fig:schema-category} shows a schema category that models the data from \Cref{fig:mm-data}. Categorical objects (representing entities and properties) are displayed as ovals. Each object has an internal identifier (not shown in the figure) and a label. By convention, entities have their labels capitalized (e.g., \object{User}) while properties have not (e.g., \object{id}).
+
+Morphisms (representing relationships between entities and properties) are displayed as arrows. Each morhpism is identified by a unique integer \term{signature}. E.g., morphism with signature \signature{1} corresponds to the relationship between entity \object{Review} and its property \object{id}. Morphisms can also have human-readable labels, but they are not displayed in the figure for simplicity. Identity morphisms are omitted for the same reason, alghough they are present internally (they are required by the definition of a category).
+\end{example}
 
 \begin{figure}[ht]
     \centering
     \includegraphics[width=\textwidth]{img/commentary-schema_category.drawio.pdf}
-    \caption{An example of a schema category on the conceptual level, modelling a subset of the data from \Cref{fig:mm_data}. Objects (ovals) represent entities and properties, while morphisms (arrows) represent relationships between them. Each morphism has an integer signature. Identity morphisms (required by the definition of a category) are not shown for simplicity.}
-    \label{fig:schema_category}
+    \caption{Schema category from \Cref{ex:schema-category}, modeling the data from \Cref{fig:mm-data} on the conceptual level.}
+    \label{fig:schema-category}
 \end{figure}
 
-On the logical level, each kind has its own logical model. A logical model is also a schema category, but it is defined over a specific data model and database system. Therefore, its objects and morphisms have a very specific semantics, e.g., in a relational model, there would be an entity representing the table, properties representing its columns, and morphisms between them meaning that the columns belong to the table. Because the underlying kinds are always trees, the schema categories of logical models are also trees with a distinguished \term{root object}. An example of a logical model for a columnar database is shown in \Cref{fig:mapping}.
+Note that this definition of schema category slightly differs from the original~\citep{mm_cat,mm_cat_journal} which required that each morphism had a counterpart in the opposite direction (called \term{dual morphism}) and allowed each morhism to specify a \term{cardinality} in the same way as an \acrshort{er} would (e.g., \code{0..*}). This is intentional, as the original definition was later refined (see \paperRef{cikm_2022}).
 
-The schema category has to conform to the constraints of the underlying data model. For example, in a relational model, columns cannot contain array values, so there cannot be a morphism from a column object to the table object. However, in a document model, there is no such restriction, so we can have a morphism from a field object to a document object, representing the fact that the field is an array nested inside the document.\\
+The current version does have the concept of dual morphisms, and the cardinalities are limited to \code{0..1} and \code{1..1} \emph{in the direction of the morphism}. For example, in \Cref{fig:schema-category}, we can immediatelly see that each instance of \object{User} can have at most one instance of \object{name} (even without providing any further information). This limitation is crucial to ensure that the conceptual schema can be mapped to any data model, because it requires each N:N relationship to be decomposed to an intermediate entity with two N:1 relationships. A more fine-grained cardinality control is achieved via categorical concepts like \term{monomorphism} and \term{epimorphism}.\\
+
+On the logical level, each kind has its own logical model. A logical model is also a schema category, but it is defined over a specific data model and database system. Therefore, its objects and morphisms have a very specific semantics, e.g., in a relational model, there would be an entity representing the table, properties representing its columns, and morphisms between them meaning that the columns belong to the table. Because the underlying kinds are always trees, the schema categories of logical models are also trees with a distinguished \term{root object}.
+
+The schema category has to conform to the constraints of the underlying data model. For example, in a relational model, columns cannot contain array values, so there cannot be a morphism from a column object to the table object. However, in a document model, there is no such restriction, so we can have a morphism from a field object to a document object, representing the fact that the field is an array nested inside the document. We can also rename objects in the logical model to conform to the naming conventions of the underlying database system, or to avoid name clashes with attributes of different kinds.
+
+Finally, each logical model is connected to the conceptual schema via a \term{mapping}, which is a functor that maps objects and morphisms between both schema categories (from the logical model to the conceptual schema). This allows us to preserve the semantics of the conceptual schema while still being able to use the specific features of the underlying data model.
+
+\begin{example}
+\label{ex:mapping}
+Continuing \Cref{ex:schema-category}, \Cref{fig:mapping} displays a logical schema category for the columnar database from \Cref{fig:mm-data} (in red), mapped to the conceptual schema category from \Cref{fig:schema-category}. The root object of the logical model is \object{review}, which is mapped directly to the \object{Review} object in the conceptual schema.
+
+Table \object{review} cannot have a column \object{user}, because user is an entity and columnar model does not support nested structures. However, we can \term{inline} the \object{id} property into the \object{review} table by defining the object \object{user\_id} (mapped to the object \object{id} from the conceptual schema), and the morphism \signature{3.4} (mapped to the morphism from \object{Review} to \object{id} in the conceptual schema). The dot symbol represents a composite morphism---in this case, morphism \signature{3.4} corresponds to the composition of morphisms \signature{3} and \signature{4}.
+
+Because the schema category of the logical model is a always a tree, we can express both it and its mapping to the conceptual schema in a single \acrshort{json}-like structure. It shows the root object, its attributes, and the signatures of the morphisms to them (displayed on the right of the figure).
+\end{example}
 
 \begin{figure}[ht]
     \centering
     \includegraphics[width=\textwidth]{img/commentary-mapping.drawio.pdf}
-    \caption{An example of a logical model for a columnar database (red), mapped to the conceptual schema from \Cref{fig:schema_category} via a functor. Because the schema category of the logical model is a tree, we can express both it and its mapping to the conceptual schema in a single \acrshort{json}-like document (on right).}
+    \caption{A mapping between a logical model for the columnar database from \Cref{fig:mm-data} and the conceptual schema from \Cref{fig:schema-category}. Entities \object{Friend} and \object{Attributes} are omitted for simplicity.}
     \label{fig:mapping}
 \end{figure}
 
-Finally, each logical model is connected to the conceptual schema via a \term{mapping}, which is a functor that maps objects and morphisms between both schema categories (from the logical model to the conceptual schema) while preserving their structure. For example, the \Cref{fig:mapping} shows a mapping from the logical model of a columnar database to the conceptual schema from \Cref{fig:schema_category}. A logical model for a table \object{review} cannot have a column \object{user}, because user is an entity and columnar model does not support nested structures. However, we can \term{inline} the \object{id} property into the \object{review} table by using a logical model with objects \object{review} and \object{user\_id} (mapped to \object{Review} and \object{id} from the conceptual schema), and a morphism between them (mapped to the composite morphism from \object{Review} to \object{id} in the conceptual schema).
+\begin{example}
+\label{ex:mapping-other}
+Logical models of other kinds from \Cref{fig:mm-data} can be mapped to the conceptual schema in a similar way. \Cref{fig:mapping-other} shows the logical model for the relational database (in purple), the document database (in green), and the graph database (in blue). The mappings are omitted for simplicity, but they are similar to the one in \Cref{fig:mapping}.
 
-Besides the structural changes, the mapping can also rename objects---for example, to conform to the naming conventions of the underlying database system, or to avoid name clashes with attributes of different kinds.
-
-\subsubsection{Tools}
-
-MM-cat framework is an umbrella term for a family of tools based on the above-described unified representation. The first one, also called \term{MM-cat}~\citep{mm_cat}, enables multi-model data modeling, as well as transformation of data between various models. The second one, \term{MM-evocat} (\paperRef{cikm_2022}), adds the ability to evolve the conceptual schema and propagate changes. \term{MM-infer}~\citep{mm_infer}, later extended in \paperRef{enase_2025, edbt_2025}, allows to infer the conceptual schema and logical models from the data. \term{MM-quecat}~\citep{mm_quecat} resp. \term{MM-evoque} (\paperRef{edbt_2024}) enables querying multi-model data using a unified query language resp. propagating changes from the conceptual schema to the queries. Finally, \term{MM-mapsearch} (\paperRef{edbt_2026}) explores the concept of self-adaptation.
-
-The overall architecture of the system is shown in \Cref{fig:architecture}. The tools roughly correspond to the milestones from \Cref{sec:vision}, however, in practice they are more of different \emph{use cases} of one unified system than a set of separated tools. This proof-of-concept implementation is crucial for testing the proposed approach and demonstrating its feasibility.
+Note that the \object{Attributes} entity is represented by the \object{attributes} document, which is nested inside the \object{business} document. This is a common pattern in document databases, where related data is often stored together in a single document for performance reasons. Next, the graph database contains two logical models---one for the node label \object{User} and one for the edge label \object{FRIEND}. Lastly, the column \object{yelping\_since} from the relational database is mapped to the property \object{createdAt}, showing us that objects in the conceptual schema can be renamed whenever necessary.
+\end{example}
 
 \begin{figure}[ht]
     \centering
-    \includegraphics[width=\textwidth]{img/commentary-architecture.drawio.pdf}
-    \caption{Architecture of the MM-cat framework, showing the main tools and their interactions. The arrows represent the flow of data and control between the artifacts on the three levels of abstraction. The colors of the arrows don't have any particular meaning.}
-    \label{fig:architecture}
+    \includegraphics[width=\textwidth]{img/commentary-mapping_other.drawio.pdf}
+    \caption{Logical models for the relational, document, and graph databases from \Cref{fig:mm-data}.}
+    \label{fig:mapping-other}
 \end{figure}
 
 \subsection{Querying}
@@ -90,24 +114,69 @@ Lastly, one of the primary motivations for using multi-model data is the perform
 
 These requirements led us to the development of \term{MMQL} (\textbf{M}ulti-\textbf{m}odel \textbf{q}uery \textbf{l}anguage)~\citep{mm_quecat, koupil2023universal}. MMQL is a query language over the schema category, making it independent of both the underlying data models and the specific databases. After parsing, the query engine splits the query into maximal subqueries that can be executed on a single database, translates them to the native query languages, executes them, and finally combines the results.
 
-The syntax of MMQL is based on SPARQL, as it is a well-known and widely used query language for graph data (and schema category can be represented as a multigraph). Each triple pattern in the query corresponds to a morphism in the schema category, together with its domain and codomain objects. However, the similarity to SPARQL is just syntactic, as both objects and morphisms in the schema category can have very different semantics dependent on the underlying data models and databases. E.g., one morphism can represent a join in a relational database, a relationship kind in a property graph database, or a nested document in a document database. An example of MMQL query is displayed in \Cref{fig:querying}.
+The syntax of MMQL is based on SPARQL, as it is a well-known and widely used query language for graph data (and schema category can be represented as a multigraph). Each triple pattern in the query corresponds to a morphism in the schema category, together with its domain and codomain objects. However, the similarity to SPARQL is just syntactic, as both objects and morphisms in the schema category can have very different semantics dependent on the underlying data models and databases. E.g., one morphism can represent a join in a relational database, a relationship kind in a property graph database, or a nested document in a document database.
+
+A single \term{query plan} is created by matching the patterns in the query to the available logical models (via the mappings from the schema category). Because of redundancy, more than one combination might be possible. In that happens, multiple query plans are created and the best one is chosen based on the estimated cost.
+
+\begin{example}
+\label{ex:querying-single}
+Going back to the schema category from \Cref{fig:schema-category}, we can query the following information: \emph{Find all businesses that allow dogs. For each business, return its name and whether it has TV available}. This process is displayed in \Cref{fig:query-single}.
+
+First, we use the \code{WHERE} clause to express the pattern we want to match in the logical models. The names of the variables (prefixed with the \code{?} symbol) are arbitrary, as the triples are identified by the signatures of the morphisms. Next, the \code{SELECT} clause describes the structure of the result, which is an object with two fields---\code{name} and \code{hasTV}.
+
+In the example, the \code{WHERE} pattern is matched to the logical model of the document database (in this case, MongoDB), so the query engine translates it directly to the native query language. After executing the query, the results are projected to the structure defined in the \code{SELECT} clause and returned to the user.
+\end{example}
 
 \begin{figure}[ht]
     \centering
-    \includegraphics[width=\textwidth]{img/commentary-querying.drawio.pdf}
-    \caption{Example of MMQL over the schema category from \Cref{fig:schema_category}. In the \code{WHERE} clause, we express the pattern to match via the signatures of the morphisms. We can also filter, order, or group the data. The \code{SELECT} describes the structure of the result.}
-    \label{fig:querying}
+    \includegraphics[width=\textwidth]{img/commentary-query_single.drawio.pdf}
+    \caption{A MMQL query from \Cref{ex:querying-single} and its translation to the MongoDB query language.}
+    \label{fig:query-single}
 \end{figure}
 
-A single \term{query plan} is created by matching the patterns in the query to the available logical models (via the mappings from the schema category). In case of multiple possible combinations (i.e., if the same data is stored in multiple databases), multiple query plans are created and the best one is chosen based on the estimated cost.
+\begin{example}
+\label{ex:querying-multi}
+\Cref{fig:query-multi} shows another query: \emph{Find all reviews with at least 3 stars about a business with id \code{bus\#679}, ordered by the number of stars (ascending). For each review, return the stars and the author's name}. 
 
-Optimizations play a crucial role in this process. We have explored, implemented, and evaluated several techniques to improve the performance of MMQL queries~\citep{strobl-mastersthesis}:
+This time, we need \code{FILTER} and \code{ORDER BY} clauses to filter and order the results. There is no logical model that contains all the required information, so the query engine splits the query into two subqueries---one for the columnar database and one for the relational database. The query engine then joins the results of both subqueries based on the \object{id} property of the \object{User} entity and projects them to the output structure.
+\end{example}
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=\textwidth]{img/commentary-query_multi.drawio.pdf}
+    \caption{A MMQL query from \Cref{ex:querying-multi} and its translation to \acrshort{sql} for a relational and a columnar database.}
+    \label{fig:query-multi}
+\end{figure}
+
+Optimization of query plans is crucial for the performance of any database system. In our case, it is even more important, as we have to deal with multiple databases at the same time. We do not try to optimize the native queries themselves, as that is the responsibility of the underlying applications. Instead, we have explored, implemented, and evaluated several techniques to improve the performance of the MMQL query engine~\citep{strobl-mastersthesis}:
 
 \begin{itemize}
     \item \term{Predicate pushdown} -- Generally, it is more efficient to filter the data as early as possible, ideally in the underlying databases, so we push the predicates down along the query plan tree. Not all operations can be pushed to the databases (e.g., cross-database joins), so they are executed in the query engine. In some cases, the databases do not support certain operations (e.g., aggregation), or they might not be very efficient (e.g., lookups in MongoDB), so we have to execute them by ourselves as well.
-    \item \term{Dependent joins} -- If one side of a join depends on the results of the other side, we might be able to push this as a \uv{filter} to the database. E.g., when two kinds are joined on a key, we can query one of them first and then use the possible key values as a filter for the second one. This is especially beneficial when the first kind is already heavily filtered by other predicates.
+    \item \term{Dependent joins} -- If one side of a join depends on the results of the other side, we might be able to push this as a \uv{filter} to the database. E.g., when two kinds are joined on a key, we can query one of them first and then use the possible key values as a filter for the second one. This is especially beneficial when the first kind is already heavily filtered by other predicates. This is shown in \Cref{fig:query-multi}.
     \item \term{Cost estimation} -- The cost of plans and subplans is the most important factor for plan creation and selection. We have implemented cache-based cost estimation, allowing us to reuse the results of previous queries and to learn from them over time. We have also implemented a simple cost model based on the cost estimated by the databases and the number of records processed by each operation, which is used when there is no information in the cache.
 \end{itemize}
+
+\subsection{MM-cat framework}
+
+\term{MM-cat} framework is an umbrella term for a family of tools based on the above-described unified representation. They provide a proof-of-concept implementation that allows us to test the proposed approach, evaluate its feasibility, and demonstrate its capabilities.
+
+\begin{itemize}
+    \item \term{MM-cat}~\citep{mm_cat} (the first tool has the same name as the whole framework) enables multi-model data modeling, as well as transformation of data between various models.
+    \item \term{MM-evocat} (\paperRef{cikm_2022}) adds the ability to evolve the conceptual schema and propagate changes.
+    \item \term{MM-infer}~\citep{mm_infer} (later extended in \paperRef{enase_2025, edbt_2025}) allows to infer the conceptual schema and logical models from the data.
+    \item \term{MM-quecat}~\citep{mm_quecat} enables querying multi-model data using MMQL.
+    \item \term{MM-evoque} (\paperRef{edbt_2024}) allows propagating changes from the conceptual schema to the queries.
+    \item \term{MM-mapsearch} (\paperRef{edbt_2026}) explores the concept of self-adaptation.
+\end{itemize}
+
+The overall architecture of the system is shown in \Cref{fig:architecture}. There are three levels of abstraction (conceptual, logical, and physical), each with its own artifacts (schema categories, mappings, and data). The arrows show interactions between various parts of the system enabled by the tools. For example, MM-infer observes the data and infers both the conceptual and the logical schema categories. The MM-cat tool has two distinct components (\emph{modeling} and \emph{transformations}), which are displayed separately. The colors of the arrows don't have any particular meaning, they are just used to distinguish between different interactions. Although the tools roughly correspond to the capabilities described in \Cref{sec:vision}, in practice, they are more of different \emph{use cases} of one unified system than a set of separated tools.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=\textwidth]{img/commentary-architecture.drawio.pdf}
+    \caption{Architecture of the MM-cat framework, showing the main tools and their interactions.}
+    \label{fig:architecture}
+\end{figure}
 
 \subsection{Related Work}
 \label{sec:foundations-related-work}

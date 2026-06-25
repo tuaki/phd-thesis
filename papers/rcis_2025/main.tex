@@ -95,10 +95,9 @@ The core and the integration point of all our solutions is an abstract represent
 The decomposition of a schema category $\mathbf{S}$, eventually partial or overlapping, is defined via a set of \textit{mappings}. For each kind, the mapping specifies where and how its records are stored in a selected single-/multi-model DBMS utilizing a concept of \textit{functor}, which mutually maps corresponding objects of logical and conceptual schemas and preserves the hierarchical structure of a kind.% using a so-called \textit{access path}, which recursively describes the structure of a kind.
 
 \begin{example}
-\small
 Consider a part of the sample multi-model scenario in Figure~\pRef{fig:example_workflow_running_example}(c). %which covers a part of the \emph{Yelp Academic Dataset}\footnote{\url{https://www.kaggle.com/datasets/yelp-dataset/yelp-dataset/data}} which we use as the running example and also for experimental purposes (see Section~\pRef{sec:experiments}). It involves a relational table (purple) \emph{User} describing users whose friends are captured in another relational table \emph{Friends}. The document (green) model, i.e., collection \emph{Business}, is used to represent information about businesses, whereas the blue (graph) model provides the mapping of users to their businesses. A schema category modelling such data is shown in Figure~\pRef{fig:example_workflow_running_example}c. The colors correspond to the particular logical models.
 In the categorical schema, kinds \emph{User} and \emph{Business} (whose root objects are highlighted with colors) are mapped to the respective relational table (purple) and document collection (green). The kind \emph{User} has only simple properties, e.g., \emph{name} or \emph{fans} (we omit the most common morphism label \emph{\texttt{\#property}} for morphisms of semantics \uv{has a property}). In the curly braces, we can see the identifiers of the kinds, e.g., \emph{user\_id} for kind \emph{User}. The kind \emph{Business} also has a complex property \emph{address} consisting of several simple properties (e.g., \emph{city} and \emph{street}). There is also kind \emph{Tip}, which represents the relationship of kinds denoted using the respective morphisms with label \emph{\texttt{\#role}}, of semantics \uv{has a role} (i.e., \emph{User} and \emph{Business}). %It is mapped to the respective graph pattern. 
-Kind \emph{Friends} represents an array of pairs of objects denoted using morphisms with label \emph{\texttt{\#role}}, whose position is given by the simple property \emph{\_INDEX}. Last but not least, complex property \emph{attributes} of kind \emph{Business} represents a map of \emph{(key, value)} pairs associated with kind \emph{Business}.\qed
+Kind \emph{Friends} represents an array of pairs of objects denoted using morphisms with label \emph{\texttt{\#role}}, whose position is given by the simple property \emph{\_INDEX}. Last but not least, complex property \emph{attributes} of kind \emph{Business} represents a map of \emph{(key, value)} pairs associated with kind \emph{Business}.
 \end{example}
 
 % \begin{figure}[h]
@@ -331,7 +330,6 @@ Complex SMOs aim to mediate transformations on existing parts of the schema cate
 
 
 \begin{example}
-\small
 Consider the examples from Figure~\pRef{fig:example_workflow_running_example} illustrating categorical schema automatically inferred~\citep{koupil2022mminfer} from the \textit{Yelp Academic Dataset}\footnote{\url{https://www.yelp.com/dataset}}, subsequently modified using SMOs and changes propagated to data. %Colors again represent data models: green for document and violet for relational. 
 SMO-targeted areas are highlighted in yellow.
 
@@ -341,7 +339,6 @@ Relationship objects \emph{Review} and \emph{Tip} include morphisms labeled \tex
 As we can see, the automatic schema inference led to unnatural structures. For instance, kind \emph{Business} includes a complex property \emph{attributes}, comprising 39 optional properties, each found in 19 to 119,765 source documents. Hence, we transformed property \emph{attributes} into a map (using SMO \emph{asMap()}). Also, kind \emph{Business} contains several properties forming an address (e.g., \emph{state}, \emph{city}, etc.). So, we renamed \emph{address} to \emph{street} (using SMO \emph{rename()}) and grouped related properties into a complex property \emph{address} (using SMO \emph{group()}). Furthermore, we converted properties \emph{friend} and \emph{date} into arrays (using SMO \emph{asArray()}), resulting in \textbf{Version 2} in Figure~\pRef{fig:example_workflow_running_example}(b).
 
 Subsequently, we applied SMOs \emph{deleteMapping()} and \emph{createMapping()} to change the logical representation of the data, i.e., we restructured kinds \emph{User} and \emph{Friends} into separate relational tables (violet). Finally, we embedded kind \emph{Checkin} into kind \emph{Business} via \emph{updateMapping()} and deleted the original kind \emph{Checkin}. These SMOs resulted in the categorical schema \textbf{Version 3} in Figure~\pRef{fig:example_workflow_running_example}(c).%, as shown in Figure~\pRef{fig:example_workflow_running_example}.
-\qed
 \end{example}
 
 \subsection{Propagation to Data}
@@ -378,10 +375,9 @@ Without optimal propagation, query performance deteriorates.
 
 \begin{example}
 \pLabel{ex:query}
-\small
 Let us introduce an example of the impact of capacity-decreasing SMOs on representative queries. Figure~\pRef{fig:strategy:fdep}(a) illustrates a fragment of the Version 3 schema from Figure~\pRef{fig:example_workflow_running_example}(c), where modifications are performed using the SMOs \emph{deleteProperty()}, \emph{createProperty()}, and \emph{rename()}. Additionally, Figure~\pRef{fig:strategy:fdep}(a) presents three specific queries: \textbf{$Q_1$:} \uv{Retrieve the \textit{text} and \textit{stars} from \textit{Reviews} where \textit{review\_id} exceeds 100}, \textbf{$Q_2$:} \uv{Retrieve pairs of (\textit{state, countOfBusinesses}) representing the number of businesses in each state}, and \textbf{$Q_3$:} \uv{Retrieve all \textit{Reviews} ordered by \textit{review\_id}}.
 
-The capacity-decreasing SMO \emph{deleteProperty(review\_id)} affects queries $Q_1$ and $Q_3$, while SMO \emph{deleteProperty(state)} impacts $Q_2$.\qed
+The capacity-decreasing SMO \emph{deleteProperty(review\_id)} affects queries $Q_1$ and $Q_3$, while SMO \emph{deleteProperty(state)} impacts $Q_2$.
 \end{example}
 
 %Several strategies can be used to solve the query rewriting issues:
@@ -396,7 +392,6 @@ The first propagation option involves replacing the removed column with a \texti
 The representation of phantom values varies based on the query $Q$ where property $p$ is removed. If $p$ appears only in filtering conditions, the phantom can be a bitmap indicating whether each row was part of the original result by modifying the filter condition to $p = \texttt{True}$. For clauses such as \texttt{DISTINCT}, aggregation functions, and \texttt{JOIN}, the original values are replaced with enumerated values from a less memory-intensive domain (e.g., replacing strings with integers). For the \texttt{ORDER BY} clause, the order is maintained using ordered unsigned integers while retaining original values for projection. A minimal memory \textit{footprint} is sought since the phantom size matches the number of original records. For each query, a phantom of the deleted column can be created (e.g., using multiple bitmaps for greater memory efficiency). For some queries, phantoms can be consolidated into fewer representations. % using appropriate methods.
 
 \begin{example}
-\small
 Consider capacity-decreasing operations from Figure~\pRef{fig:strategy:fdep}(a) that are applied to $review\_id$ in kind \emph{Review} and $state$ in the address of kind $Business$, impacting queries $Q_1$--$Q_3$.
 Let us analyze them to %identify those impacted by the SMO and 
 determine the optimal phantom representation based on query composition.
@@ -405,7 +400,7 @@ For example, removing $review\_id$ impacts both selection $reviews > rew\#100$ i
 
 Aggregation in $Q_2$ adds additional complexity. If the aggregated value is excluded from the result, replacing strings with primitive enumeration values conserves memory (as a resulting phantom representation, as illustrated in Figure~\pRef{fig:strategy:fdep}(b)). Conversely, if included, the original values must be retained, resulting in phantoms as memory intensive as the original data.
 
-In all cases, the modified queries still yield results identical to their originals. \qed
+In all cases, the modified queries still yield results identical to their originals.
 \end{example}
 
 \afterpage{
@@ -433,11 +428,10 @@ A \textit{relaxed functional dependency} (RFD) generalizes an FD by introducing 
 Inspired by the approach in~\citep{DBLP:conf/er/CaruccioPT18}, we can synchronize queries using (relaxed) functional dependencies to maintain the original query semantics. Furthermore, we categorize (R)FDs as surjective or injective. A surjective FD enables the replacement of all values in the deleted column, while an injective FD ensures that the replacement values are unambiguous.
 
 \begin{example}
-\small
 To assess the substitutability of a removed property, valid (relaxed) FDs are utilized (see Figure~\pRef{fig:strategy:fdep}(c) and~\pRef{fig:strategy:fdep}(d)). For example, removing $review\_id$ from kind \textit{Review} is governed by FD $user\_id, business\_id, date \rightarrow review\_id$, allowing the replacement with $(user\_id, business\_id, date)$. This substitution preserves review identification but complicates queries, making filtering operation inefficient (see $Q_1$ in Figure~\pRef{fig:strategy:fdep}(c)) and significantly altering ordering in result (i.e., $Q_3$ cannot be reconstructed). 
 A more efficient alternative uses relaxed FD $date \rightarrow review\_id$, improving filtering (see $Q_1$ in Figure~\pRef{fig:strategy:fdep}(d)) but possibly including additional documents when multiple reviews share the same date and causing slight discrepancies in ordering (see $Q_3$ in Figure~\pRef{fig:strategy:fdep}(d)). 
 
-For aggregation queries, employing FD $city, postalCode \rightarrow state$ changes the aggregation root but permits result recovery through transformation and external knowledge (see $Q_2$ in Figure~\pRef{fig:strategy:fdep}(c)). However, the relaxed FD $city \rightarrow state$ may not accurately reproduce results when cities share names between states (see $Q_2$ in Figure~\pRef{fig:strategy:fdep}(d)).\qed
+For aggregation queries, employing FD $city, postalCode \rightarrow state$ changes the aggregation root but permits result recovery through transformation and external knowledge (see $Q_2$ in Figure~\pRef{fig:strategy:fdep}(c)). However, the relaxed FD $city \rightarrow state$ may not accurately reproduce results when cities share names between states (see $Q_2$ in Figure~\pRef{fig:strategy:fdep}(d)).
 \end{example}
 
 

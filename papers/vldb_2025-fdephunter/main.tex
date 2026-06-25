@@ -169,11 +169,9 @@ tuple~$t_0$ using real-world values so that the values of LHS attributes match $
 
 \begin{example}
 \pLabel{example:negativeExamples}
-\small
 Fig.~\pRef{fig:dataset} shows a sample from the real-world IMDB title dataset\footnote{\url{https://developer.imdb.com/non-commercial-datasets/}, accessed July 2025}. Fig.~\pRef{fig:armstrong} shows an Armstrong relation created from the sample. 
 % $DE \rightarrow A$, $A \rightarrow B$, , $E \rightarrow B$, $A \rightarrow C$, $DE \rightarrow C$, $A \rightarrow D$, $CE \rightarrow D$, $A \rightarrow E$, $CD \rightarrow E$
 The positive examples (marked with red squares) form an Armstrong relation that satisfies twelve minimal FDs (e.g., $CD \rightarrow A$, $CE \rightarrow A$, $C \rightarrow B$). By adding the negative example (yellow), the Armstrong relation violates the FD $C \rightarrow B$. Finally, Fig.~\pRef{fig:lattice} presents a lattice diagram for the class of $A$ (denoted by $c_A$), where elements of $\mathcal{M}_{c_A}$ are shown in solid red, their subsets as outlined red nodes, minimal FDs in solid blue, and derived FDs as outlined blue nodes. This visualization provides an intuitive map of the combinations of attributes that determine the RHS within each FD class.
-%\qed
 \end{example}
 
 \begin{figure}[ht]
@@ -245,8 +243,7 @@ Both steps ultimately yield a collection of genuine FDs by incrementally elimina
 While the worst-case number of examples a user must review is $2^n$ (lattice size), in our experience this remains manageable in practice, especially for small datasets with many genuine FDs.
 
 \begin{example}
-\small
-Fig.~\pRef{fig:enter-label} illustrates the iterative workflow for identifying genuine FDs from the dataset in Fig.~\pRef{fig:dataset}. The initial phase outputs maximal sets and FDs depicted as a lattice alongside the corresponding Armstrong relation. Each iteration eliminates FDs, from the smallest to the largest LHS. Negative examples targeting $LHS=A$ and $LHS=BCD$ are rejected as~$A$ is an identifier and $BCD \rightarrow E$ is genuine (e.g., two series episodes may share genre $E$ but have distinct identifiers $A$). Finally, the user accepts the remaining maximal sets, ensuring no ghost FDs are in the dataset.%\qed
+Fig.~\pRef{fig:enter-label} illustrates the iterative workflow for identifying genuine FDs from the dataset in Fig.~\pRef{fig:dataset}. The initial phase outputs maximal sets and FDs depicted as a lattice alongside the corresponding Armstrong relation. Each iteration eliminates FDs, from the smallest to the largest LHS. Negative examples targeting $LHS=A$ and $LHS=BCD$ are rejected as~$A$ is an identifier and $BCD \rightarrow E$ is genuine (e.g., two series episodes may share genre $E$ but have distinct identifiers $A$). Finally, the user accepts the remaining maximal sets, ensuring no ghost FDs are in the dataset.
 \end{example}
 
 \paragraph{Architecture and Implementation}

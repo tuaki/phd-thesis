@@ -1,6 +1,6 @@
 \section{Self-adaptation}
 
-With the categorical representation of multi-model data (see \Cref{sec:mm-cat}) and the capabilities of querying and evolution (\Cref{sec:querying,sec:evolution-propagation}), we have a solid foundation for managing multi-model data. Now we can focus on optimizing it.
+With the categorical representation of multi-model data (see \Cref{sec:modeling}) and the capabilities of querying and evolution (\Cref{sec:querying,sec:evolution-propagation}), we have a solid foundation for managing multi-model data. Now we can focus on optimizing it.
 
 In its most basic form, the problem we are trying to solve can be described as follows. We assume a fixed conceptual schema, a \term{workload} (a set of weighted queries), and a set of all available databases. Let us define \term{configuration} as a set of logical models of these databases that is capable of answering all queries in the workload. The goal is to find a configuration that minimizes the overall query latency. To define the problem more precisely, we derived the following open questions:
 
@@ -43,12 +43,16 @@ In our approach, the categorical representation provides a unified view of the c
 An in-depth description and a proof-of-concept implementation of the proposed approach is provided in \paperRef{edbt_2026}. A short summary is provided in the following sections, together with a few improvements that we have made since the publication of that paper.
 
 \todo{obrázky a příklady}
+% \begin{example}
+% \label{ex:mapping}
+% \todo{mapování}
+% \end{example}
 
 \subsubsection{State Space}
 
 In our approach, we consider entities, not properties, to be the most basic building blocks. I.e., if an entity is mapped to a kind, all of its properties are mapped to the attributes of that kind. Then, a configuration tells us in which database(s) each kind is stored, and to which other kind (if any) is embedded\footnotei{Since we don't deal with the internal structure of the kinds, we do not distinguish between embedding and inlining, so we use the term \uv{embedding} for both.}{.} This limitation allows us to define a finite state space, as there is only a finite number of ways to assign the kinds to the available databases and to embed them into each other.
 
-For example, consider the conceptual schema in \Cref{fig:schema_category}. It contains three entities: \object{User}, \object{Review}, and \object{Business}. Let us assume that we have three databases available: a relational database, a document database, and a graph database. We could define \term{state vector} as a vector of three elements, where each element corresponds to one entity and contains the database to which it is assigned. An \term{embedding vector} would also have three elements, where each element contains the entity into which the corresponding entity is embedded (or \code{none}).
+For example, consider the conceptual schema in \Cref{fig:schema-category}. It contains three entities: \object{User}, \object{Review}, and \object{Business}. Let us assume that we have three databases available: a relational database, a document database, and a graph database. We could define \term{state vector} as a vector of three elements, where each element corresponds to one entity and contains the database to which it is assigned. An \term{embedding vector} would also have three elements, where each element contains the entity into which the corresponding entity is embedded (or \code{none}).
 
 This representation of state has one major issue---it does not allow redundancy, so if kinds used in a query are stored in multiple databases, the query has to be cross-model, resulting in a significant performance penalty. Such penalty is likely to outweight the benefits of using multiple databases, so the search process would lead to single-database configurations. To address this issue, we have replaced the previous two vectors with a \term{state matrix}. Its columns correspond to the entities, while its rows correspond to the databases. The values are on of:
 

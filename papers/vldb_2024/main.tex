@@ -111,7 +111,8 @@ In Section~\pRef{section:future}, we describe our planned steps. In Section~\pRe
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{Initial Framework}\pLabel{section:framework}
+\section{Initial Framework}
+\pLabel{section:framework}
 
 In our research group, we have proposed several solutions to selected aspects of unified and efficient multi-model data management. We have also implemented tools for their experimental verification. This toolset represents the initial framework we currently intend to enhance by exploiting AI to automate data management.
 
@@ -123,9 +124,8 @@ This unifying representation enables us to \uv{grasp} any combination of models 
 %There are two advantages of this approach. First, we can easily map any database schemas to a single schema category. Second, we can define system-specific categories for each database system and then create a \emph{mapping} between them and the schema category. 
 
 \begin{example}  
-\small
 An example of a schema category can be found in Fig.~\pRef{figure:workflow-2}. The schema category is mapped only to the relational database model (denoted using the violet colour). On the other hand, in Fig.~\pRef{figure:workflow-3b}, we can see the same schema category after an evolution of the mapping. It is now mapped to relational (violet) and document (green) models.
-\qed\end{example}
+\end{example}
 
 \begin{figure}[h]
     \centering
@@ -174,11 +174,9 @@ The change usually starts with a modification of the schema category. First, we 
 However, the change might start with the mappings (compare Figs.~\pRef{figure:workflow-2} and~\pRef{figure:workflow-3b}). For example, we might want to alter the way we store data in a specific database system or add a new system altogether. In that case, we have to update the mappings and then propagate the changes to the queries, though the schema category is unaffected.
 
 \begin{example}
-\small
 The evolution process is depicted in Fig.~\pRef{figure:mmcat-evolution}. The user changes the schema category, the mappings, or both. The changes are then automatically propagated to the rest of the system.
 
 The propagation of the changes to the data can be, in some cases, mediated by the querying feature. For example, suppose we want to split an object (e.g., an Address) into two (e.g., a Street and a City) based on a specific rule. In that case, we may first create the new objects and then internally use a query with a \texttt{SPLIT} function to extract the data about the street and the city from the original object.
-\qed
 \end{example}
 
 \begin{figure}[h]
@@ -193,14 +191,16 @@ Currently, evolution is managed in the framework by two tools: \textit{MM-evocat
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% \section{Experiments}\pLabel{section:experiments}
+% \section{Experiments}
+% \pLabel{section:experiments}
 % A solid theoretical background is crucial, but when it comes to database solutions, it has to be validated in real-world scenarios, which can exhibit specific behaviours different from general expectations. Therefore, we are developing a robust application to both test and demonstrate the capabilities of our framework. All the features mentioned above are implemented within the mentioned proof-of-concept tools, but only in a limited way. For example, we support only selected SMOs, a subset of the MMQL language, and three database systems (although we cover the most used data models, i.e., the relational, document, and graph ones). The target application will integrate and significantly extend the tool mentioned above. The connecting point is the schema category, which can be modelled (using \textit{MM-cat}), inferred (using \textit{MM-infer}), modified (using \textit{MM-evocat} and \textit{MM-evoque}) and queried (using \textit{MM-quecat}).
 
 % This setup allowed us to validate our approach on real-world datasets (e.g., the \textit{Yelp Academic Dataset}\footnote{\url{https://www.kaggle.com/datasets/yelp-dataset/yelp-dataset/data}})~\citep{sac24}. We have also tested the performance of our algorithms. The results are promising, but much work still needs to be done. %Last but not least, we tested the usability of our framework by implementing a simple web application as a UI.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{Future Plans}\pLabel{section:future}
+\section{Future Plans}
+\pLabel{section:future}
 Currently, we have a solid theoretical background and proof-of-concept tools to integrate and extend to the final robust solution. It may seem that the only work left is to optimize the algorithms and finish the implementation. And that would be the case in the world of single-model databases, where we can rely on a skilled database administrator to manage the whole system. In the case of multi-model data, however, we still have to deal with different database systems, models, optimization strategies, etc. Our framework can shield the users from all databases' complexity and specific (often contradictory) features. But the principal question now becomes: \uv{\textit{How to optimally distribute data between the particular data models and respective database systems with requirements changing over time?}}.
 
 We cannot rely only on human experts for more complex use cases. Therefore, our main future aim is an AI-powered solution. The general idea is that the user would design the system-indepen\-dent schema while the framework would decide how to distribute the data among the available database systems. And over time, the framework will propose modifications to the schema category.
@@ -227,7 +227,8 @@ There are also many open datasets and even some query datasets. But they usually
 Both these approaches solve us the core problem of AI-based approaches -- where to gain high-quality training data.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Open problems}\pLabel{section:open-problems}
+\section{Open problems}
+\pLabel{section:open-problems}
 Besides identifying the data management tasks where AI can be utilised to lower user interaction and to select the optimal approach, we face more specific challenges.
 %In the previous sections, we described the current state of our research and our plans for the future. Now, we will discuss some of the open problems we are unsure how to solve.
 

@@ -60,7 +60,6 @@ Integrating different data models within a larger system, such as a polystore or
 % \begin{example}
 % Fig.~\pRef{fig:multi-model-data} provides an example of a multi-model use case. The relational model (violet) represents ... The document model (green) represents ...
 % The wide-column model (red) represents ...
-% \qed
 % \begin{figure}[ht]
 %     \centering
 %     %\includegraphics[width=\textwidth]{sample-data.pdf}
@@ -87,7 +86,6 @@ Each morphism $m \in \mathcal{M}_\mathbf{S}$ is represented as a tuple $(signatu
 
 % \begin{example}
 % Fig.~\pRef{fig:schema_category} provides an example of a schema category describing the sample multi-model data from Fig.~\pRef{fig:multi-model-data}\footnote{Note that for simplicity, we do not visualize the most common case of \uv{has a property}.}. The roots of the respective kinds are denoted using the respective colours of the models. So are the dashed borders of the particular mappings.
-% \qed
 % \begin{figure}[ht]
 %     \centering
 %     %\includegraphics[width=\textwidth]{schema-category.pdf}
@@ -134,8 +132,8 @@ The green nodes represent the roots of the respective kinds. In the compound bra
 As we can see, the quality of the initial schema category is limited by the input data quality, the input model's specific features, and the capabilities of automatic schema inference
 of \emph{MM-infer} 
 In particular, the properties denoted with red color bear values of identifiers of various kinds, as they probably represent the respective references. E.g., kind \code{Review} is identified by \code{review\_id}, but it also involves \code{user\_id} of the user who created the review and \code{business\_id} of the reviewed business. This cannot be captured using JSON, but we want to capture this information in the schema category and use it later. Similarly, kind \code{User} has a set of properties (denoted with pink color) that have the same (in this case simple) structure and semantics (as we can guess from their names \code{compliment\_*}) and differ only in type. And there might be lots of such properties. So, at the categorical (conceptual) level, expressing them as a single property with a particular type might make more sense and can be represented better in another logical model.
-\qed
 \end{example}
+
 \begin{figure}[ht]
     \centering
     \includegraphics[width=\textwidth]{papers/enase_2025/figures/sk-initial.png}
@@ -152,7 +150,6 @@ to solve the issues. \footnote{Some issues can be solved
 in \emph{MM-infer} 
 (semi-)automatically, we use them just for illustration.} 
 First, the users replaced repeating occurrences of properties \code{business\_id} and \code{user\_id} and expressed the references using the morphisms with the respective direction (the new morphisms are emphasized with dotted arrows). Second, the properties of kind \code{User} that are structurally and semantically equivalent were merged and transformed into a single property with a respective property \code{\_TYPE}.
-\qed
 \end{example}
 
 \begin{figure}[ht!]
@@ -167,14 +164,14 @@ First, the users replaced repeating occurrences of properties \code{business\_id
 Having the edited schema category, we can 
 use \emph{MM-evocat} again to 
 modify the mapping (initially to the input document model). Following \textbf{scenario~A}, we want to transform all the JSON document data into the relational model. The situation is depicted in Fig.~\pRef{fig:sk-mapping-3A}, where the users changed the mapping of the whole schema category to the relational model (violet). Namely, the original kinds \code{User}, \code{Review}, \code{Business}, and \code{Tip} were mapped to the respective relational tables instead of JSON collections. Regarding the features of the relational models, also the property \code{friend} of kind \code{User} and property \code{date} of kind \code{Checkin} had to be mapped to separate kinds \code{Friend} and \code{Date} (and, therefore, to respective separate relational tables). Similarly, the property \code{attribute} of kind \code{Business} was mapped to a map of attributes and thus a separate table.
-\qed
+\end{example}
+
 \begin{figure}
     \centering
     \includegraphics[width=\textwidth]{papers/enase_2025/figures/sk-mapping-3A.png}
     \caption{Schema category from Fig.~\pRef{fig:sk-edited} mapped to the relational model (scenario~A)}
     \pLabel{fig:sk-mapping-3A}
 \end{figure}
-\end{example}
 
 \begin{example}
 Following \textbf{scenario~B}, the users might find out that transforming all the data to the relational model is not optimal, and they decide to use the best of both worlds. As depicted in Fig.~\pRef{fig:sk-mapping-3B}, they kept the mapping of kinds \code{User} and \code{Friend} to the relational models, each to a separate table, like in Fig.~\pRef{fig:sk-mapping-3A}. They also want to keep a mapping of kinds \code{Review} and \code{Tip} to the relational model but to merge them into a single table because \code{Tip} is just a subset of \code{Review}. So, they create a new kind \code{Comment} that covers both of them and map it to a single table. The new kind requires property \code{comment\_id}, which we can reuse (for records of kind \code{Review}) or generate by a simple algorithm (for records of kind \code{Tip}).
@@ -182,7 +179,6 @@ Following \textbf{scenario~B}, the users might find out that transforming all th
 Finally, they decided to embed the kinds \code{Attribute} and \code{Date}, which required separate relational tables, to the relational table of kind \code{Business}. So, they mapped them to the document model and embedded them to the kind \code{Business}. (Such a combination of models is supported, e.g., in PostgreSQL.) This transformation reduced the overhead of joining the same tables each time while keeping the kind \code{Business} mapped to the relational model. 
 
 Fig.~\pRef{fig:sk-mapping-3B} depicts the result, where we get truly multi-model data represented in two logical models -- violet relational and green document.
-\qed
 \end{example}
 
 \begin{figure}
@@ -194,7 +190,6 @@ Fig.~\pRef{fig:sk-mapping-3B} depicts the result, where we get truly multi-model
 
 \begin{example}
 Finally, following \textbf{scenario~C} and as depicted in Fig.~\pRef{fig:sk-mapping-3C}, the users might further transform the multi-model data from a combination of two to a combination of three logical models and map the kind \code{Comment} to the wide-column model (red). This model is better suited for frequent data analysis, i.e., the type of queries the users might want to do with the comments. It also more naturally represents that tips do not have all the attributes of reviews.
-\qed
 \end{example}
 
 \begin{figure}
@@ -213,7 +208,6 @@ to be evaluated in the underlying DBMS. But, for our purposes, instead of queryi
 \begin{example}
 For example, the users may want to query for \uv{\emph{names of businesses which have been reviewed since January 1st, 2023 and allow dogs}}. Its expression in MMQL over the improved schema category in Fig.~\pRef{fig:sk-edited} is provided in Fig.~\pRef{fig:query-mmql-1}. 
 If the input data in Fig.~\pRef{fig:sk-edited} were stored in MongoDB\footnote{\url{https://www.mongodb.com/}}, its translation to MongoDB QL is provided in Fig.~\pRef{fig:query-mongo}. 
-\qed
 \end{example}
 
 \begin{figure}[!htb]
@@ -228,7 +222,8 @@ If the input data in Fig.~\pRef{fig:sk-edited} were stored in MongoDB\footnote{\
             FILTER(?date > "2023-01-01")
         }
     \end{lstlisting}
-    \caption{MMQL query over the improved schema category in Fig.~\pRef{fig:sk-edited}}\pLabel{fig:query-mmql-1}
+    \caption{MMQL query over the improved schema category in Fig.~\pRef{fig:sk-edited}}
+    \pLabel{fig:query-mmql-1}
 \end{figure}
 
 \begin{figure}[!htb]
@@ -252,7 +247,8 @@ If the input data in Fig.~\pRef{fig:sk-edited} were stored in MongoDB\footnote{\
             } },
         ])
     \end{lstlisting}
-    \caption{MongoDB QL query over data from Fig.~\pRef{fig:sk-edited}}\pLabel{fig:query-mongo}
+    \caption{MongoDB QL query over data from Fig.~\pRef{fig:sk-edited}}
+    \pLabel{fig:query-mongo}
 \end{figure}
 
 If we change the mapping to another model (or a combination of models) represented in another DBMS (or multiple DBMSs), we get the query expressed using the respective query language(s). In addition, if we change the part of the schema category accessed by the query, the modification of MMQL is ensured 
@@ -263,7 +259,6 @@ along with the modification of the mapping.
 
 \begin{example}
 When we unify the business attributes to a map, as depicted in Fig.~\pRef{fig:sk-mapping-3A}, the MMQL query is modified to reflect the change, as depicted in Fig.~\pRef{fig:query-mmql-2}. In addition, in Fig.~\pRef{fig:sk-mapping-3A}, we also changed the mapping to the relational model (\textbf{scenario~A}). Assuming that now the data is stored in PostgreSQL, the respective mapping to the relational model ensures the translation of MMQL query to the SQL query provided in Fig.~\pRef{fig:query-sql}.
-\qed
 \end{example}
 
 \begin{figure}[!htb]
@@ -280,7 +275,8 @@ When we unify the business attributes to a map, as depicted in Fig.~\pRef{fig:sk
             FILTER(?date > "2023-01-01")
         }
     \end{lstlisting}
-    \caption{MMQL query over schema category from Fig.~\pRef{fig:sk-mapping-3A}}\pLabel{fig:query-mmql-2}
+    \caption{MMQL query over schema category from Fig.~\pRef{fig:sk-mapping-3A}}
+    \pLabel{fig:query-mmql-2}
 \end{figure}
 
 \begin{figure}[!htb]
@@ -293,12 +289,12 @@ When we unify the business attributes to a map, as depicted in Fig.~\pRef{fig:sk
             AND attribute.type = 'DogsAllowed'
             AND attribute.value = true
     \end{lstlisting}
-    \caption{SQL query over data from Fig.~\pRef{fig:sk-mapping-3A} (scenario~A)}\pLabel{fig:query-sql}
+    \caption{SQL query over data from Fig.~\pRef{fig:sk-mapping-3A} (scenario~A)}
+    \pLabel{fig:query-sql}
 \end{figure}
 
 \begin{example}
 If we use the combination of the document and relational model (\textbf{scenario~B}) depicted in Fig.~\pRef{fig:sk-mapping-3B}, we can assume that the data is still stored in PostgreSQL. As SQL in PostgreSQL is extended towards the support of cross-model queries over both relational and document data, i.e., SQL/JSON, the evaluation process again translates the MMQL query to a single, this time cross-model query, as depicted in Fig.~\pRef{fig:query-sql-json}. Note that despite the mapping change, the parts of the schema category accessed by the MMQL query remain untouched, so the MMQL query remains the same.
-\qed
 \end{example}
 
 \begin{figure}[!htb]
@@ -310,12 +306,12 @@ If we use the combination of the document and relational model (\textbf{scenario
         WHERE comment.date > '2023-01-01'
             AND attributes->>'DogsAllowed' = 'true'
     \end{lstlisting}
-    \caption{SQL/JSON query over data from Fig.~\pRef{fig:sk-mapping-3B} (scenario~B)}\pLabel{fig:query-sql-json}
+    \caption{SQL/JSON query over data from Fig.~\pRef{fig:sk-mapping-3B} (scenario~B)}
+    \pLabel{fig:query-sql-json}
 \end{figure}
 
 \begin{example}
 Finally, suppose we use a combination of models unsupported by a single multi-model DBMS (\textbf{scenario~C}) depicted in Fig.~\pRef{fig:sk-mapping-3C}. In that case, the evaluation consists of the decomposition of the query to two subqueries for the respective subsystems -- SQL for PostgreSQL and, e.g., CQL for Apache Cassandra\footnote{\url{https://cassandra.apache.org/}} -- as depicted in Fig.~\pRef{fig:query-cql-sql}. Thus, we can also test a family of DBMSs, together with the need to use an additional tool to merge the results. However, because the schema category did not change, the MMQL query stays the same again.
-\qed
 \end{example}
 
 \begin{figure}[!htb]
@@ -331,7 +327,8 @@ Finally, suppose we use a combination of models unsupported by a single multi-mo
         WHERE business_id IN (/* CQL query result */)
             AND attributes->>'DogsAllowed' = 'true'
     \end{lstlisting}
-    \caption{CQL and SQL queries over data from Fig.~\pRef{fig:sk-mapping-3C} (scenario~C)}\pLabel{fig:query-cql-sql}
+    \caption{CQL and SQL queries over data from Fig.~\pRef{fig:sk-mapping-3C} (scenario~C)}
+    \pLabel{fig:query-cql-sql}
 \end{figure}
 
 
