@@ -41,7 +41,7 @@ It is important to note that, while these principles are general and most likely
 
 In our approach, the categorical representation provides a unified view of the conceptual schema, the logical models, and the mappings between them. It allows us to describe queries (and thus the workload) independently of the actual configurations, as well as to reason about cross-model queries. It also defines a set of \acrshort{smo}s that offer a natural way to transform one configuration into another, which is crucial for defining the transitions between states. Lastly, we can use it to migrate the data to the final configuration.
 
-An in-depth description and a proof-of-concept implementation of the proposed approach is provided in \paperRef{edbt_2026}. A short summary is provided in the following sections, together with a few improvements that we have made since the publication of that paper.
+An in-depth description of the proposed approach, together with a proof-of-concept implementation called \term{MM-mapsearch}, is provided in \paperRef{edbt_2026}. The following sections contain a short summary, as well as a few improvements that we have made since the publication of that paper.
 
 \todo{obrázky a příklady}
 % \begin{example}
@@ -110,6 +110,8 @@ Therefore, we do not view index optimization as a separate problem unrelated to 
 \todo{RELATED WORK}
 
 \subsection{Contributions}
+
+\todo{připomenout relevantní papery}
 
 We formulated self-adaptation as a workload-aware optimization problem over the logical models and their mappings to a fixed conceptual schema. Instead of treating different data models resp. databases individually, our approach represents alternative configurations of the same conceptual schema in a common search space. This makes it possible to compare heterogeneous designs systematically and to reason about adaptation at the level of the whole multi-model system rather than one store at a time.
 
