@@ -191,7 +191,7 @@ Traditionally, relational data is modeled using \acrshort{er} or \acrshort{uml} 
 
 \term{U-schema}~\citep{DBLP:journals/is/CandelRM22} offers a unified representation for multi-model data. It is a foundation for the \term{Orion} language~\citep{DBLP:conf/er/ChillonRM21a, 10.1109/TKDE.2024.3362273}, enabling evolution, and \term{SkiQL}~\citep{skiql}, enabling querying the schema. Although these capabilities might sound very similar to the ones we propose in this thesis, there are a few important differences.
 
-First, U-schema tries to unify the data models on the \emph{logical} rather than the \emph{conceptual} level. This leads either to an inability to tailor the representation to the specific features of each data model (if we use one logical model for multiple databases), or to a redundancy and a loss of semantics (if we use multiple disconnected logical models). We try to avoid this issue by using a unified conceptual schema that is independent of the underlying data models, and then mapping it to the specialized logical models. Similarly, the evolution only happens on the logical level, so the evolution propagation to data is much more straightforward.
+First, U-schema tries to unify the data models on the \emph{logical} rather than the \emph{conceptual} level. This leads either to an inability to tailor the representation to the specific features of each data model (if we use one logical model for multiple databases), or to a redundancy and a loss of semantics (if we use multiple disconnected logical models). We try to avoid this issue by using a unified conceptual schema that is independent of the underlying data models, and then mapping it to the specialized logical models. Similarly, the evolution only happens on the logical level, so the propagation to data is much more straightforward.
 
 A biggest difference is in the querying capabilities. SkiQL is a \emph{schema} query language, which means that it can only query the structure of the data, but not its content. This is a very important distinction, as our focus is on the opposite---we only query the contents of the data, not its structure. However, this is not a limitation of our approach, as we can still get the structure either from our internal model or from the data (i.e., by inference).\\
 
@@ -200,7 +200,7 @@ There is also a more theoretical approach~\citep{DBLP:journals/corr/abs-2201-049
 \todo{
     Podívat se ještě na Gallinucci, podle Pavla se nám blíží nejvíc.
 
-    E. Gallinucci, M. Golfarelli, S. Rizzi, A. Abelló, O. Romero, Interactive multidimensional modeling of linked data for exploratory OLAP, Inf. Syst. 77 (2018) 86–104. doi:10.1016/J.IS.2018.06.004.
+    E. Gallinucci, M. Golfarelli, S. Rizzi, A. Abelló, O. Romero, Interactive multidimensional modeling of linked data for exploratory OLAP, Inf. Syst. 77 (2018) 86-104. doi:10.1016/J.IS.2018.06.004.
 }
 
 \subsection{Contributions}

@@ -1,7 +1,7 @@
 \section{Self-adaptation}
 \label{sec:self-adaptation}
 
-With the categorical representation of multi-model data (see \Cref{sec:modeling}) and the capabilities of querying and evolution (\Cref{sec:querying,sec:evolution-propagation}), we have a solid foundation for managing multi-model data. Now we can focus on optimizing it.
+With the categorical representation of multi-model data (see \Cref{sec:modeling}) and the capabilities of querying and evolution (\Cref{sec:querying,sec:evolution-management}), we have a solid foundation for managing multi-model data. Now we can focus on optimizing it.
 
 In its most basic form, the problem we are trying to solve can be described as follows. We assume a fixed conceptual schema, a \term{workload} (a set of weighted queries), and a set of all available databases. Let us define \term{configuration} as a set of logical models of these databases that is capable of answering all queries in the workload. The goal is to find a configuration that minimizes the overall query latency. To define the problem more precisely, we derived the following open questions:
 

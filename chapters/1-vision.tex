@@ -16,9 +16,11 @@ Lastly, our motivation is not only about an \emph{ability} to do something, but 
 
 All of the above-described capabilities can be achieved with a different amount of automation. More automation is generally better, as it reduces the amount of manual work and expertise required of users. It also allows the system to find solutions that might not be obvious to users, or that would be too time-consuming to do manually. The price for this is increased complexity of the system and potentially reduced control over the process. Therefore, we automate the capabilities gradually following three distinct levels~\citep{ideas2022vision}. In this section, we focus only on the \emph{source of a change}, not on the \emph{way it is propagated}, as the latter is covered in~\Cref{sec:evolution-automation}.
 
+\todo{Příklady níže by měly odpovídat příkladům v 0.3 a obecně running example.}
+
 \begin{itemize}
     \item \term{User-specified changes} -- E.g., the user wants to add a column \object{date} to a table \object{review}, allowing to tracking when reviews are created. Or, the user decides to transform the data from a columnar model to a graph model, as the latter is more suitable for the current workload.
-    \item \term{Data-driven changes} -- The system detects that the data has changed its structure, e.g., by observing that a new column \object{date} has been added to the \object{review} table, and updates the conceptual schema. Or, it finds out that labels (matching existing tables in the columnar database) are now present in the graph database, and creates the corresponding mappings.
+    \item \term{Data-driven changes} -- The system detects that the data has changed its structure, e.g., by observing that a new column \object{date} has been added to the \object{review} table, and updates the conceptual schema. Or, it finds out that labels (matching existing tables in the columnar database) are now present in the graph database, and creates the corresponding logical models.
     \item \term{Self-adaptation} -- The system proactively analyzes the workload and data characteristics, and decides to transform the data from a columnar model to a graph model (similarly how a database expert would do), without any user intervention.
 \end{itemize}
 

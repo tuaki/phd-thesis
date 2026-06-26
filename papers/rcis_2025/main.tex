@@ -131,7 +131,7 @@ In other words, instead of RDF graph data, we query the schema category $\mathbf
 \section{Evolution Management Approach}
 \pLabel{sec:approach}
 
-A schema category $\mathbf{S}$ represents the conceptual model of a given multi-model use case, abstracting from the technical details of underlying logical models. In addition to their specific features, the logical schemas can overlap, i.e., parts of the data can be represented redundantly using distinct logical models. Users interact with $\mathbf{S}$ represented as a graph while mapping to logical schemas ensures information preservation. This mapping can be inferred from sample data instances~\citep{koupil2022mminfer} or created manually for selected parts of $\mathbf{S}$ using the operations \textit{createMapping()}, \textit{editMapping()}, and \textit{deleteMapping()}.
+A schema category $\mathbf{S}$ represents the conceptual model of a given multi-model use case, abstracting from the technical details of underlying logical models. In addition to their specific features, the logical schemas can overlap, i.e., parts of the data can be represented redundantly using distinct logical models. Users interact with $\mathbf{S}$ represented as a graph while mapping to logical schemas ensures information preservation. This mapping can be inferred from sample data instances~\citep{koupil2022mminfer} or created manually for selected parts of $\mathbf{S}$ using the operations \textit{createMapping()}, \textit{updateMapping()}, and \textit{deleteMapping()}.
 
 \begin{table}[!b]
 \centering
@@ -721,10 +721,10 @@ Only system \textit{Darwin}~\citep{storl2022darwin} allows for other data migrat
 % \midrule
 % %                               Tuijn       Spivak       Darwin     MM-evolver      Orion       MM-evocat
 % \textbf{Model-level}            & -         & -          & -         & -         & -         
-% & createMapping, editMapping, deleteMapping    \\
+% & createMapping, updateMapping, deleteMapping    \\
 
 % \textbf{Kind-level}             & add, delete   & delete, rename, copy, intersection, union & add, delete, rename   & add, delete, rename   & add, delete, extract (copy), rename, split, merge    
-% & createMapping, editMapping, deleteMapping   \\
+% & createMapping, updateMapping, deleteMapping   \\
 
 % \textbf{Property-level}         & add, delete   & delete, rename, copy, intersection, union & add, delete, move, copy, rename   & add, delete, move, copy, rename  & add, delete, move, extract, rename, cast & createProperty, deleteProperty, rename, move, copy, join, split   \\
 
