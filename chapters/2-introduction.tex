@@ -104,9 +104,13 @@ Note that the \object{Attributes} entity is represented by the \object{attribute
 \subsection{Querying}
 \label{sec:querying}
 
-Each database system has its own query language, tailored to the specific data model. From SQL to XQuery, these languages have vast differences in both syntax and semantics. Even within the same data model, query languages (e.g., SPARQL and Cypher for the graph model) offer very diverse features.
+Although most relational databases use the query language standard (\acrshort{sql}~\citep{SQL}), there are still many differences in the syntax and semantics of the language between different database systems. For example, some databases support specific features like window functions or recursive queries, while others do not. This can make it difficult to write queries that work across multiple databases, even if they all use \acrshort{sql}.
 
-Mastering multiple query languages takes a lot of time and effort, and it is not realistic to expect users to be proficient in all of them. This is a huge barrier for using multi-model data efficiently. Therefore, we want to be able to query multi-model data using a single, unified query language. Such a language should be expressive enough to cover all queries across all data models, and it should recognize all possible data structures that can be returned by these queries.
+In the case of \acrshort{nosql} databases, the situation is even more complex. Each database system has its own query language, tailored to the specific data model. Each database system has its own query language, tailored to the specific data model. From \acrshort{sql} to XQuery~\citep{XQuery}, these languages have vast differences in both syntax and semantics. Even within the same data model, query languages (e.g., SPARQL~\citep{SPARQL} and Cypher~\citep{Cypher} for the graph model) offer very diverse features~\citep{Jiaheng2023Survey}.
+
+There are attempts to unify query languages across different data models, most notably by extending \acrshort{sql} with additional features for specific data models. However, these extensions are often limited in scope and do not cover all possible queries across all data models. For example, SQL/JSON~\citep{SQLJSON} allows querying JSON data, but it does not support other data models like graph. Similarly, SQL/PGQ~\citep{SQLPGQ} allows querying property graphs, but it does not support documents.
+
+Therefore, querying multi-model data requires running multiple queries in different query languages and then combining their results manually, which is a complex and error-prone task. Moreover, mastering multiple query languages takes a lot of time and effort, and it is not realistic to expect users to be proficient in all of them. This is a huge barrier for using multi-model data efficiently. To address this issue, we want to be able to query multi-model data using a single, unified query language. Such a language should be expressive enough to cover all queries across all data models, and it should recognize all possible data structures that can be returned by these queries.
 
 Lastly, one of the primary motivations for using multi-model data is the performance benefits from using the best model for the given job. In order to fully realize these benefits, the overhead of using the unified query language should be minimal, ideally negligible compared to a native solution.
 
@@ -114,7 +118,7 @@ Lastly, one of the primary motivations for using multi-model data is the perform
 
 These requirements led us to the development of \term{MMQL} (\textbf{M}ulti-\textbf{m}odel \textbf{q}uery \textbf{l}anguage)~\citep{mm_quecat, koupil2023universal}. MMQL is a query language over the schema category, making it independent of both the underlying data models and the specific databases. After parsing, the query engine splits the query into maximal subqueries that can be executed on a single database, translates them to the native query languages, executes them, and finally combines the results.
 
-The syntax of MMQL is based on SPARQL, as it is a well-known and widely used query language for graph data (and schema category can be represented as a multigraph). Each triple pattern in the query corresponds to a morphism in the schema category, together with its domain and codomain objects. However, the similarity to SPARQL is just syntactic, as both objects and morphisms in the schema category can have very different semantics dependent on the underlying data models and databases. E.g., one morphism can represent a join in a relational database, a relationship kind in a property graph database, or a nested document in a document database.
+The syntax of MMQL is based on SPARQL~\citep{SPARQL}, as it is a well-known and widely used query language for graph data (and schema category can be represented as a multigraph). Each triple pattern in the query corresponds to a morphism in the schema category, together with its domain and codomain objects. However, the similarity to SPARQL is just syntactic, as both objects and morphisms in the schema category can have very different semantics dependent on the underlying data models and databases. E.g., one morphism can represent a join in a relational database, a relationship kind in a property graph database, or a nested document in a document database.
 
 A single \term{query plan} is created by matching the patterns in the query to the available logical models (via the mappings from the schema category). Because of redundancy, more than one combination might be possible. In that happens, multiple query plans are created and the best one is chosen based on the estimated cost.
 
@@ -130,7 +134,7 @@ In the example, the \code{WHERE} pattern is matched to the logical model of the 
 \begin{figure}[ht]
     \centering
     \includegraphics[width=\textwidth]{img/commentary-query_single.drawio.pdf}
-    \caption{A MMQL query from \Cref{ex:querying-single} and its translation to the MongoDB query language.}
+    \caption{A MMQL query from \Cref{ex:querying-single} and its translation to the MongoDB query language~\citep{MQL}.}
     \label{fig:query-single}
 \end{figure}
 
