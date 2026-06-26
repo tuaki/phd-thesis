@@ -116,9 +116,9 @@ Lastly, one of the primary motivations for using multi-model data is the perform
 
 \subsubsection{MMQL}
 
-These requirements led us to the development of \term{MMQL} (\textbf{M}ulti-\textbf{m}odel \textbf{q}uery \textbf{l}anguage)~\citep{mm_quecat, koupil2023universal}. MMQL is a query language over the schema category, making it independent of both the underlying data models and the specific databases. After parsing, the query engine splits the query into maximal subqueries that can be executed on a single database, translates them to the native query languages, executes them, and finally combines the results.
+These requirements led us to the development of \term{\acrshort{mmql}}~\citep{mm_quecat, koupil2023universal}. \acrshort{mmql} is a query language over the schema category, making it independent of both the underlying data models and the specific databases. After parsing, the query engine splits the query into maximal subqueries that can be executed on a single database, translates them to the native query languages, executes them, and finally combines the results.
 
-The syntax of MMQL is based on SPARQL~\citep{SPARQL}, as it is a well-known and widely used query language for graph data (and schema category can be represented as a multigraph). Each triple pattern in the query corresponds to a morphism in the schema category, together with its domain and codomain objects. However, the similarity to SPARQL is just syntactic, as both objects and morphisms in the schema category can have very different semantics dependent on the underlying data models and databases. E.g., one morphism can represent a join in a relational database, a relationship kind in a property graph database, or a nested document in a document database.
+The syntax of \acrshort{mmql} is based on SPARQL~\citep{SPARQL}, as it is a well-known and widely used query language for graph data (and schema category can be represented as a multigraph). Each triple pattern in the query corresponds to a morphism in the schema category, together with its domain and codomain objects. However, the similarity to SPARQL is just syntactic, as both objects and morphisms in the schema category can have very different semantics dependent on the underlying data models and databases. E.g., one morphism can represent a join in a relational database, a relationship kind in a property graph database, or a nested document in a document database.
 
 A single \term{query plan} is created by matching the patterns in the query to the available logical models (via the mappings from the schema category). Because of redundancy, more than one combination might be possible. In that happens, multiple query plans are created and the best one is chosen based on the estimated cost.
 
@@ -126,7 +126,7 @@ A single \term{query plan} is created by matching the patterns in the query to t
 \label{ex:querying-single}
 Going back to the schema category from \Cref{fig:schema-category}, we can query the following information: \emph{Find all businesses that allow dogs. For each business, return its name and whether it has TV available}. This process is displayed in \Cref{fig:query-single}.
 
-First, we use the \code{WHERE} clause to express the pattern we want to match in the logical models. The names of the variables (prefixed with the \code{?} symbol) are arbitrary, as the triples are identified by the signatures of the morphisms. Next, the \code{SELECT} clause describes the structure of the result, which is an object with two fields---\code{name} and \code{hasTV}.
+First, we use the \code{WHERE} clause to express the pattern we want to match in the logical models. The names of the variables (prefixed with the \code{?} symbol) are arbitrary, as the triples are identified by the signatures of the morphisms. The \code{true} literal acts as an implicit filter. Next, the \code{SELECT} clause describes the structure of the result, which is an object with two fields---\code{name} and \code{hasTV}.
 
 In the example, the \code{WHERE} pattern is matched to the logical model of the document database (in this case, MongoDB), so the query engine translates it directly to the native query language. After executing the query, the results are projected to the structure defined in the \code{SELECT} clause and returned to the user.
 \end{example}
@@ -134,7 +134,7 @@ In the example, the \code{WHERE} pattern is matched to the logical model of the 
 \begin{figure}[ht]
     \centering
     \includegraphics[width=\textwidth]{img/commentary-query_single.drawio.pdf}
-    \caption{A MMQL query from \Cref{ex:querying-single} and its translation to the MongoDB query language~\citep{MQL}.}
+    \caption{A \acrshort{mmql} query from \Cref{ex:querying-single} and its translation to the MongoDB query language~\citep{MQL}.}
     \label{fig:query-single}
 \end{figure}
 
@@ -148,11 +148,11 @@ This time, we need \code{FILTER} and \code{ORDER BY} clauses to filter and order
 \begin{figure}[ht]
     \centering
     \includegraphics[width=\textwidth]{img/commentary-query_multi.drawio.pdf}
-    \caption{A MMQL query from \Cref{ex:querying-multi} and its translation to \acrshort{sql} for a relational and a columnar database.}
+    \caption{A \acrshort{mmql} query from \Cref{ex:querying-multi} and its translation to \acrshort{sql} for a relational and a columnar database.}
     \label{fig:query-multi}
 \end{figure}
 
-Optimization of query plans is crucial for the performance of any database system. In our case, it is even more important, as we have to deal with multiple databases at the same time. We do not try to optimize the native queries themselves, as that is the responsibility of the underlying applications. Instead, we have explored, implemented, and evaluated several techniques to improve the performance of the MMQL query engine~\citep{strobl-mastersthesis}:
+Optimization of query plans is crucial for the performance of any database system. In our case, it is even more important, as we have to deal with multiple databases at the same time. We do not try to optimize the native queries themselves, as that is the responsibility of the underlying applications. Instead, we have explored, implemented, and evaluated several techniques to improve the performance of the \acrshort{mmql} query engine~\citep{strobl-mastersthesis}:
 
 \begin{itemize}
     \item \term{Predicate pushdown} -- Generally, it is more efficient to filter the data as early as possible, ideally in the underlying databases, so we push the predicates down along the query plan tree. Not all operations can be pushed to the databases (e.g., cross-database joins), so they are executed in the query engine. In some cases, the databases do not support certain operations (e.g., aggregation), or they might not be very efficient (e.g., lookups in MongoDB), so we have to execute them by ourselves as well.
@@ -168,7 +168,7 @@ Optimization of query plans is crucial for the performance of any database syste
     \item \term{MM-cat}~\citep{mm_cat} (the first tool has the same name as the whole framework) enables multi-model data modeling, as well as transformation of data between various models.
     \item \term{MM-evocat} (\paperRef{cikm_2022}) adds the ability to evolve the conceptual schema and propagate changes.
     \item \term{MM-infer}~\citep{mm_infer} (later extended in \paperRef{enase_2025, edbt_2025}) allows to infer the conceptual schema and logical models from the data.
-    \item \term{MM-quecat}~\citep{mm_quecat} enables querying multi-model data using MMQL.
+    \item \term{MM-quecat}~\citep{mm_quecat} enables querying multi-model data using \acrshort{mmql}.
     \item \term{MM-evoque} (\paperRef{edbt_2024}) allows propagating changes from the conceptual schema to the queries.
     \item \term{MM-mapsearch} (\paperRef{edbt_2026}) explores the concept of self-adaptation.
 \end{itemize}
@@ -207,4 +207,4 @@ There is also a more theoretical approach~\citep{DBLP:journals/corr/abs-2201-049
 
 As mentioned above, this section serves as a summary of a previous research that we used as the basis for our work, so we do not claim many contributions here. What we do claim is the proof-of-concept implementation of the MM-cat framework, evaluation of the proposed approach, and a refinement of the original model.
 
-Besides that, we have also contributed to the development of the MMQL query language by solidifying its syntax and semantics, implementing it in the query engine, and optimizing its performance using the techniques described in \Cref{sec:querying}.
+Besides that, we have also contributed to the development of the \acrshort{mmql} query language by solidifying its syntax and semantics, implementing it in the query engine, and optimizing its performance using the techniques described in \Cref{sec:querying}.

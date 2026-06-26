@@ -25,8 +25,6 @@ Based on our previous work (see \Cref{sec:modeling}) and the related work (\Cref
     - Možná až v related work? Protože my je vlastně neřešíme, takže bychom je popsali jako něco, co bychom teoreticky mohli umět (kdybychom fakt chtěli), akorát jsme zatím nechtěli.
 }
 
-\todo{příklady a obrázky}
-
 \subsection{Evolution Hierarchy}
 
 A change in one component that is propagated to another component is also a change, so it may require further propagation, leading to a cascade of changes that can be difficult to manage. This is especially true in a multi-model data world, where there are many different components and relationships between them. This leads us to the following questions:
@@ -48,59 +46,64 @@ The latter is done by directly rewriting the queries---since the queries are def
 
 Because we use atomic operations as the basis for change propagation, we do not have to execute all of them at once. This allows us to interleave the propagation with additional user input, which is necessary for some types of operations. It also allows us to postpone the propagation until the most appropriate time, e.g., when the system is underutilized, or when the changes are expected to have the least impact on the performance of the system. By default, the data migration is done \term{eagerly}, i.e., for all data that is affected by the change. Although we did not explore \term{lazy} approaches in our research, our framework should be able to support them as well by using previous versions of conceptual schema, mappings, and queries to access the data that has not been migrated yet.
 
-\subsection{Level of Automation}
-\label{sec:evolution-automation}
+\begin{example}
+\label{ex:evolution-add}
+Starting with the conceptual schema and columnar logical model (\Cref{fig:mapping}), the users might realize they want to be able to delete reviews. To do that, they use the \code{createProperty} operation to add a property \object{deletedAt} to the entity \object{Review} in the conceptual schema and connecte them via a new morphism (\signature{18}). This triggers the creation of the corresponding attribute in the logical model via the \code{editMapping} operation, and the addition of the attribute to the data via the corresponding \acrshort{ddl} statements (\Cref{fig:evolution-add}).
 
-As advertised in \Cref{sec:vision-automation}, the process of evolution propagation can be automated to different degrees. The more automation, the less manual work and expertise is required from users, but also the less control they have over the process.
-
-\todo{
-    Nejsem si jistý tou druhou částí této otázky, můžu to takhle napsat? Můj point je, že query v SQL nemusí být možné jednoduše namapovat na nějaké ER schéma.
-}
-
-In theory, the entire process could be fully automated with a sufficiently advanced AI system that can understand the semantics of the data and queries, predict the impact of changes, and make the best decisions about how to propagate them. In practice, we are still far from achieving this level of automation, and there are many challenges to overcome before we can get there. Therefore, we automate the process gradually following three distinct levels~\citep{ideas2022vision}.
-
-\todo{exmaples, nějak celé předělat}
-% \begin{example}
-% \label{ex:mapping}
-% \todo{mapování}
-% \end{example}
-
+Although the entity is used in the \acrshort{mmql} query from \Cref{fig:query-multi}, the change is not propagated there because adding a property does not affect the query results. However, the users might decide to add the property to the query manually, because they want to be able to filter out deleted reviews (\Cref{fig:query-propagation-multi}).
+\end{example}
 
 \begin{figure}[ht]
     \centering
     \includegraphics[width=\textwidth]{img/commentary-evolution_add.drawio.pdf}
-    \caption{\todo{}}
+    \caption{Schema from \Cref{fig:schema-category} is extended via the \code{createProperty} operation. The change is propagated to the mapping.}
     \label{fig:evolution-add}
 \end{figure}
 
 \begin{figure}[ht]
     \centering
+    \includegraphics[width=\textwidth]{img/commentary-query_propagation_multi.drawio.pdf}
+    \caption{The \acrshort{mmql} query from \Cref{fig:query-multi} is manually updated to include the new \object{deletedAt} property added in \Cref{fig:evolution-add}.}
+    \label{fig:query-propagation-multi}
+\end{figure}
+
+\begin{example}
+\label{ex:evolution-map}
+A more complex use case is displayed in \Cref{fig:evolution-map}. Properties of the \object{Attributes} entity represent various characteristics of the businesses. In such a dynamic environment, it is common that new attributes are added to the data. In order to do that quickly, the users might decide to transform the entity into a key-value map via the \code{asMap} operation. The \object{Attribute}, \object{key}, and \object{value} objects are created, together with the morphisms \signature{19}, \signature{20}, and \signature{21}. Note that the morphism \signature{19} has the opposite direction than the previous morphism \signature{11}. This is because in the original schema, there was a \code{*:1} relationship between the \object{Business} and \object{Attributes} entities. Now, there is an \code{1:N} relationship between the \object{Business} and \object{Attribute} entities (one business can have multiple attributes).
+
+After that, the old \object{Attributes} entity is deleted. The mapping is updated accordingly. This time, the change does affect the query from \Cref{fig:query-single}, because the \object{Attributes} entity was used in the query. The query is rewritten to use the new objects instead, and the previous attributes are replaced with explicit string literals, filtering the \object{key} properties (\Cref{fig:query-propagation-single}).
+\end{example}
+
+\begin{figure}[ht]
+    \centering
     \includegraphics[width=\textwidth]{img/commentary-evolution_map.drawio.pdf}
-    \caption{\todo{}}
+    \caption{Schema from \Cref{fig:schema-category} is transformed via the \code{asMap} operation. The change is propagated to the mapping.}
     \label{fig:evolution-map}
 \end{figure}
 
 \begin{figure}[ht]
     \centering
     \includegraphics[width=\textwidth]{img/commentary-query_propagation_single.drawio.pdf}
-    \caption{\todo{}}
+    \caption{The \acrshort{mmql} query from \Cref{fig:query-single} is automatically fixed so that it uses the new \object{Attribute} map created in \Cref{fig:evolution-map}.}
     \label{fig:query-propagation-single}
 \end{figure}
 
-\begin{figure}[ht]
-    \centering
-    \includegraphics[width=\textwidth]{img/commentary-query_propagation_multi.drawio.pdf}
-    \caption{\todo{}}
-    \label{fig:query-propagation-multi}
-\end{figure}
+
+\subsection{Level of Automation}
+\label{sec:evolution-automation}
+
+As mentioned in \Cref{sec:vision-automation}, the process of evolution propagation can be automated to different degrees.
+\todo{toto nezní vědecky
+
+The more automation, the less manual work and expertise is required from users, but also the less control they have over the process.}
+
+In theory, the entire process could be fully automated with a sufficiently advanced AI system that can understand the semantics of the data and queries, predict the impact of changes, and make the best decisions about how to propagate them. In practice, we are still far from achieving this level of automation, and there are many challenges to overcome before we can get there. Therefore, we automate the process gradually following three distinct levels~\citep{ideas2022vision}.
 
 \subsubsection{Rule-based Adaptation}
 
-In the first level, we define the \acrshort{smo}s and their propagation rules. For example, we can use the \code{createProperty} operation to add a property \object{date} to an entity \object{Review} in the conceptual schema. This, in turn, will trigger the creation of the corresponding attribute in the logical models via the \code{editMapping} operation, and the addition of the attribute to the data via the corresponding \acrshort{ddl} statements.
+In the first level, we define the \acrshort{smo}s and their propagation rules. This is the case of \Cref{ex:evolution-add,ex:evolution-map}. Another use case would be to use the \code{createMapping} operation to define a new mapping between the conceptual schema and a logical model, e.g., a graph model, triggering the transformation of the data to the new model.
 
-Or, we can use the \code{createMapping} operation to define a new mapping to a graph model, triggering the transformation of the data from an existing relational model.
-
-The above-described operations are deterministic and have strict preconditions and postconditions, so we can be sure that they will always lead to a consistent state of the system. However, this means there is a lot of situations that cannot be handled by the system. E.g., if a property is deleted and a certain query depends on it, there are several ways to rewrite the query, but none of them is strictly correct or incorrect. In such cases, a manual intervention is required to choose the preferred option. This approach was implemented in the tool \term{MM-evoque}, see \paperRef{edbt_2024} for further details.
+The above-described operations are deterministic and have strict preconditions and postconditions, so we can be sure that they will always lead to a consistent state of the system. However, this means there is a lot of situations that cannot be handled by the system. E.g., if a property is deleted and a certain query depends on it, there are several ways to rewrite the query, but none of them is strictly correct or incorrect. In such cases, a manual intervention is required to choose the preferred option. This approach is explained in detail in \paperRef{edbt_2024}.
 
 \subsubsection{Learning-based Adaptation}
 
@@ -108,15 +111,15 @@ This level builds on top of the previous one by leveraging the deterministic ope
 
 For example, \paperRef{rcis_2025} discusses several query propagation strategies that can be applied when a property is deleted, and evaluates their performance on a real-world dataset. The system can learn from the observed workload and data characteristics to choose the most appropriate strategy for each situation.
 
-Approaches like this rely heavily on detailed insights about the workload and data. In the case of query propagation, functional dependencies between attributes are particularly useful, as they can help to identify which attributes are likely to be affected by a change and how to rewrite the queries accordingly. This is the main motivation behind the tool \term{FDepHunter}, see \paperRef{vldb_2025_fdephunter}, which is designed to not only discover functional dependencies, but also to distinguish between genuine, fake, and ghost dependencies.
+Tasks like this rely heavily on detailed insights about the workload and data. In the case of query propagation, functional dependencies between attributes are particularly useful, as they can help to identify which attributes are likely to be affected by a change and how to rewrite the queries accordingly. This is the main motivation behind our new approach designed to not only discover functional dependencies, but to also distinguish between genuine, fake, and ghost dependencies. The approach, together with a proof-of-concept implementation called \term{FDepHunter}, is described in \paperRef{vldb_2025_fdephunter}.
 
 Rather than treating dependency discovery as a fully automatic black-box task, FDepHunter provides an interactive workflow in which domain experts iteratively refine the discovered dependencies. Technically, it incrementally builds an Armstrong relation~\citep{DBLP:books/aw/AbiteboulHV95} enriched with positive and negative examples, which approximate the relevant properties of the complete dataset while allowing several questionable dependencies to be refined at once. This gives the system a practical way to obtain higher-quality semantic information in situations where purely automatic profiling would be too unreliable for downstream adaptation tasks.
 
 \subsubsection{Self-adaptation}
 
-Instead of reacting to changes by \uv{repairing} parts of the system whenever other parts change, the system now proactively tries to optimize its overall performance. This involve finding the right balance between the cost of and performance benefits of transforming the data to a different model, and rewriting the queries to take advantage of the new model. This is a very complex task that requires a deep understanding of the workload and data characteristics, as well as the ability to predict the impact of changes on the system's performance. These concepts are further explored in the following section.
+Instead of reacting to changes by \uv{repairing} parts of the system whenever other parts change, the system now proactively tries to optimize its overall performance. This involve finding the right balance between the cost of and performance benefits of transforming the data to a different model, and rewriting the queries to take advantage of the new model. This is a very complex task that requires deep understanding of the workload and data characteristics, as well as the ability to predict the impact of changes on the system's performance.
 
-Another form of self-adaptation is to anticipate changes before they even happen. For example, a certain set of queries might not be frequently used now, but the changes of this frequency might suggest much higher usage in the future, so the system can adapt itself in advance. This is a very ambitious goal that we are still far from achieving, but it is an exciting direction for future research.
+Another form of self-adaptation is to anticipate changes before they even happen. For example, a certain set of queries might not be frequently used now, but the changes of this frequency might suggest much higher usage in the future, so the system can adapt itself in advance. These concepts are further explored in \Cref{sec:self-adaptation}.
 
 \subsection{Related Work}
 \label{sec:evolution-related-work}
