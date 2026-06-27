@@ -3,7 +3,7 @@
 
 With the categorical representation of multi-model data (see \Cref{sec:modeling}) and the capabilities of querying and evolution (\Cref{sec:querying,sec:evolution-management}), we have a solid foundation for managing multi-model data. Now we can focus on optimizing it.
 
-In its most basic form, the problem we are trying to solve can be described as follows. We assume a fixed conceptual schema, a \term{workload} (a set of weighted queries), and a set of all available databases. Let us define \term{configuration} as a set of logical models of these databases that is capable of answering all queries in the workload. The goal is to find a configuration that minimizes the overall query latency. To define the problem more precisely, we derived the following open questions:
+In its most basic form, the problem we are trying to solve can be described as follows. We assume a fixed conceptual schema, a \term{workload} (a set of queries weighted by their frequencies), and a set of all available databases. Let us define \term{configuration} as a set of logical models of these databases that is capable of answering all queries in the workload. The goal is to find a configuration that minimizes the overall query latency. To define the problem more precisely, we derived the following open questions:
 
 \question{sa:search-space}{Search space}{In general, there is inifinitely many configurations. We should find a deterministic way to limit the search space to a manageable size while still covering the best alternatives. Since even the number of \emph{meaningful}\footnote{I.e., configurations that are not redundant (up to renaming) or strictly worse than others.} configurations grows exponentially with the size of the conceptual schema, the alternatives must be generated systematically and efficiently.}
     
@@ -32,7 +32,7 @@ In its most basic form, the problem we are trying to solve can be described as f
 Based on the open questions above, we propose the following principles:
 
 \begin{itemize}
-    \item A \term{state} is a an element of a finite vector space that maps the conceptual schema and the databases to a configuration. \term{State space} is a graph of all possible states connected by available transitions.
+    \item A \term{state} is a an element of a finite vector space that maps the conceptual schema and the databases to a configuration. \term{State space} is then a graph of all possible states connected by available transitions.
     \item The state space is explored using an algorithm that evaluates the states both directly (by estimating the latency of the corresponding configurations) and indirectly (by the values of neighboring states).
     \item There is a model that, given a state and a workload, can cheaply estimate the total latency of the corresponding configuration without actually materializing it.
 \end{itemize}
@@ -44,28 +44,38 @@ In our approach, the categorical representation provides a unified view of the c
 An in-depth description of the proposed approach, together with a proof-of-concept implementation called \term{MM-mapsearch}, is provided in \paperRef{edbt_2026}. The following sections contain a short summary, as well as a few improvements that we have made since the publication of that paper.
 
 \todo{obrázky a příklady}
-% \begin{example}
-% \label{ex:mapping}
-% \todo{mapování}
-% \end{example}
 
 \subsubsection{State Space}
 
 In our approach, we consider entities, not properties, to be the most basic building blocks. I.e., if an entity is mapped to a kind, all of its properties are mapped to the attributes of that kind. Then, a configuration tells us in which database(s) each kind is stored, and to which other kind (if any) is embedded\footnotei{Since we don't deal with the internal structure of the kinds, we do not distinguish between embedding and inlining, so we use the term \uv{embedding} for both.}{.} This limitation allows us to define a finite state space, as there is only a finite number of ways to assign the kinds to the available databases and to embed them into each other.
 
-For example, consider the conceptual schema in \Cref{fig:schema-category}. It contains three entities: \object{User}, \object{Review}, and \object{Business}. Let us assume that we have three databases available: a relational database, a document database, and a graph database. We could define \term{state vector} as a vector of three elements, where each element corresponds to one entity and contains the database to which it is assigned. An \term{embedding vector} would also have three elements, where each element contains the entity into which the corresponding entity is embedded (or \code{none}).
+\paperRef{edbt_2026} describes a simple representation of state consisting of two vectors, both of which have the same number of elements as the number of entities in the conceptual schema. The first vector contains the database to which each entity is assigned. The second vector contains the entity into which each entity is embedded (or \code{none} if it is not embedded into any other entity).
 
-This representation of state has one major issue---it does not allow redundancy, so if kinds used in a query are stored in multiple databases, the query has to be cross-model, resulting in a significant performance penalty. Such penalty is likely to outweight the benefits of using multiple databases, so the search process would lead to single-database configurations. To address this issue, we have replaced the previous two vectors with a \term{state matrix}. Its columns correspond to the entities, while its rows correspond to the databases. The values are on of:
+This representation of state has one major issue---it does not allow redundancy, so if kinds used in a query are stored in multiple databases, the query has to be cross-model, resulting in a significant performance penalty. Such penalty is likely to outweight the benefits of using multiple databases, so the search process would lead to single-database configurations. To address this issue, we have replaced the previous two vectors with a \term{state matrix}. Its columns correspond to the entities, while its rows correspond to the databases. The values are one of:
 
 \begin{itemize}
-    \item \code{false}, if the entity is not stored in this database at all,
-    \item \code{true}, if the entity is stored in this database, but not embedded into any other entity, and
+    \item \code{0} (i.\,e., \code{false}), if the entity is not stored in this database at all,
+    \item \code{1} (i.\,e., \code{true}), if the entity is stored in this database, but not embedded into any other entity, and
     \item the identifier of another entity, if the entity is stored in this database and embedded into that other entity.
 \end{itemize}
 
-This allows us to represent both redundancy and embedding while keeping the state space finite. The number is possible states is further reduced by a handful of constraints, such as that an entity cannot be embedded into itself, or that all entities must be stored in at least one database. The resulting state space is still large, but it is manageable and can be explored systematically.
+This allows us to represent both redundancy and embedding while keeping the state space finite. The number of possible states is further reduced by a handful of constraints, such as that an entity cannot be embedded into itself, or that all entities must be stored in at least one database. The resulting state space is still large, but it is manageable and can be explored systematically.
 
 % Přístup, kde stav místo toho, kde je uložen jaký kind, řeší, kde se vyhodnocuje jaký dotaz, je spíš nepoužitelný, protože neumí dobře reprezentovat cross-model dotazy - stejně si u nich musíme pamatovat přesný rozklad na kindy, což nejspíš vede na ještě složitější stavový prostor, navíc s nejasnými embeddingy a potenciálně příliš mnoha stavy (pokud je dotazů víc, než kindů, což by typicky mělo být).
+
+\begin{example}
+\label{ex:aimm-state}
+After the evolution from \Cref{ex:evolution-add,ex:evolution-map}, the conceptual schema has 5 entities: \object{User}, \object{Friend}, \object{Review}, \object{Business}, and \object{Attribute}. \Cref{fig:aimm-state} shows the simplified schema category (all properties are omitted), the initial configuration (based on \Cref{fig:mm-data}), and the corresponding state matrix.
+
+The optimizations are closed tied to the specific databases instead of general data models, so we assumed the following options: \emph{PostgreSQL} (relational), \emph{ClickHouse} (columnar), \emph{Neo4j} (graph), and \emph{MongoDB} (document). We also had to extend the logical model \object{User} in \emph{Neo4j} with the \object{yelping\_since} property (it was not in the original model), because, as we said above, each entity has to be stored with all of its properties.
+\end{example}
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=\textwidth]{img/commentary-aimm_state.drawio.pdf}
+    \caption{The initial configuration of the running example and its state matrix. Columns are labeled with the first letter of the corresponding entity.}
+    \label{fig:aimm-state}
+\end{figure}
 
 \subsubsection{Search Strategy}
 
@@ -73,7 +83,21 @@ Although the state space is finite, it is still too large for exhaustive evaluat
 
 The main idea behind \acrshort{mcts} is to incrementally build a tree of evaluated states. In each step, the algorithm first selects the most promising path from the root to a leaf node while balancing exploitation and exploration. Then, it expands the tree by applying a migration step to the selected leaf node, creating a new child node. A corresponding configuration is evaluated using the latency estimation model, and the result is backpropagated up the tree to update the values of the nodes along the path. 
 
-A more detailed description of the algorithm can be found in \Cref{edbt_2026:sec:mcts}. The standard version of \acrshort{mcts} is designed for tree-structured search spaces (e.g., a game of chess), so we had to make some adjustments. For example, we use a \acrshort{dag} instead of a tree, as the same configuration can be reached by different sequences of migration steps.
+A more detailed description of the algorithm can be found in \Cref{edbt_2026:sec:mcts}. The standard version of \acrshort{mcts} is designed for tree-structured search spaces (e.g., a game of chess), so we had to make some adjustments. For instance, we use a \acrshort{dag} instead of a tree, as the same configuration can be reached by different sequences of migration steps.
+
+\begin{example}
+\label{ex:aimm-search}
+\Cref{fig:aimm-search} shows a simplified version of the searched \acrshort{dag}. The left part shows the initial state from \Cref{fig:aimm-state} (node with label 0) and all its possible modifications of the \object{User} entity. I.e., we can either remove it from PostgreSQL (and get to state 1), or add it to ClickHouse (2) or MongoDB (3). Notably, we cannot remove it from Neo4j, as that would require removing \object{Friend} first, because it is represented there as a relationship. For the same reason, we cannot embed it into \object{Friend} in Neo4j. Next, nodes 4--6 are all the states reachable by two consecutive modifications of \object{User}. As we can see, we can get to them in multiple different ways.
+
+The right part shows the first modification of the \object{Friend} entity---we can add it to all databases where it is not already stored (states 7--9). However, we cannot remove it from Neo4j, because then it would not be stored in any database at all. We also cannot embed it into \object{User} in neither Neo4j nor PostgreSQL, because they do not support array values\footnotei{Technically, PostgreSQL \emph{does} support arrays, but we use it here as an example of a generic relational database.}{,} and one user can have multiple friends.
+\end{example}
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=\textwidth]{img/commentary-aimm_search.drawio.pdf}
+    \caption{First few steps of the search process from the initial configuration (0), either by modifying the \object{User} entity (left) or the \object{Friend} entity (right). Colors around the steps correspond to the databases from \Cref{fig:aimm-state}.}
+    \label{fig:aimm-search}
+\end{figure}
 
 \subsubsection{Latency Estimation}
 
@@ -89,11 +113,14 @@ Lastly, we can also use the latency estimation model to estimate both the cost o
 
 However, this is still a work in progress, as there are many other factors that can affect the migration cost. For example, the cost of downtime does not depend only on the latency of the migration queries, but also on the \uv{business} cost of doing so, which, in turn, depends heavily on the specific application and its users. Nevertheless, the proposed cost model is a good starting point in the search for a more general solution to this problem, as it is able to provide all \uv{technical} information that is needed to estimate the migration cost, while leaving the \uv{business} part to the user.
 
-\todo{
-    obrázek z MODELS 2026 (query evaluation)?
+\begin{example}
+\label{ex:aimm-result}
+Currently, the workload consists of two queries (\Cref{ex:querying-single,ex:querying-multi}). Neither of them uses the \object{Friend} entity, so the algorithm will try to optimize it away. We can fix that by adding a third query that uses \object{Friend}, but for the sake of this example, we will keep the workload as it is.
 
-    - proof-of-concept prototype ...
-}
+The precise result is impossible to predict, as it depends on the actual latencies of the queries in the individual databases. However, we can make an educated guess that the algorithm will try to move both \object{User} and \object{Review} to the same database, as that would eliminate the cross-model query. So, the final configuration will most likely consist of two independent parts---the fastest database for query from \Cref{ex:querying-single} (containing \object{Business} and \object{Attribute}) and the fastest database for query from \Cref{ex:querying-multi} (\object{User} and \object{Review}).
+\end{example}
+
+In real-world scenarios, both data and workloads are much more complex than in \Cref{ex:aimm-result}. Such clear separation of the workload into independent parts is quite rare, so the process will usually result in either several cross-model queries or redundant kinds. The balance between these two options is determined by the relative overhead of cross-model querying vs. the additional cost of migration and maintenance of redundant data.
 
 \subsection{Index Optimization}
 
