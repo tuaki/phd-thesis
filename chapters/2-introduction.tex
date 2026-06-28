@@ -1,21 +1,31 @@
 \section{Foundations}
 
-Our contributions are based on a preexisting approach to multi-model data modeling~\citep{mm_cat,mm_cat_journal}. In this section, we introduce its main concepts and describe how it evolved into a comprehensive multi-model data management framework called \term{MM-cat}. But first, we need to explain the basic theory and terminology we will use throughout the thesis.
-
-\todo{Víc popsat zbytek této sekce.
-
-!navázat modeling a querying
-}
+Our work is based on a preexisting approach to multi-model data modeling~\citep{mm_cat,mm_cat_journal}. In this section, we introduce its main concepts and describe how it evolved into a comprehensive multi-model data management framework called \term{MM-cat}. We first clarify the terminology and the levels of abstraction used throughout the thesis. Next, we briefly introduce the categorical ideas on which the approach is built. We then show how the same conceptual representation supports both modeling and querying, which is the key reason why it later also serves as the basis for evolution management and self-adaptation.
 
 \subsubsection{Common terminology}
 
-Let us define the levels of abstraction: \term{conceptual schema}, \term{logical models}, and \term{physical data}. The first is a \emph{platform-independent} representation of the business concepts. It doesn't limit the concepts to any specific data model or database system. The second is a \emph{platform-specific} representation of the data, tailored to a specific data model and database system---for example, a relational logical model cannot have nested structures, while a document logical model can. The last is the actual data stored in the database systems. We usually do not know its precise structure, as it is often an implementation detail of the specific database application.
+\todo{
+    \url{https://chatgpt.com/share/6a412a47-dcc8-83eb-9f57-6b8d4948a0db}
+
+    We distinguish three abstraction levels commonly used in database design: conceptual, logical, and physical. The conceptual model describes the domain independently of the target database technology. The logical model captures the data structures supported by a particular database paradigm (e.g., relational, document, graph), while the physical model describes implementation aspects such as storage structures and indexing.
+
+    From the perspective of MDA, the conceptual model corresponds approximately to a PIM, whereas the logical and physical models represent progressively more platform-specific models.
+
+    Mluví se o tom např. v \emph{Ramez Elmasri and Shamkant Navathe: Fundamentals of Database Systems}, nicméně tam tomu říkají \emph{conceptual design}, ne model nebo schema.
+}
+
+Let us distinguish three levels of abstraction: the \term{conceptual schema}, the \term{logical models}, and the \term{physical data}. The conceptual schema is a \emph{platform-independent} description of the domain of interest. It captures business concepts and their relationships without committing to any particular database technology. The logical models are \emph{platform-specific} descriptions of how selected parts of the conceptual schema are represented in concrete data models and database systems. For example, a classical relational representation is flat, whereas a document representation can naturally express nesting. Finally, the data is the concrete records currently stored according to those logical models. In other words, we do not work with low-level storage structures such as files, pages, or indexes here, but with the application-level data that the database system exposes.
+
+\todo{
+    Přišlo mi, že v článcích používáme právě "conceptual schema" a "logical model". Ale měl bych tedy všude používat "model" nebo "shcema"?
+}
 
 Each data model (or even each database system) has its own terminology for the concepts and data structures it uses. Let us defined the following terms on the conceptual level:
 \begin{itemize}
-    \item \term{property} -- a basic concept with no internal structure (e.g., name, email),
-    \item \term{entity} -- a structure consisting of properties (e.g., person, order),
-    \item \term{relationship} -- a connection between an entity and a property or another entity (e.g., a person has a name, an order is for a person).
+    \item \term{property} -- a concept representing a value-carrying aspect of an entity (e.g., id, name, email),
+    \item \term{entity} -- a a structure consisting of properties (e.g., user, business, review),
+    \item \todo{Ok, toto je asi ten problém. Já chápu nějaké věci, které např. ER popisuje jako "relationship", jako "entity", protože to v SK modelujeme pomocí objektů. Např. pokud mám "order" a "product", kde objednávka může mít víc produktů a produkt může být ve více objednávkách, tak to musíme modelovat jako \object{order} <- \object{has product} -> \object{product}, protože je tam N:N vztah ... navíc bychom na ten \object{has product} přidat ještě další propertis, např. \object{quantity} nebo třeba \object{index} (tedy by to bylo pole s jasně daným pořadím). Nicméně takhle ty ostatní modelovací frameworky asi nefungují, ne?}
+    \item \term{relationship} -- a connection between an entity and a property or another entity (e.g., a user has a name, a review is about a business).
 \end{itemize}
 On the logical level, we use:
 \begin{itemize}
@@ -30,13 +40,15 @@ While kind has to correspond to an entity, an attribute can correspond to either
 
 \subsubsection{Category Theory}
 
-Category theory is a very abstract branch of mathematics that studies the properties of mathematical structures and their relationships. It provides a powerful framework for modeling and reasoning about complex systems, including data management systems.
+Category theory gives us a compact language for describing structures together with the relationships between their parts. In this thesis, we use it as a modeling tool---it lets us describe data from different models in one common formalism while still keeping enough structure for querying, evolution, and transformations.
 
-The most important concept in the theory is the \term{category}. The full definition is in \Cref{cikm_2022:sec:conceptual-model}, but for the purpose of this introduction, we can think of a category as a directed multigraph---there is a set of nodes (called \term{objects}) and a set of directed edges (called \term{morphisms}) between them. Morphisms consisting of a single edge (we call them \term{base morphisms}) can be composed to more complex ones (\term{composite morphisms}).
+The central notion is a \term{category}. In full generality, categories may have collections of \term{objects} and \term{morphisms}. In this thesis, however, we only work with \term{small categories}, so it is sufficient to think in terms of sets of objects and sets of morphisms. Last requirements for the category are a rule for composing compatible morphisms and an identity morphism for every object. For intuition, it is often helpful to picture such a category as a directed multigraph with objects as nodes and morphisms as edges. The difference is that a category is not given only by the nodes and edges, it also explicitly captures which paths can be composed and guarantees that composition behaves consistently.
 
-A category can be mapped to another category via a \term{functor}, which is a mapping that preserves the structure of the categories. Formally, a functor is a function that maps each object in the first category to an object in the second category, and each morphism in the first category to a morphism in the second category, such that the composition of morphisms is preserved. The categories do not have to be the same size---for example, we can map multiple objects to a single object (and the morphisms between them to the identity morphism on that object). Or, we can map two objects connected by a base morphism to two objects connected by a composite morphism, which effectively expands the two objects into a more complex structure. In any case, the functor preserves the composition of morphisms, which is crucial for ensuring that objects in both categories have the same \emph{semantics}.
+In our setting, morphisms directly specified by the model will be called \term{base morphisms}, while morphisms obtained by composition will be called \term{composite morphisms}. This distinction is practical rather than purely theoretical. Base morphisms capture the explicitly modeled relationships, whereas composite morphisms let us refer to longer semantic paths through the schema.\\
 
-The previous paragraphs are obviously a gross oversimplification of the actual theory and its application in our research. There are many nuances and technical details that we do not cover here. Yet, if we want an approach to be actually useful, it is necessary to be able to explain it in a simple and intuitive way.
+A second key notion is a \term{functor}. A functor provides a structure-preserving mapping between categories. It is a function that maps each object from the first category to an object in the second category (and similarly for morphisms), such that both identity morphisms and composition of morphisms is preserved.
+
+The categories do not have to be the same size---for example, we can map multiple objects to a single object (and the morphisms between them to the identity morphism on that object). Or, we can map two objects connected by a base morphism to two objects connected by a composite morphism, which effectively expands the two objects into a more complex structure. In any case, the identity and composition preservation ensures that objects in both categories have the same \emph{semantics}.
 
 \subsection{Modeling}
 \label{sec:modeling}
@@ -44,8 +56,6 @@ The previous paragraphs are obviously a gross oversimplification of the actual t
 The basic idea of our approach is to create a \emph{unified model} of multi-model data on both conceptual and logical levels, and to use it as the basis for all the operations on the data, including querying and evolution. This unified model is based on category theory, which allows us to capture the semantics of all existing data models in a consistent way.
 
 The conceptual schema is a category called \term{schema category}. Its objects represent the concepts in the domain of interest---entities and their properties, while its morphisms represent relationships between these concepts.
-
-\todo{some more stuff?}
 
 \begin{example}
 \label{ex:schema-category}
@@ -187,7 +197,7 @@ The overall architecture of the system is shown in \Cref{fig:architecture}. Ther
 
 \todo{RELATED WORK - this part is work in progress}
 
-Traditionally, relational data is modeled using \acrshort{er} or \acrshort{uml} diagrams. Even though they are not expressive enough to capture all the semantics of multi-model data\footnotei{For example, key-value maps representing a number of dynamic attributes of an entity/class.}{,} they are still widely used in practice so we can at least use them as an inspiration. Other aspects of data management (evolution, querying, etc.) are usually specific to a particular database system, and therefore they are not directly applicable to multi-model data.\\
+Traditionally, relational data is modeled using \acrshort{er}~\citep{ER} or \acrshort{uml}~\citep{UML} diagrams. Even though they are not expressive enough to capture all the semantics of multi-model data\footnotei{For example, key-value maps representing a number of dynamic attributes of an entity/class.}{,} they are still widely used in practice so we can at least use them as an inspiration. Other aspects of data management (evolution, querying, etc.) are usually specific to a particular database system, and therefore they are not directly applicable to multi-model data.\\
 
 \term{U-schema}~\citep{DBLP:journals/is/CandelRM22} offers a unified representation for multi-model data. It is a foundation for the \term{Orion} language~\citep{DBLP:conf/er/ChillonRM21a, 10.1109/TKDE.2024.3362273}, enabling evolution, and \term{SkiQL}~\citep{skiql}, enabling querying the schema. Although these capabilities might sound very similar to the ones we propose in this thesis, there are a few important differences.
 

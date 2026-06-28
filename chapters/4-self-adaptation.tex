@@ -43,8 +43,6 @@ In our approach, the categorical representation provides a unified view of the c
 
 An in-depth description of the proposed approach, together with a proof-of-concept implementation called \term{MM-mapsearch}, is provided in \paperRef{edbt_2026}. The following sections contain a short summary, as well as a few improvements that we have made since the publication of that paper.
 
-\todo{obrázky a příklady}
-
 \subsubsection{State Space}
 
 In our approach, we consider entities, not properties, to be the most basic building blocks. I.e., if an entity is mapped to a kind, all of its properties are mapped to the attributes of that kind. Then, a configuration tells us in which database(s) each kind is stored, and to which other kind (if any) is embedded\footnotei{Since we don't deal with the internal structure of the kinds, we do not distinguish between embedding and inlining, so we use the term \uv{embedding} for both.}{.} This limitation allows us to define a finite state space, as there is only a finite number of ways to assign the kinds to the available databases and to embed them into each other.
