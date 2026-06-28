@@ -3,7 +3,7 @@
 
 When it comes to data (and for that matter, any kind of data, not just multi-model), what we really want is to be able to extract information from it---i.e., ask questions about it and get answers---in a process commonly known as \term{querying}. In the context of multi-model data, this process naturally extends across boundaries of different models and, therefore, database systems.
 
-Besides this primary goal, there are several other milestones that will help us to achieve it. We need to be able to \term{model} data so that we can reason about its structure and semantics---a necessary prerequisite for querying and some of the following milestones. Sometimes, the data is modelled first and created later. In other cases, we want to \term{infer} the schema of the data automatically.
+Besides this primary goal, there are several other milestones that will help us to achieve it. We need to be able to \term{model} data so that we can reason about its structure and semantics---a necessary prerequisite for querying and some of the following milestones. Sometimes, the data is modeled first and created later. In other cases, we want to \term{infer} the schema of the data automatically.
 
 Both modeling and inference are closely related to the process of \term{evolution}. Because if the schema of the data changes (and it is usually the case of \uv{when} instead of \uv{if}), we have to propagate the changes both to the data and to the queries that depend on it. In a multi-model data world, this might require us to \term{transform} the data between different models.
 
