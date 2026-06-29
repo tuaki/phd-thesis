@@ -1,28 +1,47 @@
 \section{Vision}
 \label{sec:vision}
 
+\todo{The central problem addressed by this thesis is how to manage multi-model data as one evolving and optimizable system, rather than as a collection of independent stores.}
+
 When it comes to data (and for that matter, any kind of data, not just multi-model), what we really want is to be able to extract information from it---i.e., ask questions about it and get answers---in a process commonly known as \term{querying}. In the context of multi-model data, this process naturally extends across boundaries of different models and, therefore, database systems.
 
 Besides this primary goal, there are several other milestones that will help us to achieve it. We need to be able to \term{model} data so that we can reason about its structure and semantics---a necessary prerequisite for querying and some of the following milestones. Sometimes, the data is modeled first and created later. In other cases, we want to \term{infer} the schema of the data automatically.
 
+\todo{Model vs. schema}
+
 Both modeling and inference are closely related to the process of \term{evolution}. Because if the schema of the data changes (and it is usually the case of \uv{when} instead of \uv{if}), we have to propagate the changes both to the data and to the queries that depend on it. In a multi-model data world, this might require us to \term{transform} the data between different models.
 
-Lastly, our motivation is not only about an \emph{ability} to do something, but also about the \emph{efficiency} of doing so. In accordance with our primary goal, we want to be able to query data as efficiently as possible. In this regard, multi-model data offers a unique opportunity to optimize querying by choosing the most appropriate model for the task at hand. This is obviously very difficult to do manually, so we want the system to be able to adapt itself---in a process called \term{self-adaptation}---to the current workload and data characteristics.
+Lastly, our motivation is not only about an \emph{ability} to do something, but also about the \emph{efficiency} of doing so. In accordance with our primary goal, we want to be able to query data as efficiently as possible. In this regard, multi-model data offers a unique opportunity to optimize querying by choosing the most appropriate model for the task at hand. This is very difficult to do manually, so we want the system to be able to adapt itself---in a process called \term{self-adaptation}---to the current workload and data characteristics.
 
 \todo{The vision is described in more detail in~\paperRef{vldb_2024}.}
+
+\todo{
+Dnešní systémy typicky řeší jednu z těchto věcí:
+
+    podporují více modelů, ale bez hlubšího jednotného sémantického základu;
+    umožňují migrace/evoluce, ale v rámci jednoho modelu;
+    optimalizují fyzický design, ale ne rozhodnutí typu „relační vs. dokumentové vs. grafové uložení“;
+    podporují dotazování, ale ne dlouhodobou evoluci a samo-adaptaci.
+
+Pointa:
+
+    What is missing is a principled management layer that connects modeling, querying, evolution, and workload-aware optimization.
+}
 
 \subsection{Level of Automation}
 \label{sec:vision-automation}
 
-All of the above-described capabilities can be achieved with a different amount of automation. More automation is generally better, as it reduces the amount of manual work and expertise required of users. It also allows the system to find solutions that might not be obvious to users, or that would be too time-consuming to do manually. The price for this is increased complexity of the system and potentially reduced control over the process. Therefore, we automate the capabilities gradually following three distinct levels~\citep{ideas2022vision}. In this section, we focus only on the \emph{source of a change}, not on the \emph{way it is propagated}, as the latter is covered in~\Cref{sec:evolution-automation}.
+\todo{Todo možná až dál? Jakože tematicky to vysvětluje všechno nad tím, ale je to už trochu vázané na evoluci ...}
 
-\todo{Příklady níže by měly odpovídat příkladům v 0.3 a obecně running example.}
+All of the above-described capabilities can be achieved with a different amount of automation. More automation is generally better, as it reduces the amount of manual work and expertise required of users. It also allows the system to find solutions that might not be obvious to users, or that would be too time-consuming to do manually. The price for this is increased complexity of the system and potentially reduced control over the process. Therefore, we automate the capabilities gradually following three distinct levels~\citep{ideas2022vision}:
 
 \begin{itemize}
-    \item \term{User-specified changes} -- E.g., the user wants to add a column \object{date} to a table \object{review}, allowing to tracking when reviews are created. Or, the user decides to transform the data from a columnar model to a graph model, as the latter is more suitable for the current workload.
-    \item \term{Data-driven changes} -- The system detects that the data has changed its structure, e.g., by observing that a new column \object{date} has been added to the \object{review} table, and updates the conceptual schema. Or, it finds out that labels (matching existing tables in the columnar database) are now present in the graph database, and creates the corresponding logical models.
+    \item \term{User-specified changes} -- The users change the schema of the data. E.g., they add a column \object{deletedAt} to a table \object{review}, allowing to track when reviews are deleted. Or, the users decide to transform the data from a columnar model to a graph model, as the latter is more suitable for the current workload.
+    \item \term{Data-driven changes} -- The system detects that the data has changed its structure, e.g., by observing that a new column \object{deletedAt} has been added to the \object{review} table, and updates the schema. Or, it finds out that labels (matching existing tables in the columnar database) are now present in the graph database, and creates the corresponding logical models.
     \item \term{Self-adaptation} -- The system proactively analyzes the workload and data characteristics, and decides to transform the data from a columnar model to a graph model (similarly how a database expert would do), without any user intervention.
 \end{itemize}
+
+These points focus only on the \emph{source of a change}, not on the \emph{way it is propagated}. The latter is covered in~\Cref{sec:evolution-automation}.
 
 \todo{
 - More vision somewhere?
@@ -32,10 +51,38 @@ All of the above-described capabilities can be achieved with a different amount 
 
 \subsection{Open Questions}
 
-\todo{modelování - jednotné rozhraní pro přístup k datům, unifikovaný model}
+\todo{modelování - jednotné rozhraní pro přístup k datům, unifikovaný model
 
-\todo{dotazování - sjednocení dotazování, podpora všech featur všech modelů, cross-model dotazy, optimalizace}
+How can heterogeneous data models be represented in a common semantic framework without erasing their model-specific structure?
+}
 
-\todo{evoluce - TODO}
+\todo{dotazování - sjednocení dotazování, podpora všech featur všech modelů, cross-model dotazy, optimalizace
 
-\todo{self-adaptation - TODO}
+TODO
+}
+
+\todo{evoluce
+
+- How can changes be propagated across conceptual schemas, logical models, data, and queries in a multi-model environment?
+
+- How can uncertain or ambiguous evolution decisions be supported by data-derived semantic evidence? (FDepHunter)
+}
+
+\todo{self-adaptation
+
+How can a multi-model system choose suitable representations for a workload without exhaustively materializing and benchmarking all alternatives?
+}
+
+\todo{benchmarking
+
+How can such systems be evaluated when real multi-model benchmarks and workloads are scarce?
+}
+
+\todo{DortDB
+
+What are the limits of the proposed framework, and which parts require alternative approaches?
+}
+
+\subsection{Challenges}
+
+\todo{Nebo jen open questions?}
