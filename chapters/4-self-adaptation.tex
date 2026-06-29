@@ -3,7 +3,7 @@
 
 With the categorical representation of multi-model data (see \Cref{sec:modeling}) and the capabilities of querying and evolution (\Cref{sec:querying,sec:evolution-management}), we have a solid foundation for managing multi-model data. Now we can focus on optimizing it.
 
-In its most basic form, the problem we are trying to solve can be described as follows. We assume a fixed conceptual schema, a \term{workload} (a set of queries weighted by their frequencies), and a set of all available databases. Let us define \term{configuration} as a set of logical models of these databases that is capable of answering all queries in the workload. The goal is to find a configuration that minimizes the overall query latency. To define the problem more precisely, we derived the following open questions:
+In its most basic form, the problem we are trying to solve can be described as follows. We assume a fixed conceptual schema, a \term{workload} (a set of queries weighted by their frequencies), and a set of all available databases. Let us define \term{configuration} as a set of logical schemas of these databases that is capable of answering all queries in the workload. The goal is to find a configuration that minimizes the overall query latency. To define the problem more precisely, we derived the following open questions:
 
 \question{sa:search-space}{Search space}{In general, there is inifinitely many configurations. We should find a deterministic way to limit the search space to a manageable size while still covering the best alternatives. Since even the number of \emph{meaningful}\footnote{I.e., configurations that are not redundant (up to renaming) or strictly worse than others.} configurations grows exponentially with the size of the conceptual schema, the alternatives must be generated systematically and efficiently.}
     
@@ -39,39 +39,39 @@ Based on the open questions above, we propose the following principles:
 
 It is important to note that, while these principles are general and most likely applicable in other approaches to the problem of self-adaptation, they can be only enabled by a sufficiently robust representation of multi-model data.
 
-In our approach, the categorical representation provides a unified view of the conceptual schema, the logical models, and the mappings between them. It allows us to describe queries (and thus the workload) independently of the actual configurations, as well as to reason about cross-model queries. It also defines a set of \acrshort{smo}s that offer a natural way to transform one configuration into another, which is crucial for defining the transitions between states. Lastly, we can use it to migrate the data to the final configuration.
+In our approach, the categorical representation provides a unified view of the conceptual schema, the logical schemas, and the mappings between them. It allows us to describe queries (and thus the workload) independently of the actual configurations, as well as to reason about cross-model queries. It also defines a set of \acrshort{smo}s that offer a natural way to transform one configuration into another, which is crucial for defining the transitions between states. Lastly, we can use it to migrate the data to the final configuration.
 
 An in-depth description of the proposed approach, together with a proof-of-concept implementation called \term{MM-mapsearch}, is provided in \paperRef{edbt_2026}. The following sections contain a short summary, as well as a few improvements that we have made since the publication of that paper.
 
 \subsubsection{State Space}
 
-In our approach, we consider entities, not properties, to be the most basic building blocks. I.e., if an entity is mapped to a kind, all of its properties are mapped to the attributes of that kind. Then, a configuration tells us in which database(s) each kind is stored, and to which other kind (if any) is embedded\footnotei{Since we don't deal with the internal structure of the kinds, we do not distinguish between embedding and inlining, so we use the term \uv{embedding} for both.}{.} This limitation allows us to define a finite state space, as there is only a finite number of ways to assign the kinds to the available databases and to embed them into each other.
+In our approach, we consider complex types, not simple types, to be the most basic building blocks. I.e., if a complex type is mapped to a kind, all of its properties are mapped to the attributes of that kind. Then, a configuration tells us in which database(s) each kind is stored, and to which other kind (if any) is embedded\footnotei{Since we don't deal with the internal structure of the kinds, we do not distinguish between embedding and inlining, so we use the term \uv{embedding} for both.}{.} This limitation allows us to define a finite state space, as there is only a finite number of ways to assign the kinds to the available databases and to embed them into each other.
 
-\paperRef{edbt_2026} describes a simple representation of state consisting of two vectors, both of which have the same number of elements as the number of entities in the conceptual schema. The first vector contains the database to which each entity is assigned. The second vector contains the entity into which each entity is embedded (or \code{none} if it is not embedded into any other entity).
+\paperRef{edbt_2026} describes a simple representation of state consisting of two vectors, both of which have the same number of elements as the number of complex types in the conceptual schema. The first vector contains the database to which each complex type is assigned. The second vector contains the kind into which each complex type is embedded (or \code{none} if it is not embedded into any other kind).
 
-This representation of state has one major issue---it does not allow redundancy, so if kinds used in a query are stored in multiple databases, the query has to be cross-model, resulting in a significant performance penalty. Such penalty is likely to outweight the benefits of using multiple databases, so the search process would lead to single-database configurations. To address this issue, we have replaced the previous two vectors with a \term{state matrix}. Its columns correspond to the entities, while its rows correspond to the databases. The values are one of:
+This representation of state has one major issue---it does not allow redundancy, so if kinds used in a query are stored in multiple databases, the query has to be cross-model, resulting in a significant performance penalty. Such penalty is likely to outweight the benefits of using multiple databases, so the search process would lead to single-database configurations. To address this issue, we have replaced the previous two vectors with a \term{state matrix}. Its columns correspond to the complex types, while its rows correspond to the databases. The values are one of:
 
 \begin{itemize}
-    \item \code{0} (i.\,e., \code{false}), if the entity is not stored in this database at all,
-    \item \code{1} (i.\,e., \code{true}), if the entity is stored in this database, but not embedded into any other entity, and
-    \item the identifier of another entity, if the entity is stored in this database and embedded into that other entity.
+    \item \code{0} (i.\,e., \code{false}), if the kind (for the given complex type) is not stored in this database at all,
+    \item \code{1} (i.\,e., \code{true}), if the kind is stored in this database, but not embedded into any other kind, and
+    \item the identifier of another kind, if the kind is stored in this database and embedded into that other kind.
 \end{itemize}
 
-This allows us to represent both redundancy and embedding while keeping the state space finite. The number of possible states is further reduced by a handful of constraints, such as that an entity cannot be embedded into itself, or that all entities must be stored in at least one database. The resulting state space is still large, but it is manageable and can be explored systematically.
+This allows us to represent both redundancy and embedding while keeping the state space finite. The number of possible states is further reduced by a handful of constraints, such as that a kind cannot be embedded into itself, or that all complex types must be represented by at least one kind. The resulting state space is still large, but it is manageable and can be explored systematically.
 
 % Přístup, kde stav místo toho, kde je uložen jaký kind, řeší, kde se vyhodnocuje jaký dotaz, je spíš nepoužitelný, protože neumí dobře reprezentovat cross-model dotazy - stejně si u nich musíme pamatovat přesný rozklad na kindy, což nejspíš vede na ještě složitější stavový prostor, navíc s nejasnými embeddingy a potenciálně příliš mnoha stavy (pokud je dotazů víc, než kindů, což by typicky mělo být).
 
 \begin{example}
 \label{ex:aimm-state}
-After the evolution from \Cref{ex:evolution-add,ex:evolution-map}, the conceptual schema has 5 entities: \object{User}, \object{Friend}, \object{Review}, \object{Business}, and \object{Attribute}. \Cref{fig:aimm-state} shows the simplified schema category (all properties are omitted), the initial configuration (based on \Cref{fig:mm-data}), and the corresponding state matrix.
+After the evolution from \Cref{ex:evolution-add,ex:evolution-map}, the conceptual schema has 5 complex types: \object{User}, \object{Friend}, \object{Review}, \object{Business}, and \object{Attribute}. \Cref{fig:aimm-state} shows the simplified schema category (all properties are omitted), the initial configuration (based on \Cref{fig:mm-data}), and the corresponding state matrix.
 
-The optimizations are closed tied to the specific databases instead of general data models, so we assumed the following options: \emph{PostgreSQL} (relational), \emph{ClickHouse} (columnar), \emph{Neo4j} (graph), and \emph{MongoDB} (document). We also had to extend the logical model \object{User} in \emph{Neo4j} with the \object{yelping\_since} property (it was not in the original model), because, as we said above, each entity has to be stored with all of its properties.
+The optimizations are closed tied to the specific databases instead of general data models, so we assumed the following options: \emph{PostgreSQL} (relational), \emph{ClickHouse} (columnar), \emph{Neo4j} (graph), and \emph{MongoDB} (document). We also had to extend the logical schema \object{User} in \emph{Neo4j} with the \object{yelping\_since} attribute (it was not in the original schema), because, as we said above, each kind has to be stored with all properties of its corresponding complex type.
 \end{example}
 
 \begin{figure}[ht]
     \centering
     \includegraphics[width=\textwidth]{img/commentary-aimm_state.drawio.pdf}
-    \caption{The initial configuration of the running example and its state matrix. Columns are labeled with the first letter of the corresponding entity.}
+    \caption{The initial configuration of the running example and its state matrix. Columns are labeled with the first letter of the corresponding complex type.}
     \label{fig:aimm-state}
 \end{figure}
 
@@ -85,15 +85,15 @@ A more detailed description of the algorithm can be found in \Cref{edbt_2026:sec
 
 \begin{example}
 \label{ex:aimm-search}
-\Cref{fig:aimm-search} shows a simplified version of the searched \acrshort{dag}. The left part shows the initial state from \Cref{fig:aimm-state} (node with label 0) and all its possible modifications of the \object{User} entity. I.e., we can either remove it from PostgreSQL (and get to state 1), or add it to ClickHouse (2) or MongoDB (3). Notably, we cannot remove it from Neo4j, as that would require removing \object{Friend} first, because it is represented there as a relationship. For the same reason, we cannot embed it into \object{Friend} in Neo4j. Next, nodes 4--6 are all the states reachable by two consecutive modifications of \object{User}. As we can see, we can get to them in multiple different ways.
+\Cref{fig:aimm-search} shows a simplified version of the searched \acrshort{dag}. The left part shows the initial state from \Cref{fig:aimm-state} (node with label 0) and all its possible modifications of \object{User}. I.e., we can either remove it from PostgreSQL (and get to state 1), or add it to ClickHouse (2) or MongoDB (3). Notably, we cannot remove it from Neo4j, as that would require removing \object{Friend} first, because it is represented there as a relationship. For the same reason, we cannot embed it into \object{Friend} in Neo4j. Next, nodes 4--6 are all the states reachable by two consecutive modifications of \object{User}. As we can see, we can get to them in multiple different ways.
 
-The right part shows the first modification of the \object{Friend} entity---we can add it to all databases where it is not already stored (states 7--9). However, we cannot remove it from Neo4j, because then it would not be stored in any database at all. We also cannot embed it into \object{User} in neither Neo4j nor PostgreSQL, because they do not support array values\footnotei{Technically, PostgreSQL \emph{does} support arrays, but we use it here as an example of a generic relational database.}{,} and one user can have multiple friends.
+The right part shows the first modification of \object{Friend}---we can add it to all databases where it is not already stored (states 7--9). However, we cannot remove it from Neo4j, because then it would not be stored in any database at all. We also cannot embed it into \object{User} in neither Neo4j nor PostgreSQL, because they do not support array values\footnotei{Technically, PostgreSQL \emph{does} support arrays, but we use it here as an example of a generic relational database.}{,} and one user can have multiple friends.
 \end{example}
 
 \begin{figure}[ht]
     \centering
     \includegraphics[width=\textwidth]{img/commentary-aimm_search.drawio.pdf}
-    \caption{First few steps of the search process from the initial configuration (0), either by modifying the \object{User} entity (left) or the \object{Friend} entity (right). Colors around the steps correspond to the databases from \Cref{fig:aimm-state}.}
+    \caption{First few steps of the search process from the initial configuration (0), either by modifying \object{User} (left) or \object{Friend} (right). Colors around the steps correspond to the databases from \Cref{fig:aimm-state}.}
     \label{fig:aimm-search}
 \end{figure}
 
@@ -113,7 +113,7 @@ However, this is still a work in progress, as there are many other factors that 
 
 \begin{example}
 \label{ex:aimm-result}
-Currently, the workload consists of two queries (\Cref{ex:querying-single,ex:querying-multi}). Neither of them uses the \object{Friend} entity, so the algorithm will try to optimize it away. We can fix that by adding a third query that uses \object{Friend}, but for the sake of this example, we will keep the workload as it is.
+Currently, the workload consists of two queries (\Cref{ex:querying-single,ex:querying-multi}). Neither of them uses the \object{Friend} complex type, so the algorithm will try to optimize it away. We can fix that by adding a third query that uses \object{Friend}, but for the sake of this example, we will keep the workload as it is.
 
 The precise result is impossible to predict, as it depends on the actual latencies of the queries in the individual databases. However, we can make an educated guess that the algorithm will try to move both \object{User} and \object{Review} to the same database, as that would eliminate the cross-model query. So, the final configuration will most likely consist of two independent parts---the fastest database for query from \Cref{ex:querying-single} (containing \object{Business} and \object{Attribute}) and the fastest database for query from \Cref{ex:querying-multi} (\object{User} and \object{Review}).
 \end{example}
@@ -124,9 +124,9 @@ In real-world scenarios, both data and workloads are much more complex than in \
 
 MM-mapsearch only optimizes the data layout on the logical level; it does not concern itself with the physical level. In \paperRef{dke_2026}, we conducted an in-depth study of indexes, which is a crucial aspect of physical level optimizations. We reviewed existing index-selection methods from relational systems and checked how they transfer to \acrshort{nosql} databases.
 
-This line of work complements MM-mapsearch in an important way. While MM-mapsearch searches for a suitable \emph{configuration} in terms of logical models, mappings, embedding, and redundancy, index optimization shows that the logical design is only one part of the overall performance problem. Even after a promising configuration is chosen, its efficiency still depends on lower-level physical structures such as indexes. In this sense, \paperRef{dke_2026} primarily relates to \questionRef{sa:richer-state-space}: it shows that a truly self-adaptive system should eventually optimize not only where and how the data is represented, but also which physical access structures are maintained for the current workload.
+This line of work complements MM-mapsearch in an important way. While MM-mapsearch searches for a suitable \emph{configuration} in terms of logical schemas, mappings, embedding, and redundancy, index optimization shows that the logical design is only one part of the overall performance problem. Even after a promising configuration is chosen, its efficiency still depends on lower-level physical structures such as indexes. In this sense, \paperRef{dke_2026} primarily relates to \questionRef{sa:richer-state-space}: it shows that a truly self-adaptive system should eventually optimize not only where and how the data is represented, but also which physical access structures are maintained for the current workload.
 
-At the same time, the paper confirms that the key technical obstacle is, once again, cost estimation. Existing index-selection methods rely heavily on the ability to estimate query costs for many alternative configurations without fully materializing them, which is precisely the same type of requirement as in \questionRef{sa:latency-estimation}. The difference is that here the alternatives vary on the physical level rather than on the level of logical models. This is encouraging for our overall approach---if we are able to estimate the latency of workload queries for candidate multi-model configurations, then the same principle can later be extended to physical-design choices as well.
+At the same time, the paper confirms that the key technical obstacle is, once again, cost estimation. Existing index-selection methods rely heavily on the ability to estimate query costs for many alternative configurations without fully materializing them, which is precisely the same type of requirement as in \questionRef{sa:latency-estimation}. The difference is that here the alternatives vary on the physical level rather than logical one. This is encouraging for our overall approach---if we are able to estimate the latency of workload queries for candidate multi-model configurations, then the same principle can later be extended to physical-design choices as well.
 
 Therefore, we do not view index optimization as a separate problem unrelated to MM-mapsearch, but rather as its natural continuation towards a richer adaptation space. The categorical representation gives us a principled handle on logical reorganization, whereas the index-selection work identifies what must be added for self-adaptation on the physical level. Together, these two directions suggest a broader long-term vision in which the system first reasons about model placement and structure, and then refines the chosen configuration using physical optimizations tailored to the observed workload.
 
@@ -146,7 +146,7 @@ Our approach combines elements that these lines of work usually keep separate. I
 
 \todo{připomenout relevantní papery}
 
-We formulated self-adaptation as a workload-aware optimization problem over the logical models and their mappings to a fixed conceptual schema. Instead of treating different data models resp. databases individually, our approach represents alternative configurations of the same conceptual schema in a common search space. This makes it possible to compare heterogeneous designs systematically and to reason about adaptation at the level of the whole multi-model system rather than one store at a time.
+We formulated self-adaptation as a workload-aware optimization problem over the logical schemas and their mappings to a fixed conceptual schema. Instead of treating different data models resp. databases individually, our approach represents alternative configurations of the same conceptual schema in a common search space. This makes it possible to compare heterogeneous designs systematically and to reason about adaptation at the level of the whole multi-model system rather than one store at a time.
 
 The categorical framework allowed us to define a state representation that captures the essential aspects of a configuration, including model assignment, embedding and inlining, (\questionRef{sa:embedding-inlining}), and redundancy (\questionRef{sa:redundancy}). This representation is both expressive enough to cover the most important design choices and compact enough to keep the search space finite (\questionRef{sa:search-space}). It also provides a principled way to migrate data between configurations.
 

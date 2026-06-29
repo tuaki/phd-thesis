@@ -1,13 +1,25 @@
 \section{Vision}
 \label{sec:vision}
 
+\todo{
+- možná sloučit vizi a úvod
+
+
+- úvod (MM-data),
+- popis problémů,
+- cíle
+- možná zmínit, co už bylo řešeno
+- jak to chci řešit (krátce)
+- pro konkrétní cíle jsou další sekce
+
+- future work? asi až v závěru
+}
+
 \todo{The central problem addressed by this thesis is how to manage multi-model data as one evolving and optimizable system, rather than as a collection of independent stores.}
 
 When it comes to data (and for that matter, any kind of data, not just multi-model), what we really want is to be able to extract information from it---i.e., ask questions about it and get answers---in a process commonly known as \term{querying}. In the context of multi-model data, this process naturally extends across boundaries of different models and, therefore, database systems.
 
 Besides this primary goal, there are several other milestones that will help us to achieve it. We need to be able to \term{model} data so that we can reason about its structure and semantics---a necessary prerequisite for querying and some of the following milestones. Sometimes, the data is modeled first and created later. In other cases, we want to \term{infer} the schema of the data automatically.
-
-\todo{Model vs. schema}
 
 Both modeling and inference are closely related to the process of \term{evolution}. Because if the schema of the data changes (and it is usually the case of \uv{when} instead of \uv{if}), we have to propagate the changes both to the data and to the queries that depend on it. In a multi-model data world, this might require us to \term{transform} the data between different models.
 
@@ -37,7 +49,7 @@ All of the above-described capabilities can be achieved with a different amount 
 
 \begin{itemize}
     \item \term{User-specified changes} -- The users change the schema of the data. E.g., they add a column \object{deletedAt} to a table \object{review}, allowing to track when reviews are deleted. Or, the users decide to transform the data from a columnar model to a graph model, as the latter is more suitable for the current workload.
-    \item \term{Data-driven changes} -- The system detects that the data has changed its structure, e.g., by observing that a new column \object{deletedAt} has been added to the \object{review} table, and updates the schema. Or, it finds out that labels (matching existing tables in the columnar database) are now present in the graph database, and creates the corresponding logical models.
+    \item \term{Data-driven changes} -- The system detects that the data has changed its structure, e.g., by observing that a new column \object{deletedAt} has been added to the \object{review} table, and updates the schema. Or, it finds out that labels (matching existing tables in the columnar database) are now present in the graph database, and creates the corresponding logical schemas.
     \item \term{Self-adaptation} -- The system proactively analyzes the workload and data characteristics, and decides to transform the data from a columnar model to a graph model (similarly how a database expert would do), without any user intervention.
 \end{itemize}
 
@@ -50,6 +62,13 @@ These points focus only on the \emph{source of a change}, not on the \emph{way i
 }
 
 \subsection{Open Questions}
+
+\todo{Přejmenovat na "Cíle" (a možná zmínit i "necíle")
+
+- možná to dát výš?
+
+- potom je zmínit v conclusion
+}
 
 \todo{modelování - jednotné rozhraní pro přístup k datům, unifikovaný model
 
