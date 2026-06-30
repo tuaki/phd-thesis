@@ -11,7 +11,7 @@ In real-world scenarios, these complex use cases involving multiple data models 
 \label{ex:mm-data}
 The \emph{Yelp Academic Dataset}\footnote{\url{https://www.kaggle.com/datasets/yelp-dataset/yelp-dataset}} consists of \acrshort{json} collections representing \emph{businesses} (e.g., restaurants), \emph{users} (who write \emph{reviews} and tips about the \emph{businesses}), and the reviews and tips themselves. There is also a social network of \emph{friends}, as well as a set of \emph{checkins} and \emph{photos} associated with the businesses.
 
-For the rest of this thesis, we will be using a subset of this dataset, displayed in \Cref{fig:mm-data}. Originally, the data is stored in a document model, but we transformed it into a multi-model representation. The \code{user} is a table in a relational model, the \code{business} is a collection in a document model, the \code{FRIEND} is a relationship in a graph model, and the \code{review} is a table in a columnar model. Crucially, the data from different models is connected via the same identifiers, allowing us to combine it in a single query.
+For the rest of this thesis, we will be using a subset of this dataset, displayed in \Cref{fig:mm-data}. Originally, the data is stored in a document model, but we transformed it into a multi-model representation. The \code{user} is a table in a relational model, the \code{business} is a collection in a document model, the \code{FRIEND} is a relationship in a graph model, and the \code{review} is a table in a columnar model. Crucially, the data from different models is connected via the same identifiers, allowing us to combine results from multiple queries.
 \end{example}
 
 \begin{figure}[ht]
@@ -21,15 +21,7 @@ For the rest of this thesis, we will be using a subset of this dataset, displaye
     \label{fig:mm-data}
 \end{figure}
 
-The various data models from \Cref{ex:mm-data} illustrate the advantages of each model for different types of data. E.g., the relational model is suitable for structured data with fixed schemas, while the document model is better for semi-structured data with flexible schemas (e.g., many different options in the \code{attributes} field). The graph model excels at complex queries like finding the shortest path between two users in a social network, and the columnar model is optimized for analytical queries on large datasets.
-
-However, the diversity of data models also presents challenges. For instance, if we want to find all users who have written a review for a business with a specific attribute, we need to combine data from the relational and document models. \todo{more challanges?}
-
-\todo{
-- jedna DB nemusí stačit (i když je MM), můžeme chtít jiné škálování
-
-!zmínit redundancy
-}
+The various data models from \Cref{ex:mm-data} illustrate the advantages of each model for different types of data. E.g., the relational model is suitable for structured data with fixed schemas, while the document model is better for semi-structured data with flexible schemas (e.g., many different options in the \code{attributes} field). The graph model excels at complex queries like finding the shortest path between two users in a social network, and the columnar model is optimized for analytical queries on large datasets. On the other hand, this specialization comes with a cost---even though we can combine results from multiple queries, doing so is not straightforward, error-prone, and generally less efficient than querying a single model data.
 
 \subsubsection{Outline}
 

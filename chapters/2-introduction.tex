@@ -1,6 +1,6 @@
 \section{Foundations}
 
-Our work is based on a preexisting approach to multi-model data modeling~\citep{mm_cat,mm_cat_journal}. In this section, we introduce its main concepts and describe how it evolved into a comprehensive multi-model data management framework called \term{MM-cat}. We first clarify the terminology and the levels of abstraction used throughout the thesis. Next, we briefly introduce the categorical ideas on which the approach is built. We then show how the same conceptual representation supports both modeling and querying, which is the key reason why it later also serves as the basis for evolution management and self-adaptation.
+Our work is based on a preexisting approach to multi-model data modeling~\citep{mm_cat, mm_cat_journal} and querying~\citep{mm_quecat, koupil2023universal}. In this section, we introduce its main concepts and describe how it evolved into a comprehensive multi-model data management framework called \term{MM-cat}. We first clarify the terminology and the levels of abstraction used throughout the thesis. Next, we briefly introduce the categorical ideas on which the approach is built. We then show how the same conceptual representation supports both modeling and querying, which is the key reason why it later also serves as the basis for evolution management and self-adaptation.
 
 \subsubsection{Common terminology}
 
@@ -11,21 +11,16 @@ We distinguish three abstraction levels commonly used in database design: \term{
 These levels can be mapped to the terminology defined by \acrshort{mda}~\citep{MDA}---the conceptual level corresponds to the \acrshort{pim} while the other two levels correspond to the \acrshort{psm}. Nevertheless, we do not use the \acrshort{mda} in the rest of the thesis.
 
 Each data model (or even each database system) has its own terminology for the concepts and data structures it uses. Let use define the following terms:
-
 \begin{itemize}
     \item \term{kind} -- a class of items (e.g., a relational table, a collection of documents, or a node/edge label),
     \item \term{attribute} -- a field of a kind (e.g., a column in a table, a field in a document, or a property of a node/edge).
 \end{itemize}
-
 These terms unify the concepts from the logical level. On the physical level, we have:
-
 \begin{itemize}
     \item \term{record} -- an item of a kind (e.g., a table row, a document, or a node/edge),
     \item \term{value} -- a value of an attribute in a record (e.g., a cell in a table row, a field in a document, or a property of a node/edge).
 \end{itemize}
-
 Finally, the terminology on the conceptual level is defined in a way that abstracts away any model-specific details:
-
 \begin{itemize}
     \item \term{simple type} -- a value-carrying element (e.g., id, name, email),
     \item \term{complex type} -- a structure consisting of simple types (e.g., user, business, review),
@@ -36,13 +31,11 @@ Finally, the terminology on the conceptual level is defined in a way that abstra
 While kind has to correspond to a complex type, an attribute can correspond to either a complex type (e.g., a nested document in a document database) or a simple type (e.g., a column in a relational table). Relationships can be expressed in many different ways (e.g., references, nesting, inlining, etc.), so we do not define a unified term for them.
 
 For illustration, let us show how these terms correspond to the classical \acrshort{er} model~\citep{ER} on the conceptual level:
-
 \begin{itemize}
     \item complex type -- entity/relationship type,
     \item simple type -- attribute of an entity/relationship type,
     \item projection -- edge from an entity/relationship type to an attribute or another entity/relationship type.
 \end{itemize}
-
 Generally, we will not be using the \acrshort{er} terminology in the rest of the thesis.
 
 \subsubsection{Category Theory}
@@ -62,7 +55,7 @@ The categories do not have to be the same size---for example, we can map multipl
 
 The basic idea of our approach is to create a \emph{unified model} of multi-model data on both conceptual and logical levels, and to use it as the basis for all the operations on the data, including querying and evolution. This unified model is based on category theory, which allows us to capture the semantics of all existing data models in a consistent way.
 
-The conceptual schema is a category called \term{schema category}\footnotei{This definition of schema category slightly differs from the original~\citep{mm_cat,mm_cat_journal} which required that each morphism had a counterpart in the opposite direction (called \term{dual morphism}) and allowed each morhism to specify \term{cardinality} in the same way as an \acrshort{er} would (e.g., \code{0..*}). This is intentional, as the original definition was later refined (see \paperRef{cikm_2022}).
+The conceptual schema is a category called \term{schema category}\footnotei{This definition of schema category slightly differs from the original~\citep{mm_cat, mm_cat_journal} which required that each morphism had a counterpart in the opposite direction (called \term{dual morphism}) and allowed each morhism to specify \term{cardinality} in the same way as an \acrshort{er} would (e.g., \code{0..*}). This is intentional, as the original definition was later refined (see \paperRef{cikm_2022}).
 
 The current version does have the concept of dual morphisms, and the cardinalities are limited to \code{0..1} and \code{1..1} \emph{in the direction of the morphism}. For example, in \Cref{fig:schema-category}, we can immediatelly see that each instance of \object{User} can have at most one instance of \object{name} (even without providing any further information). This limitation is crucial to ensure that the conceptual schema can be mapped to any data model, because it requires each N:N projection to be decomposed to an intermediate complex type with two N:1 projections. A more fine-grained cardinality control is achieved via categorical concepts like \term{monomorphism} and \term{epimorphism}.}{.}
 Its objects represent the concepts in the domain of interest---complex and simple types, while its morphisms represent projections between these concepts. An object is a simple type if there is no morphism from it to any other object, otherwise it is a complex type.
@@ -117,12 +110,18 @@ Note that the \object{Attributes} complex type is represented by the \object{att
     \label{fig:mapping-other}
 \end{figure}
 
+\subsection{Transformations}
+
+This part is not very long, because in our approach, transformations are a direct consequence of modeling. We defined \term{instance category}~\citep{mm_cat, mm_cat_journal} to have the same structure as the schema category, but to also contain the actual data records. We also developed algorithms that leverage the above-mentioned mappings between the conceptual and logical schemas to transform data from a database to an instance category and back~\citep{mm_cat_journal}. This allows us to transform data between any two models by first transforming it to the instance category and then transforming it to the target model. The mappings ensure that the semantics of the data is preserved during this process.
+
+The transformation algorithms are mostly database-independent, but they have a few database-specific parts, i.e., the concrete data structures and \acrshort{ddl} and \acrshort{dml} statements. Therefore, for each supported database, we have to define a \term{wrapper}, which implements all of the database-specific parts. The same approach is used in other places as well (e.g., querying and evolution). Crucially, the underlying algorithms are general enough to support all popular data models; the wrappers handle only the technical details of each database.
+
 \subsection{Querying}
 \label{sec:querying}
 
 Although most relational databases use the query language standard (\acrshort{sql}~\citep{SQL}), there are still many differences in the syntax and semantics of the language between different database systems. For example, some databases support specific features like window functions or recursive queries, while others do not. This can make it difficult to write queries that work across multiple databases, even if they all use \acrshort{sql}.
 
-In the case of \acrshort{nosql} databases, the situation is even more complex. Each database system has its own query language, tailored to the specific data model. From \acrshort{sql} to XQuery~\citep{XQuery}, these languages have vast differences in both syntax and semantics. Even within the same data model, query languages (e.g., SPARQL~\citep{SPARQL} and Cypher~\citep{Cypher} for the graph model) offer very diverse features~\citep{Jiaheng2023Survey}.
+In the case of \acrshort{nosql} databases, the situation is even more complex. Each database system has its own query language, tailored to the specific data model. From \acrshort{sql} to XQuery~\citep{XQuery}, these languages have vast differences in both syntax and semantics. Even within the same data model, query languages (e.g., SPARQL~\citep{sparql} and Cypher~\citep{Cypher} for the graph model) offer very diverse features~\citep{Jiaheng2023Survey}.
 
 There are attempts to unify query languages across different data models, most notably by extending \acrshort{sql} with additional features for specific data models. However, these extensions are often limited in scope and do not cover all possible queries across all data models. For example, SQL/JSON~\citep{SQLJSON} allows querying JSON data, but it does not support other data models like graph. Similarly, SQL/PGQ~\citep{SQLPGQ} allows querying property graphs, but it does not support documents.
 
@@ -134,7 +133,7 @@ Lastly, one of the primary motivations for using multi-model data is the perform
 
 These requirements led us to the development of \term{\acrshort{mmql}}~\citep{mm_quecat, koupil2023universal}. \acrshort{mmql} is a query language over the schema category, making it independent of both the underlying data models and the specific databases. After parsing, the query engine splits the query into maximal subqueries that can be executed on a single database, translates them to the native query languages, executes them, and finally combines the results.
 
-The syntax of \acrshort{mmql} is based on SPARQL~\citep{SPARQL}, as it is a well-known and widely used query language for graph data (and schema category can be represented as a multigraph). Each triple pattern in the query corresponds to a morphism in the schema category, together with its domain and codomain objects. However, the similarity to SPARQL is just syntactic, as both objects and morphisms in the schema category can have very different semantics dependent on the underlying data models and databases. E.g., one morphism can represent a join in a relational database, a relationship kind in a property graph database, or a nested document in a document database.
+The syntax of \acrshort{mmql} is based on SPARQL~\citep{sparql}, as it is a well-known and widely used query language for graph data (and schema category can be represented as a multigraph). Each triple pattern in the query corresponds to a morphism in the schema category, together with its domain and codomain objects. However, the similarity to SPARQL is just syntactic, as both objects and morphisms in the schema category can have very different semantics dependent on the underlying data models and databases. E.g., one morphism can represent a join in a relational database, a relationship kind in a property graph database, or a nested document in a document database.
 
 A single \term{query plan} is created by matching the patterns in the query to the available logical schemas (via the mappings from the schema category). Because of redundancy, more than one combination might be possible. In that happens, multiple query plans are created and the best one is chosen based on the estimated cost.
 
@@ -169,7 +168,6 @@ This time, we need \code{FILTER} and \code{ORDER BY} clauses to filter and order
 \end{figure}
 
 Optimization of query plans is crucial for the performance of any database system. In our case, it is even more important, as we have to deal with multiple databases at the same time. We do not try to optimize the native queries themselves, as that is the responsibility of the underlying applications. Instead, we have explored, implemented, and evaluated several techniques to improve the performance of the \acrshort{mmql} query engine~\citep{strobl-mastersthesis}:
-
 \begin{itemize}
     \item \term{Predicate pushdown} -- Generally, it is more efficient to filter the data as early as possible, ideally in the underlying databases, so we push the predicates down along the query plan tree. Not all operations can be pushed to the databases (e.g., cross-database joins), so they are executed in the query engine. In some cases, the databases do not support certain operations (e.g., aggregation), or they might not be very efficient (e.g., lookups in MongoDB), so we have to execute them by ourselves as well.
     \item \term{Dependent joins} -- If one side of a join depends on the results of the other side, we might be able to push this as a \uv{filter} to the database. E.g., when two kinds are joined on a key, we can query one of them first and then use the possible key values as a filter for the second one. This is especially beneficial when the first kind is already heavily filtered by other predicates. This is shown in \Cref{fig:query-multi}.
@@ -207,10 +205,9 @@ Besides these classical approaches, several proposals target multi-model data mo
 
 A second difference is in the querying capabilities. SkiQL is a \emph{schema} query language, which means that it can only query the structure of the data, but not its content. This is a very important distinction, as our focus is on the opposite---we only query the contents of the data, not its structure. However, this is not a limitation of our approach, as we can still get the structure either from our internal model or from the data (i.e., by inference).
 
-
 There is also a more theoretical category-theoretic approach to heterogeneous data management~\citep{DBLP:journals/corr/abs-2201-04905}. A recently published version~\citep{lu2025part1, lu2025part2} is much more rigorous and comprehensive while also exploring querying multi-model data. It introduces categorical algebra and calculus as an extension of relational algebra and calculus via multi-model predicates. These works provide valuable formal foundations for representing multiple models and reasoning about transformations between them. Compared with our work, however, they focus more on the formal apparatus itself than on an integrated toolset for modeling, querying, schema inference, and evolution over practical multi-model systems.
 
-Finally, related work also comes from multi-model DBMSs, polyglot persistence, and query federation. Existing systems often provide a common access layer over heterogeneous sources or extend one dominant query language to cover additional models. A broad overview of this landscape is given in~\citep{Jiaheng2023Survey}. On the standards side, \acrshort{sql} has been extended toward particular combinations of models, for example by SQL/XML~\citep{SQLXML}, SQL/JSON~\citep{SQLJSON}, and SQL/PGQ~\citep{SQLPGQ}. These standards are important, but each covers only a subset of the multi-model problem. Similarly, polystore and mediator-style systems~\citep{conf/cikm/LuHC18,DBLP:journals/ijcc/BondiombouyV16,alotaibi2020estocada} show how queries can be executed across heterogeneous backends, yet they usually treat local representations as given rather than deriving them from an explicit conceptual schema and its mappings. In contrast, our framework combines conceptual modeling, logical representation, mappings, and querying in one coherent foundation.
+Finally, related work also comes from multi-model DBMSs, polyglot persistence, and query federation. Existing systems often provide a common access layer over heterogeneous sources or extend one dominant query language to cover additional models. A broad overview of this landscape is given in~\citep{Jiaheng2023Survey}. On the standards side, \acrshort{sql} has been extended toward particular combinations of models, for example by SQL/XML~\citep{SQLXML}, SQL/JSON~\citep{SQLJSON}, and SQL/PGQ~\citep{SQLPGQ}. These standards are important, but each covers only a subset of the multi-model problem. Similarly, polystore and mediator-style systems~\citep{conf/cikm/LuHC18, DBLP:journals/ijcc/BondiombouyV16,alotaibi2020estocada} show how queries can be executed across heterogeneous backends, yet they usually treat local representations as given rather than deriving them from an explicit conceptual schema and its mappings. In contrast, our framework combines conceptual modeling, logical representation, mappings, and querying in one coherent foundation.
 
 % \subsection{Contributions}
 
