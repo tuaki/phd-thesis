@@ -338,13 +338,22 @@
 \newcommand{\pLabel}[1]{\label{\inputPrefix#1}}
 \newcommand{\pRef}[1]{\ref{\inputPrefix#1}}
 
-% \newcounter{question}[section]
-\newcounter{question}[chapter]
-
-\newcommand{\question}[3]{%
-\refstepcounter{question}%
-\par\medskip
-\noindent\textbf{Q\arabic{question}}\label{#1} \ \emph{#2} \ #3\par\medskip
+% Define a new question prefix
+\newcommand{\defineQuestionPrefix}[2]{%
+  \newcounter{question@#1}%
+  \expandafter\def\csname questionprefix@#1\endcsname{#2}%
 }
 
-\newcommand{\questionRef}[1]{\hyperref[#1]{Q\ref{#1}}}
+% Create a question
+\newcommand{\question}[4]{%
+  \refstepcounter{question@#1}%
+  \par\medskip
+  \noindent\textbf{\csname questionprefix@#1\endcsname\arabic{question@#1}}\label{#1:#2} \ \emph{#3} \ #4\par\medskip
+}
+
+% Reference a question
+\newcommand{\questionRef}[2]{%
+  \hyperref[#1:#2]{%
+    \csname questionprefix@#1\endcsname\ref{#1:#2}%
+  }%
+}
