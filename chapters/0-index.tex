@@ -21,7 +21,7 @@ For the rest of this thesis, we will be using a subset of this dataset, displaye
     \label{fig:mm-data}
 \end{figure}
 
-The various data models from \Cref{ex:mm-data} illustrate the advantages of each model for different types of data. E.g., the relational model is suitable for structured data with fixed schemas, while the document model is better for semi-structured data with flexible schemas (e.g., many different options in the \code{attributes} field). The graph model excels at complex queries like finding the shortest path between two users in a social network, and the wide-column model is optimized for . On the other hand, this specialization comes with a cost---even though we can combine results from multiple queries, doing so is not straightforward, error-prone, and generally less efficient than querying a single model data.
+The various data models from \Cref{ex:mm-data} illustrate the advantages of each model for different types of data. E.g., the relational model is suitable for structured data with fixed schemas, while the document model is better for semi-structured data with flexible schemas (e.g., many different options in the \code{attributes} field). The graph model excels at complex queries like finding the shortest path between two users in a social network, and the wide-column model is optimized for large throughput scenarios. On the other hand, this specialization comes with a cost---even though we can combine results from multiple queries, doing so is not straightforward, error-prone, and generally less efficient than querying a single model data.
 
 \subsubsection{Outline}
 

@@ -3,9 +3,9 @@
 
 With the categorical representation of multi-model data (see \Cref{sec:modeling}) and the capabilities of querying and evolution (\Cref{sec:querying,sec:evolution-management}), we have a solid foundation for managing multi-model data. Now we can focus on optimizing it.
 
-In its most basic form, the problem we are trying to solve can be described as follows. We assume a fixed conceptual schema, a workload (a set of queries weighted by their frequencies), and a set of all available databases. Let us define \term{configuration} as a set of logical schemas of these databases that is capable of answering all queries in the workload. The goal is to find a configuration that minimizes the overall query latency. To define the problem more precisely, we derived the following open questions:
+In its most basic form, the problem we are trying to solve can be described as follows. We assume a fixed conceptual schema, a workload (a set of queries weighted by their frequencies), and a set of all available databases. Let us define \term{configuration} as a set of logical schemas of these databases that is capable of answering all queries in the workload. The goal is to find a configuration that minimizes the overall query latency. To define the problem more precisely, we derived the following open problems:
 
-\question{sa:search-space}{Search space}{In general, there is infinitely many configurations. We should find a deterministic way to limit the search space to a manageable size while still covering the best alternatives. Since even the number of \emph{meaningful}\footnote{I.e., configurations that are not redundant (up to renaming) or strictly worse than others.} configurations grows exponentially with the size of the conceptual schema, the alternatives must be generated systematically and efficiently.}
+\question{sa:search-space}{Search space}{In general, there is infinitely many possible configurations. We should find a deterministic way to limit the search space to a manageable size while still covering the best alternatives. Since even the number of \emph{meaningful}\footnote{I.e., configurations that are not redundant (up to renaming) or strictly worse than others.} configurations grows exponentially with the size of the conceptual schema, the alternatives must be generated systematically and efficiently.}
     
 \question{sa:embedding-inlining}{Embedding, inlining}{The document model allows embedding related data together, which reduces the number of joins. The relational model allows inlining columns from one table to another. Even so, some databases support embedding one model into another (e.g., PostgreSQL allows JSON columns in a relational table). The system should be able to identify opportunities for embedding and inlining, and to evaluate their benefits and costs. This includes not only the expected improvement in query performance, but also the effort required to reach (and maintain) the new configuration.}
 
@@ -29,7 +29,7 @@ In its most basic form, the problem we are trying to solve can be described as f
 
 \subsection{MM-mapsearch}
 
-Based on the open questions above, we propose the following principles:
+Based on the open problems above, we propose the following principles:
 \begin{itemize}
     \item A \term{state} is a an element of a finite discrete \term{state space} represented by a matrix. It maps the conceptual schema and the databases to a configuration. State space is then a graph of all possible states connected by the available transitions.
     \item The state space is explored using an algorithm that evaluates the states both directly (by estimating the latency of the corresponding configurations) and indirectly (by the values of neighboring states).
@@ -118,7 +118,7 @@ In real-world scenarios, both data and workloads are much more complex than in \
 
 \subsection{Index Optimization}
 
-MM-mapsearch only optimizes the data layout on the logical level; it does not concern itself with the physical level. In \paperRef{dke_2026}, we conducted an in-depth study of indexes, which is a crucial aspect of physical level optimizations. We reviewed existing index-selection methods from relational systems and checked how they transfer to \acrshort{nosql} databases.
+The approach described so-far only optimizes the data layout on the logical level; it does not concern itself with the physical level. We addressed this aspect in \paperRef{dke_2026}, where we conducted an in-depth study of indexes, which are crucial for physical level optimizations. We reviewed existing index-selection methods from relational systems and checked how they transfer to \acrshort{nosql} databases.
 
 This line of work complements MM-mapsearch in an important way. While MM-mapsearch searches for a suitable \emph{configuration} in terms of logical schemas, mappings, embedding, and redundancy, index optimization shows that the logical design is only one part of the overall performance problem. Even after a promising configuration is chosen, its efficiency still depends on lower-level physical structures such as indexes. In this sense, \paperRef{dke_2026} primarily relates to \questionRef{sa:richer-state-space}: it shows that a truly self-adaptive system should eventually optimize not only where and how the data is represented, but also which physical access structures are maintained for the current workload.
 
