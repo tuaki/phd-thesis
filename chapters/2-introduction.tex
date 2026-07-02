@@ -85,9 +85,9 @@ Finally, each logical schema is connected to the conceptual schema via a \term{m
 
 \begin{example}
 \label{ex:mapping}
-Continuing \Cref{ex:schema-category}, \Cref{fig:mapping} displays a logical schema category for the columnar database from \Cref{fig:mm-data} (in red), mapped to the conceptual schema category from \Cref{fig:schema-category}. The root object of the logical schema is \object{review}, which is mapped directly to the \object{Review} object in the conceptual schema.
+Continuing \Cref{ex:schema-category}, \Cref{fig:mapping} displays a logical schema category for the wide-column database from \Cref{fig:mm-data} (in red), mapped to the conceptual schema category from \Cref{fig:schema-category}. The root object of the logical schema is \object{review}, which is mapped directly to the \object{Review} object in the conceptual schema.
 
-Table \object{review} cannot have a column \object{user}, because user is a complex type and columnar model does not support nested structures. However, we can \term{inline} the \object{id} simple type into the \object{review} table by defining the object \object{user\_id} (mapped to the object \object{id} from the conceptual schema), and the morphism \signature{3.4} (mapped to the morphism from \object{Review} to \object{id} in the conceptual schema). The dot symbol represents a composite morphism---in this case, morphism \signature{3.4} corresponds to the composition of morphisms \signature{3} and \signature{4}.
+Column family \object{review} cannot have a column \object{user}, because user is a complex type and wide-column model does not support nested structures. However, we can \term{inline} the \object{id} simple type into \object{review} by defining the object \object{user\_id} (mapped to the object \object{id} from the conceptual schema), and the morphism \signature{3.4} (mapped to the morphism from \object{Review} to \object{id} in the conceptual schema). The dot symbol represents a composite morphism---in this case, morphism \signature{3.4} corresponds to the composition of morphisms \signature{3} and \signature{4}.
 
 Because a schema category of a logical schema is a always a tree, we can express both it and its mapping to the conceptual schema in a single \acrshort{json}-like structure. It shows the root object, its attributes, and the signatures of the morphisms to them (displayed on the right of the figure).
 \end{example}
@@ -95,7 +95,7 @@ Because a schema category of a logical schema is a always a tree, we can express
 \begin{figure}[ht]
     \centering
     \includegraphics[width=\textwidth]{img/commentary-mapping.drawio.pdf}
-    \caption{A mapping between a logical schema for the columnar database from \Cref{fig:mm-data} and the conceptual schema from \Cref{fig:schema-category}. Complex types \object{Friend} and \object{Attributes} are omitted for simplicity.}
+    \caption{A mapping between a logical schema for the wide-column database from \Cref{fig:mm-data} and the conceptual schema from \Cref{fig:schema-category}. Complex types \object{Friend} and \object{Attributes} are omitted for simplicity.}
     \label{fig:mapping}
 \end{figure}
 
@@ -160,13 +160,13 @@ In the example, the \code{WHERE} pattern is matched to the logical schema of the
 \label{ex:querying-multi}
 \Cref{fig:query-multi} shows another query: \emph{Find all reviews with at least 3 stars about a business with id \code{bus\#679}, ordered by the number of stars (ascending). For each review, return the stars and the author's name}. 
 
-This time, we need \code{FILTER} and \code{ORDER BY} clauses to filter and order the results. There is no logical schema that contains all the required information, so the query engine splits the query into two subqueries---one for the columnar database and one for the relational database. The query engine then joins the results of both subqueries based on \object{id} of the \object{User} and projects them to the output structure.
+This time, we need \code{FILTER} and \code{ORDER BY} clauses to filter and order the results. There is no logical schema that contains all the required information, so the query engine splits the query into two subqueries---one for the wide-column database and one for the relational database. The query engine then joins the results of both subqueries based on \object{id} of the \object{User} and projects them to the output structure.
 \end{example}
 
 \begin{figure}[ht]
     \centering
     \includegraphics[width=\textwidth]{img/commentary-query_multi.drawio.pdf}
-    \caption{A \acrshort{mmql} query from \Cref{ex:querying-multi} and its translation to \acrshort{sql} for a relational and a columnar database.}
+    \caption{A \acrshort{mmql} query from \Cref{ex:querying-multi} and its translation to \acrshort{sql} for a relational and a wide-column database.}
     \label{fig:query-multi}
 \end{figure}
 

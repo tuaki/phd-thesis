@@ -61,7 +61,7 @@ This allows us to represent both redundancy and embedding while keeping the stat
 \label{ex:aimm-state}
 After the evolution from \Cref{ex:evolution-add,ex:evolution-map}, the conceptual schema has 5 complex types: \object{User}, \object{Friend}, \object{Review}, \object{Business}, and \object{Attribute}. \Cref{fig:aimm-state} shows the simplified schema category (all properties are omitted), the initial configuration (based on \Cref{fig:mm-data}), and the corresponding state matrix.
 
-The optimizations are closed tied to the specific databases instead of general data models, so we assumed the following options: \emph{PostgreSQL} (relational), \emph{ClickHouse} (columnar), \emph{Neo4j} (graph), and \emph{MongoDB} (document). We also had to extend the logical schema \object{User} in \emph{Neo4j} with the \object{yelping\_since} attribute (it was not in the original schema), because, as we said above, each kind has to be stored with all properties of its corresponding complex type.
+The optimizations are closed tied to the specific databases instead of general data models, so we assumed the following options: \emph{PostgreSQL} (relational), \emph{Cassandra} (wide-column), \emph{Neo4j} (graph), and \emph{MongoDB} (document). We also had to extend the logical schema \object{User} in \emph{Neo4j} with the \object{yelping\_since} attribute (it was not in the original schema), because, as we said above, each kind has to be stored with all properties of its corresponding complex type.
 \end{example}
 
 \begin{figure}[ht]

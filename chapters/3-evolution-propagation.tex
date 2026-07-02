@@ -52,7 +52,7 @@ Toward the queries, we build on the approach from \paperRef{edbt_2024}, where sc
 
 \begin{example}
 \label{ex:evolution-add}
-Starting with the conceptual schema and columnar logical schema (\Cref{fig:mapping}), the users might realize they want to be able to delete reviews. To do that, they use the \code{createProperty} operation to add a property \object{deletedAt} to the complex type \object{Review} in the conceptual schema and connecte them via a new morphism (\signature{18}). This triggers the creation of the corresponding attribute in the logical schema via the \code{updateMapping} operation, and the addition of the attribute to the data via the corresponding \acrshort{ddl} statements (\Cref{fig:evolution-add}).
+Starting with the conceptual schema and the wide-column logical schema (\Cref{fig:mapping}), the users might realize they want to be able to delete reviews. To do that, they use the \code{createProperty} operation to add a property \object{deletedAt} to the complex type \object{Review} in the conceptual schema and connecte them via a new morphism (\signature{18}). This triggers the creation of the corresponding attribute in the logical schema via the \code{updateMapping} operation, and the addition of the attribute to the data via the corresponding \acrshort{ddl} statements (\Cref{fig:evolution-add}).
 
 Although \object{Review} is used in the \acrshort{mmql} query from \Cref{fig:query-multi}, the change is not propagated there because adding a property does not affect the query results. However, the users might decide to add the property to the query manually, because they want to be able to filter out deleted reviews (\Cref{fig:query-propagation-multi}).
 \end{example}

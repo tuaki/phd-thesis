@@ -1,19 +1,35 @@
 \section{Related Concepts}
 \label{sec:related-concepts}
 
+
+
 \subsection{Benchmarking \& Evaluation}
 
-\todo{transforMMer (\paperRef{enase_2025}, \paperRef{edbt_2025})
+A novel approach can be interesting and theoretically sound, however, in order to be useful in practice, it must be evaluated on realistic datasets and workloads. In the context of multi-model data management, this is particularly challenging, as there is a lack of real-world multi-model datasets and queries. First of all, most available datasets are single-model, specifically relational. The few existing multi-model benchmarks cover only fixed combinations of models, even though there are many possible combinations of models, embeddings, and other features we need to test.
 
-- Motivace (proč je to důležité a co je na tom těžkého).
+Next, the current datasets usually use only a few kinds (${\sim} 10$) and define a small number of relatively simple queries (10--30). This makes it difficult to evaluate approaches proposed in the previous sections---the state space of possible configurations for self-adaptation grows exponentially with the number of kinds, so we need to benchmark it on realistic schemas, which can easily have hundreds of kinds. Similarily, the query optimization algorithms require complex cross-model queries to test both their effectivity and efficiency.\\
 
-- Jak zapadá do zbytku frameworku (používá framework, zároveň nám ho pomáhá testovat).
-}
+Traditional solutions to this problem are either to generate a synthetic dataset, or to use a single-model dataset and transform it into a multi-model representation. However, both approaches have their limitations. Synthetic datasets are often not realistic enough and take a lot of time to design and implement. On the other hand, transforming a single-model dataset into a multi-model representation is not trivial, as it requires preserving the semantics of the original data while changing its logical representation. It also usually involves writing custom transformation scripts, which makes it error-prone and difficult to reproduce.
 
-\todo{rewrite
+\subsubsection{TransforMMer}
 
-This paper proposes a solution to the problem of lack of real-world multi-model data (and the respective queries). We use a different approach instead of the common strategy of generating a synthetic dataset despite having numerous realistic features. Using a specific utilization of our previously created toolset, we introduce the idea of a transformation framework that can transform a given, preferably real-world, dataset into a preferred multi-model dataset. Using a wellknown dataset, Yelp, we demonstrate the advantages and applicability of the idea.
-}
+The main idea behind our approach is to use the categorical framework, described in previous sections, to automate the transformation of a given dataset into a multi-model representation.
+
+Because not all data models are schema-full, the first step is to infer the schema of the input dataset. For that, we use an existing approach~\citep{mm_infer, koupil2022mminfer}. Unlike the most of our previous work, it is not based on category theory, so we adapted it to the categorical framework. It is capable of inferring both conceptual and logical schemas (represented by schema categories), as well as the mappings between them.
+
+The next step requires a manual intervention, as the inferred schema is usually not perfect. For example, the inference algorithm is able to find candidates for references and identifiers, but it cannot decide which of them are actually used in the data. Therefore, the users have to choose the correct ones, and also to add any missing identifiers or references. Another common problem is unification of parts of the schema---e.g., if a document contains multiple nested subdocuments under different keys, the inference algorithm will see each of them as a separate kind, even though they might have the same schema. This can be fixed with the \code{asMap} operation explained in \Cref{ex:evolution-map}.
+
+In fact, all changes to the conceptual schema are represented as \acrshort{smo}s, which allows seamless propagation the logical schemas. Crucially, we only allow changes that keep the logical schemas consistent with the original data. This way, we can always import it to the instance category corresponding the the refined conceptual schema.
+
+Finally, the users can choose the desired logical representation of the data, and the system will automatically transform it from the instance category to the chosen representation. The users can also choose multiple different representations, or even change them over time. This is a major advantage of our approach---it allows us to present a single dataset in all possible combinations of data models at once while keeping semantic equivalence to the original data.\\
+
+Queries are generated in a similar way. First, the users use \acrshort{mmql} to define a set of queries over the conceptual schema, which are then evolved together with the schema. Finally, we use the \acrshort{mmql} query engine to generate query plans, which transforms the queries to the chosen logical representation without executing them.\\
+
+An in-depth description of the approach can be found in \paperRef{enase_2025}. There is also a proof-of-concept implementation, available in \paperRef{edbt_2025}.
+
+% Potenciálně další contributions:
+% Zlepšili jsme inferenci
+% Můžeme použít aimm obráceně - budeme hledat benchmarky, které challengují konkrétní workloady.
 
 \subsection{Schema-free Query Unification}
 
