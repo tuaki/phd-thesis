@@ -1,13 +1,13 @@
 \section{Vision}
 \label{sec:vision}
 
-When it comes to data (and for that matter, any kind of data, not just multi-model), what we really want is to be able to extract information from it---i.e., ask questions about it and get answers---in a process commonly known as \term{querying}. In the context of multi-model data, this process naturally extends across boundaries of different models and, therefore, database systems.
+When it comes to data (and for that matter, any kind of data, not just multi-model), what we really want is to be able to extract information from it---i.e., ask questions about it and get answers---in a process commonly known as \term{querying}. In the context of multi-model data, this process naturally extends across boundaries of different models (and, in the case of polyglot persistence, also database systems).
 
-Besides this primary goal, there are several other milestones that will help us to achieve it. We need to be able to \term{model} data so that we can reason about its structure and semantics---a necessary prerequisite for querying and some of the following milestones. Sometimes, the data is modeled first and created later. In other cases, we want to \term{infer} the schema from the data.
+Besides this primary goal, there are several other milestones that will help us to achieve it. We need to be able to \term{model} data so that we can reason about its structure and semantics---a necessary prerequisite for querying and all of the capabilities described below. Sometimes, the data is modeled first and created later. In other cases, we want to \term{infer} the schema from the data.
 
-Both modeling and inference are closely related to the process of \term{evolution}. Because if the schema of the data changes (and in modern applications it is usually the case of \uv{when} instead of \uv{if}), we have to propagate the changes both to the data and to the queries that depend on it. In a multi-model data world, this might require us to \term{transform} the data between different models.
+Both modeling and inference are closely related to the process of \term{evolution}. Whenever the schema of the data changes, we have to propagate the changes both to the data and to the queries that depend on it. In a multi-model data world, this might require us to \term{transform} the data between different models.
 
-Lastly, our motivation is not only about an \emph{ability} to do something, but also about the \emph{efficiency} of doing so. In accordance with our primary goal, we want to be able to query data as efficiently as possible. In this regard, multi-model data offers a unique opportunity to optimize querying by choosing the most appropriate model for the task at hand. This is very difficult to do manually, so we want the system to be able to adapt itself---in a process called \term{self-adaptation}---to the current workload and data characteristics.
+Lastly, our motivation is not only about an \emph{ability} to do something, but also about the \emph{efficiency} of doing so. In accordance with our primary goal, we want to be able to query data as efficiently as possible. In this regard, multi-model data offers a unique opportunity to optimize querying by choosing the most appropriate combination of models for the task at hand. This is very difficult to do manually, so we want the system to be able to adapt itself---in a process called \term{self-adaptation}---to the current workload and data characteristics.
 
 \subsection{Level of Automation}
 \label{sec:vision-automation}
