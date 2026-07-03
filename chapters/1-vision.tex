@@ -7,46 +7,19 @@ Besides this primary goal, there are several other milestones that will help us 
 
 Both modeling and inference are closely related to the process of \term{evolution}. Whenever the schema of the data changes, we have to propagate the changes both to the data and to the queries that depend on it. In a multi-model data world, this might require us to \term{transform} the data between different models.
 
-Lastly, our motivation is not only about an \emph{ability} to do something, but also about the \emph{efficiency} of doing so. In accordance with our primary goal, we want to be able to query data as efficiently as possible. In this regard, multi-model data offers a unique opportunity to optimize querying by choosing the most appropriate combination of models for the task at hand. This is very difficult to do manually, so we want the system to be able to adapt itself---in a process called \term{self-adaptation}---to the current workload and data characteristics.
+Lastly, our motivation is not only about the correctness and completeness of multi-model data management, but also about its efficiency. The primary functionality of a database system---querying data---should be as efficient as possible. Multi-model data offers a unique opportunity to optimize querying by choosing the most appropriate combination of models for the task at hand. This is very difficult to do manually, so we want the system to be able to adapt its internal data representation---in a process called \term{self-adaptation}---to the current workload and data characteristics.
 
 \subsection{Level of Automation}
 \label{sec:vision-automation}
 
-All of the above-described capabilities can be achieved with a different amount of automation. More automation is generally better, as it reduces the amount of manual work and expertise required of users. It also allows the system to find solutions that might not be obvious to users, or that would be too time-consuming to do manually. Most importantly, an automated process can be reliable and not susceptible to manual errors.
+Data management can be automated to various degrees. More automation is generally better, as it reduces the amount of manual work and expertise required of users. It also allows the system to find solutions that might not be obvious to users, or that would be too time-consuming to do manually. Most importantly, an automated process can be reliable and not susceptible to manual errors.
 
-The price for this is increased complexity of the system and potentially reduced control over the process. Therefore, we automate the capabilities gradually following three distinct levels~\citep{ideas2022vision}:
+The price for this is increased complexity of the system and potentially reduced control over the process. Therefore, we introduce the automation gradually following three distinct levels, based on who is the primary actor~\citep{ideas2022vision}:
 \begin{itemize}
-    \item \term{User-specified changes} -- The users change the schema of the data. E.g., they add a column \object{deletedAt} to a column family \object{review}, allowing them to track when reviews are deleted. Or, the users decide to transform the data from the wide-column model to the graph model, as the latter is more suitable for the current workload.
-    \item \term{Data-driven changes} -- The system detects that the data has changed its structure, e.g., by observing that a new column \object{deletedAt} has been added to the \object{review} column family, and updates the schema. Or, it finds out that labels (matching existing column family in a wide-column database) are now present in the graph database, and creates the corresponding logical schemas.
-    \item \term{Self-adaptation} -- The system proactively analyzes the workload and data characteristics, and decides to transform the data from a wide-column model to a graph model (similarly how a database expert would do), without any user intervention.
+    \item \term{User-driven} -- The users explicitly \emph{model} the data by creating an external schema. They can create \emph{queries} over the schema and \emph{transform} the data between models. They can \emph{evolve} the schema and the system will propagate the changes to the data and queries.
+    \item \term{Data-driven} -- The system automatically \emph{infers} the external schema from the data. Whenever the internal schema of the data changes---either by the users or by some other process---the system \emph{infers} the changes and updates the external schema accordingly.
+    \item \term{System-driven} -- The system uses \emph{self-adaptation} techniques to proactively analyze the workload and data characteristics, so that it can by itself decide to \emph{transform} the data to a new configuration of  models which is the most suitable for the current workload.
 \end{itemize}
-These points focus only on the \emph{source of a change}, not on the \emph{way it is propagated}. The latter is covered in~\Cref{sec:evolution-automation}.
-
-\subsection{Research Goals}
-
-The previous paragraphs provide a high-level overview of the motivation for this thesis. For a more in-depth description, see~\paperRef{vldb_2024}. With this in mind, we can now formulate the concrete research goals of our overall approach. The first three goals were already addressed by previous works~\citep{mm_cat, mm_cat_journal, mm_quecat, koupil2023universal}:
-\begin{itemize}
-    \item \term{Modeling} -- How can heterogeneous data models be represented in a common semantic framework without erasing their model-specific structure?
-    \item \term{Transformations} -- How can data be transformed between different models without the need to write custom transformation rules for each pair of models?
-    \item \term{Querying} -- How can queries be unified across different data models, supporting a common, practically useful subset of features of each model, and allowing for cross-model queries and optimizations?
-\end{itemize}
-The rest of the goals are novel and thus are the main focus of this thesis:
-\begin{itemize}
-    \item \term{Evolution} -- How can changes be propagated across conceptual and logical schemas, data, and queries in a multi-model environment? How can uncertain or ambiguous evolution decisions be supported by data-derived semantic evidence?
-    \item \term{Self-adaptation} -- How can a multi-model system choose suitable representations for a workload without exhaustively materializing and benchmarking all alternatives?
-    \item \term{Benchmarking} -- How can such systems be evaluated when real multi-model benchmarks and workloads are scarce?
-    \item \term{Limits of the framework} -- What are the limits of the proposed framework, and which parts require alternative approaches?
-\end{itemize}
-
-State-of-the-art approaches to data management provide only partial solutions to these challenges. Just to name a few examples of their limitations, they typically:
-\begin{itemize}
-    \item support multiple data models, but without a deeper unified semantic foundation,
-    \item allow transformations and evolution, but within a single data model,
-    \item optimize physical design, but not decisions like \uv{relational vs. document vs. graph database}, and
-    \item support querying, but not long-term evolution (and vice versa).
-\end{itemize}
-
-As we can see, what is missing is a principled management layer that connects modeling, querying, evolution, and self-adaptation. Developing such a layer is the main goal of our research, and its extension to the above-described aspects of multi-model data management is the main contribution of this thesis.
 
 \subsection{Challenges}
 
@@ -54,6 +27,23 @@ The main source of complexity in multi-model data management is the heterogeneit
 
 Some models (document, wide-column, key-value) are aggregate-oriented and naturally group related information into nested structures, while others (relational, graph, array) are aggregate-ignorant and prefer decomposition into flat records connected by joins or references. Another important division is between schema-less models (document, key-value, wide-column) that allow flexible or only partially explicit structure, and schema-full models (relational) that require a fixed schema. This diversity is not limited to the data structures themselves. It also affect the associated query languages, integrity assumptions, and optimization techniques. Flat relational data and hierarchical JSON documents call for different operators, just as table joins and graph traversals reflect different views of connectivity.
 
-The theoretical data models have to be implemented in actual database systems, which adds another layer of complexity. Many \acrshort{nosql} systems are by design distributed, which is enabled by relaxed consistency and availability requirements (\acrshort{base}). This is in stark contrast to traditional relational systems, which are generally centralized and provide strong consistency guarantees (\acrshort{acid}). The differences in scaling mean that there is usually no \uv{one-size-fits-all} solution---the advantages of some databases/models are only apparent at certain scales, making any optimization approach even more dependent on the workload. On top of that, each database system has its own community and philosophy, leading to specific design decisions. For example, while normalization is a common practice in relational databases, document databases often prefer denormalization and redundancy to optimize for read performance.
+The theoretical data models have to be implemented in actual database systems, which adds another layer of complexity. Many \acrshort{nosql} systems are by design distributed, which is enabled by relaxed consistency and availability requirements (\acrshort{base}). This is in stark contrast to traditional relational systems, which are generally centralized and provide strong consistency guarantees (\acrshort{acid}). The differences in scaling mean that there is usually no \uv{one-size-fits-all} solution---the advantages of some databases/models are only apparent at certain scales, making any optimization approach even more dependent on the workload. On top of that, each database system has its own performance characteristics, leading to specific design decisions. For example, while normalization is a common practice in relational databases, document databases often prefer denormalization and redundancy to optimize for read performance.
 
 In fact, more than half of the 50 most popular database systems~\citep{DBEngines2026} are considered to be multi-model, i.e., supporting more than one data model. Therefore, we have to consider not only different data models, but also different combinations of models, and their respective implementations in various database systems---vast majority of these databases are not \emph{natively} multi-model, but rather started as single-model systems and later added support for other models. This means that the multi-model support is often limited, inconsistent, and not well-integrated with the rest of the system. Internally, the secondary models are typically implemented as just an interface to the primary model, which can lead to performance and consistency issues.
+
+\subsection{Research Questions}
+
+The above-described vision, based on~\paperRef{vldb_2024}, depicts the long-term goals of our research. Let us now refine them to concrete research questions. Some of them have already been addressed by previous works of our research group~\citep{mm_cat, mm_cat_journal, mm_quecat, koupil2023universal}:
+\begin{itemize}
+    \item \term{Modeling} -- How can heterogeneous data models be represented in a common semantic framework without erasing their model-specific structure?
+    \item \term{Transformations} -- How can data be transformed between different models without the need to write custom transformation rules for each pair of models?
+    \item \term{Querying} -- How can queries be unified across different data models, supporting a common, practically useful subset of features of each model, and allowing for cross-model queries and optimizations?
+\end{itemize}
+We use their answers as a foundation for the rest of our research. In this thesis, we will be addressing the following questions:
+\begin{itemize}
+    \item \term{Evolution} -- How can changes be propagated across conceptual and logical schemas, data, and queries in a multi-model environment? How can uncertain or ambiguous evolution decisions be supported by data-derived semantic evidence?
+    \item \term{Self-adaptation} -- How can a multi-model system choose suitable representations for a workload without exhaustively materializing and benchmarking all alternatives?
+    \item \term{Benchmarking} -- How can such systems be evaluated when real multi-model benchmarks and workloads are scarce?
+    \item \term{Limits of our approach} -- What are the limits of the proposed approach, and which parts require alternative approaches?
+\end{itemize}
+Many of these problems are common to single-model data management, but they are significantly more challenging in the multi-model world. Thus, we do not aim to provide a complete solution to all of them. In the following sections, we will describe the specific subsets of these problems that we want to address, as well as our actual contributions to solving them.
