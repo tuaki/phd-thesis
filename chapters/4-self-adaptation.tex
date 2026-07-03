@@ -136,9 +136,7 @@ Our approach combines elements that these lines of work usually keep separate. I
 
 \subsection{Contributions}
 
-\todo{připomenout relevantní papery}
-
-We formulated self-adaptation as a workload-aware optimization problem over the logical schemas and their mappings to a fixed conceptual schema. Instead of treating different data models resp. databases individually, our approach represents alternative configurations of the same conceptual schema in a common search space. This makes it possible to compare heterogeneous designs systematically and to reason about adaptation at the level of the whole multi-model system rather than one store at a time.
+We formulated self-adaptation as a workload-aware optimization problem over the logical schemas and their mappings to a fixed conceptual schema. Instead of treating different data models resp. databases individually, our approach represents alternative configurations of the same conceptual schema in a common search space. This makes it possible to compare heterogeneous designs systematically and to reason about adaptation at the level of the whole multi-model system rather than one store at a time (\paperRef{edbt_2026}).
 
 The categorical framework allowed us to define a state representation that captures the essential aspects of a configuration, including model assignment, embedding, and cross-model redundancy. This representation is both expressive enough to cover the most important design choices and compact enough to keep the search space finite (\questionRef{sa}{search-space}). It also provides a principled way to migrate data between configurations.
 
@@ -146,4 +144,4 @@ On top of this representation, we introduced an automated optimization process t
 
 Because evaluating every configuration directly on the databases would be too expensive, we complement the search with learned performance estimation. In particular, we extend a plan-structured neural predictor~\citep{10.14778/3342263.3342646} for non-relational databases, so that configurations can be evaluated just from query plans of the workload queries (\questionRef{sa}{latency-estimation}). However, a method that would not require full materialization to obtain query plans remains future work. A similar approach is used to estimate cross-model queries (\questionRef{sa}{cross-model}), as well as the cost of migrating to and maintaining a configuration (\questionRef{sa}{migration-cost}).
 
-Lastly, we implemented these ideas in a proof-of-concept prototype that integrates workload analysis, generation of schema variants, neural latency prediction, and an interactive interface for inspecting the recommended alternatives. Together, these results provide an initial practical foundation for automatic adaptation of multi-model data layouts under evolving workloads.
+Lastly, we implemented these ideas in a proof-of-concept prototype MM-mapsearch that integrates workload analysis, generation of schema variants, neural latency prediction, and an interactive interface for inspecting the recommended alternatives. Together, these results provide an initial practical foundation for automatic adaptation of multi-model data layouts under evolving workloads.
