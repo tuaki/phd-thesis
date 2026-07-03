@@ -158,6 +158,9 @@
 
 \input{glossary}
 
+% Only page numbers should be used as links in LOF and LOT.
+\hypersetup{linktoc=page}
+
 \begin{document}
 
 \include{title}
@@ -190,9 +193,6 @@
 
 \include{bibliography}
 
-% Only page numbers should be used as links in LOF and LOT. Putting this before title would cause the same for TOC, which we don't want.
-\hypersetup{linktoc=page}
-
 %%% Figures used in the thesis (consider if this is needed)
 \listoffigures
 
@@ -217,9 +217,9 @@
 %%% source code, data files, interactive charts, etc.). Electronic attachments
 %%% should be uploaded to SIS. Allowed file formats are specified in provision
 %%% of the rector no. 72/2017. Exceptions can be approved by faculty's coordinator.
-\appendix
-\chapter{Attachments}
+% \appendix
+% \chapter{Attachments}
 
-\section{First Attachment}
+% \section{First Attachment}
 
 \end{document}

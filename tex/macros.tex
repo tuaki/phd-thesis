@@ -215,7 +215,8 @@
 % label, title, authors, publication, [doi]
 \newcommand{\paperChapter}[4]{%
 \refstepcounter{chapter}%
-\addcontentsline{toc}{chapter}{#2}%
+% This code is straight from latex2e source.
+\addcontentsline{toc}{chapter}{\protect\numberline{\thechapter}#2}%
 \refstepcounter{Paper}%
 \edef\thisdisplay{\Roman{Paper}}%
 \label{\detokenize{#1}}%
