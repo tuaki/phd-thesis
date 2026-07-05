@@ -1,13 +1,13 @@
 \section{Related Concepts}
 \label{sec:related-concepts}
 
-
+This section collects two complementary lines of work that support the practical side of the thesis. The first concerns evaluation---if our modeling, querying, and self-adaptation techniques are to be useful, we need datasets and workloads that are both realistic and sufficiently diverse. The second concerns a more lightweight approach to cross-model querying. While the main line of the thesis is based on explicit schemas and mappings, we also wanted to explore a more pragmatic route focused on rapid interoperability over already existing heterogeneous data.
 
 \subsection{Benchmarking \& Evaluation}
 
 A novel approach can be interesting and theoretically sound, however, in order to be useful in practice, it must be evaluated on realistic datasets and workloads. In the context of multi-model data management, this is particularly challenging, as there is a lack of real-world multi-model datasets and queries. First of all, most available datasets are single-model, specifically relational. The few existing multi-model benchmarks cover only fixed combinations of models, even though there are many possible combinations of models, embeddings, and other features we need to test.
 
-Next, the current datasets usually use only a few kinds (${\sim} 10$) and define a small number of relatively simple queries (10--30). This makes it difficult to evaluate approaches proposed in the previous sections---the state space of possible configurations for self-adaptation grows exponentially with the number of kinds, so we need to benchmark it on realistic schemas, which can easily have hundreds of kinds. Similarily, the query optimization algorithms require complex cross-model queries to test both their effectivity and efficiency.\\
+Next, the current datasets (discussed in \Cref{sec:benchmarking-related-work}) usually use only a few kinds (${\sim} 10$) and define a small number of relatively simple queries (10--30). This makes it difficult to evaluate approaches proposed in the previous sections---the state space of possible configurations for self-adaptation grows exponentially with the number of kinds, so we need to benchmark it on realistic schemas, which can easily have hundreds of kinds. Similarily, the query optimization algorithms require complex cross-model queries to test both their effectivity and efficiency.\\
 
 Traditional solutions to this problem are either to generate a synthetic dataset, or to use a single-model dataset and transform it into a multi-model representation. However, both approaches have their limitations. Synthetic datasets are often not realistic enough and take a lot of time to design and implement. On the other hand, transforming a single-model dataset into a multi-model representation is not trivial, as it requires preserving the semantics of the original data while changing its logical representation. It also usually involves writing custom transformation scripts, which makes it error-prone and difficult to reproduce.
 
@@ -25,31 +25,72 @@ Finally, the users can choose the desired logical representation of the data, an
 
 Queries are generated in a similar way. First, the users use \acrshort{mmql} to define a set of queries over the conceptual schema, which are then evolved together with the schema. Finally, we use the \acrshort{mmql} query engine to generate query plans, which transforms the queries to the chosen logical representation without executing them.\\
 
-An in-depth description of the approach can be found in \paperRef{enase_2025}. There is also a proof-of-concept implementation, available in \paperRef{edbt_2025}.
+An in-depth description of the approach can be found in \paperRef{enase_2025}. There is also a proof-of-concept implementation called \term{TransforMMer}, available in \paperRef{edbt_2025}.
 
 % Potenciálně další contributions:
 % Zlepšili jsme inferenci
 % Můžeme použít aimm obráceně - budeme hledat benchmarky, které challengují konkrétní workloady.
 
+\subsubsection{Related Work}
+\label{sec:benchmarking-related-work}
+
+Existing evaluation practice usually follows two paths---fixed benchmarks and synthetic generators. Most established benchmarks are still single-model. Classical representatives such as TPC-H and TPC-DS target relational workloads, XMark~\citep{10.5555/1287369.1287455} and DeepBench~\citep{10.1145/3531348.3532176} focus on hierarchical or document-style data, and graph-specific benchmarking is covered by suites such as LDBC-SNB~\citep{10.1145/2723372.2742786} or by surveys of graph generators~\citep{10.1145/3379445}. These tools are valuable, but they do not directly address the combination of multiple models, embeddings, and cross-model query plans that matters in our setting.
+
+Only a few benchmarks target multi-model systems explicitly. BigBench~\citep{10.1145/2463676.2463712} combines relational, semi-structured, and unstructured data, UniBench~\citep{unibench} focuses on a multi-model workload over one integrated scenario, and M2Bench~\citep{10.14778/3574245.3574259} broadens the supported model combinations for analytical workloads. Even so, these benchmarks still fix the benchmark scenarios in advance. Our goal is different---rather than defining one more fixed workload, we want to generate semantically equivalent multi-model representations and related queries from an input dataset, so that the evaluation can be adapted to the particular questions raised by our framework.
+
 \subsection{Schema-free Query Unification}
 
-\todo{DortDB (\paperRef{vldb_2025_dortdb})
+\paperRef{vldb_2025_dortdb} addresses a somewhat different part of the multi-model problem than the schema-centric line of work described in the previous chapters. Its motivation comes from settings such as data lakes, browser-side data integration, or loosely coupled collections of services, where heterogeneous data already exists in multiple forms and users need to query it quickly, often without first constructing a stable conceptual schema and explicit mappings~\citep{CSUR-Jiaheng,AWSDataLake}. In such environments, the main obstacle is not only the coexistence of multiple data models, but also the coexistence of multiple query languages and execution paradigms. Existing systems often force users either to adopt one dominant top-level language or to connect several language fragments by ad hoc glue code~\citep{Jiaheng2023Survey,journals/sigmod/DugganESBHKMMMZ15,Kolev2016TheCM}.
 
-- Motivace (data lakes).
+We implemented \term{DortDB} to show that this integration can be pushed to the query layer in a more principled way. It provides a schema-agnostic query engine in which \acrshort{sql}~\citep{SQL}, XQuery~\citep{XQuery}, and Cypher~\citep{Cypher} can be nested into one another recursively, while all queries are translated into a unified algebra covering relational, hierarchical, and graph-style operations~\citep{DBLP:conf/icde/ReSF06,DBLP:conf/edbt/AnglesBGV25,DBLP:conf/sigmod/HolschGS16}. This yields two results. First, the system is expressive enough to formulate genuinely cross-model queries without committing to one privileged language. Second, once queries are represented in the common algebra, they can be optimized in a model-independent way, for example by operator reordering, elimination of redundant nested evaluations, and index-aware rewriting~\citep{DBLP:conf/sigmod/HolschGS16}. In this sense, DortDB is a contribution on its own; it demonstrates that language-level unification of heterogeneous querying is feasible, practically useful, and not limited to shallow embeddings.
 
-- Výsledky (co to umí, unified algebra, optimalizace).
+Relative to our overall approach, DortDB should not be seen as a replacement for the categorical framework, but rather as a complementary point in the design space. Our main line of work starts from an explicit conceptual schema, derives logical schemas and mappings, and uses this structure to support querying, evolution, and eventually self-adaptation. DortDB starts much lower and more pragmatically---it assumes heterogeneous data is already present, keeps the representation intentionally schema-free, and focuses on making cross-model querying workable with minimal upfront setup. The price is that it does not provide the same semantic guarantees, principled evolution machinery, or explicit reasoning about equivalence between alternative representations. The benefit is speed of adoption and flexibility in dynamic or exploratory settings.
 
-- Jak to můžeme využít v MM-catu (to fakt ještě nevím, ale zkusím se zamyslet).
-}
+This makes DortDB especially relevant in scenarios where a fully modeled solution would be too costly or too premature. It can be understood as a universal mediator layer for rapid integration of existing sources, prototyping of cross-model workloads, or interactive analysis over data whose structure is still evolving. At the same time, it also broadens the thesis by exploring a more pragmatic branch of multi-model querying, focused on language interoperability rather than on explicit shared semantics. Once the data and workloads stabilize, the schema-first MM-cat approach offers stronger guarantees and deeper automation. Conversely, DortDB shows that there is practical value in supporting heterogeneous querying even before such a full semantic model is available. Its current prototype nature must, however, be kept in mind: the system is intentionally in-memory, read-only, and primarily rule-based in its optimization, so it should be viewed as a lightweight interoperability mechanism rather than a full replacement for more deeply modeled or more mature database solutions.
+
+\begin{example}
+\label{ex:dortdb-rewrite}
+The query from \Cref{ex:querying-multi} uses SQL for both the \object{User} and \object{Review} data. However, the DortDB query engine allows us to express the same query in multiple different ways. For example, we can express the main query in \acrshort{sql}, while the \object{Review} data is obtained from a nested XQuery subquery:
+\begin{lstlisting}
+SELECT r.stars, u.name
+FROM users u
+JOIN (
+    LANG xquery
+    for $r in $reviews/Review
+    where $r/business_id = 'bus#679' and $r/stars >= 3
+    return {
+        "user_id": $r/user_id,
+        "stars": $r/stars
+    }
+) r ON r.user_id = u.id
+ORDER BY r.stars ASC
+\end{lstlisting}
+Or, we can use Cypher in the main query for the \object{Review}, while the \object{User} data is obtained from a nested SQL subquery:
+\begin{lstlisting}
+MATCH (r:Review)
+WHERE r.business_id = 'bus#679' AND r.stars >= 3
+UNWIND (
+    LANG sql
+    SELECT u.id, u.name
+    FROM users u
+    WHERE u.id = $r:user_id
+) AS u
+RETURN r.stars AS stars, u.name AS name
+ORDER BY stars ASC
+\end{lstlisting}
+In practice, the choice of which language to use for which part of the query can be guided by the users' familiarity with the languages, the expected performance of the underlying engines, or other practical considerations. The DortDB query engine will then translate the entire query into a unified algebra and optimize it as a whole.
+\end{example}
 
 \subsection{Related Work}
 
-\todo{Možná jen dvě subsubsections v daných částech?}
-\todo{
-    TPC-H, TPC-DS;
-    UniBench;
-    LDBC;
-    graph/data generators;
-    synthetic data generation;
-    benchmark generation.
-}
+Existing approaches to multi-model querying usually follow one of two broad strategies. Polystores tend to expose a unified access layer over heterogeneous back-end systems, but often keep model-specific languages and execution engines underneath. Multi-model databases, on the other hand, commonly extend one dominant language, usually \acrshort{sql}, with constructs for additional models~\citep{Jiaheng2023Survey}. This includes standards and systems such as SQL/XML~\citep{SQLXML}, SQL/JSON~\citep{SQLJSON}, SQL/PGQ~\citep{SQLPGQ}, Myria~\citep{conf/cidr/WangBBHHHHJMMMM17}, Apache Drill~\citep{Hausenblas2013ApacheDI}, or CloudMdsQL~\citep{Kolev2016TheCM}. All of these are important steps toward practical interoperability, but they usually retain one privileged top-level language and support only limited forms of embedding.
+
+There are also systems that relax this restriction only partially. Apache AGE~\citep{web:apacheage,github:apacheage}, for example, embeds Cypher into PostgreSQL through the \texttt{cypher()} function, but only in the Cypher-to-SQL direction. Systems such as OrientDB~\citep{orientdb} or ArangoDB~\citep{arangodb} support several models as well, yet they do so mainly through proprietary syntax or a system-defined language. BigDAWG~\citep{journals/sigmod/DugganESBHKMMMZ15} comes closer to language plurality by allowing different query islands, but it still separates them into predefined access modes rather than supporting unrestricted recursive combinations inside one query.
+
+Against this background, DortDB contributes a more symmetric form of language interoperability. Its goal is not to define yet another universal user language, but to preserve existing ones and connect them through a shared algebraic layer. This is precisely where it differs from the main line of this thesis. The categorical framework aims at explicit shared semantics across models, whereas DortDB aims at practical interoperability across languages over already existing heterogeneous data.
+
+\subsection{Contributions}
+
+This chapter complements the main line of the thesis through two practical enablers. TransforMMer addresses the evaluation problem by turning existing datasets into semantically equivalent multi-model benchmark data together with related queries, making it easier to test our ideas under varied representations and workloads.
+
+DortDB, in turn, addresses the cross-model querying problem by showing that heterogeneous sources can be queried through a lightweight schema-free layer based on combinations of existing languages and a shared algebraic backend. This result also shows that while some multi-model scenarios benefit from the stronger guarantees of the categorical framework, others might prefer faster, more pragmatic mechanisms based on language interoperability.
