@@ -363,3 +363,16 @@
 \noindent\fullcite{#1}\par
 \vspace{1em}
 }
+
+% Settings for the alltt environment (like, they are global, but we use them only there).
+
+\newcommand{\keyword}[1]{\textbf{#1}}
+
+\definecolor{sql}{HTML}{9673A6}
+\newcommand{\sql}[1]{\textcolor{sql}{\bfseries #1}}
+
+\definecolor{cypher}{HTML}{6C8EBF}
+\newcommand{\cypher}[1]{\textcolor{cypher}{\bfseries #1}}
+
+\definecolor{xquery}{HTML}{82B366}
+\newcommand{\xquery}[1]{\textcolor{xquery}{\bfseries #1}}

@@ -51,34 +51,35 @@ This makes DortDB especially relevant in scenarios where a fully modeled solutio
 \begin{example}
 \label{ex:dortdb-rewrite}
 The query from \Cref{ex:querying-multi} uses SQL for both the \object{User} and \object{Review} data. However, the DortDB query engine allows us to express the same query in multiple different ways. For example, we can express the main query in \acrshort{sql}, while the \object{Review} data is obtained from a nested XQuery subquery:
-\begin{lstlisting}
-SELECT r.stars, u.name
-FROM users u
-JOIN (
-    LANG xquery
-    for $r in $reviews/Review
-    where $r/business_id = 'bus#679' and $r/stars >= 3
-    return {
-        "user_id": $r/user_id,
-        "stars": $r/stars
-    }
-) r ON r.user_id = u.id
-ORDER BY r.stars ASC
-\end{lstlisting}
+\begin{alltt}\small\ttfamily
+\sql{SELECT} r.stars, user.name
+\sql{FROM} user
+\sql{JOIN} (
+    \keyword{LANG xquery}
+    \xquery{for} $review \xquery{in} $reviews/Review
+    \xquery{where} $review/business_id = 'bus#679' \xquery{and} $review/stars >= 3
+    \xquery{return} \{
+        "user_id": $review/user_id,
+        "stars": $review/stars
+    \}
+) r \sql{ON} r.user_id = user.id
+\sql{ORDER BY} r.stars \sql{ASC}
+\end{alltt}
 Or, we can use Cypher in the main query for the \object{Review}, while the \object{User} data is obtained from a nested SQL subquery:
-\begin{lstlisting}
-MATCH (r:Review)
-WHERE r.business_id = 'bus#679' AND r.stars >= 3
-UNWIND (
-    LANG sql
-    SELECT u.id, u.name
-    FROM users u
-    WHERE u.id = $r:user_id
-) AS u
-RETURN r.stars AS stars, u.name AS name
-ORDER BY stars ASC
-\end{lstlisting}
-In practice, the choice of which language to use for which part of the query can be guided by the users' familiarity with the languages, the expected performance of the underlying engines, or other practical considerations. The DortDB query engine will then translate the entire query into a unified algebra and optimize it as a whole.
+\begin{alltt}\small\ttfamily
+\cypher{MATCH} (review:Review)
+\cypher{WHERE} review.business_id = 'bus#679' \cypher{AND} review.stars >= 3
+\cypher{UNWIND} (
+    \keyword{LANG sql}
+    \sql{SELECT} user.id, user.name
+    \sql{FROM} user
+    \sql{WHERE} user.id = $review:user_id
+) \cypher{AS} u
+\cypher{RETURN} review.stars \cypher{AS} stars, u.name \cypher{AS} name
+\cypher{ORDER} \cypher{BY} stars \cypher{ASC}
+\end{alltt}
+
+Note the \texttt{\keyword{LANG}} keyword which allows us to switch between languages at any point in the query. In practice, the choice of which language to use for which part of the query can be guided by the users' familiarity with the languages, the expected performance of the underlying engines, or other practical considerations. The DortDB query engine will then translate the entire query into a unified algebra and optimize it as a whole.
 \end{example}
 
 \subsection{Related Work}
