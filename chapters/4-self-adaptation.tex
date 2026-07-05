@@ -1,9 +1,23 @@
 \section{Self-adaptation}
 \label{sec:self-adaptation}
 
-With the categorical representation of multi-model data (see \Cref{sec:modeling}) and the capabilities of querying and evolution (\Cref{sec:querying,sec:evolution-management}), we have a solid foundation for managing multi-model data. Now we can focus on optimizing it.
+With the categorical representation of multi-model data and the capabilities of querying and evolution, we have a solid foundation for managing multi-model data. Now we can focus on optimizing it.
 
-In its most basic form, the problem we are trying to solve can be described as follows. We assume a fixed conceptual schema, a workload (a set of queries weighted by their frequencies), and a set of all available databases. Let us define \term{configuration} as a set of logical schemas of these databases that is capable of answering all queries in the workload. The goal is to find a configuration that minimizes the overall query latency. To define the problem more precisely, we derived the following open problems:
+Before developing our own search-based solution, we first studied a narrower but closely related workload-aware optimization problem on the physical level, namely index selection. In \paperRef{dke_2026}, we surveyed state-of-the-art index-selection methods, compared how major database systems implement and use indexes, and evaluated how far existing approaches transfer from relational systems to \acrshort{nosql}, multi-model, and multi-modal\footnote{Multi-modal systems combine different \emph{modalities}, e.g., text, images, videos, geospatial, etc.} settings. This gave us a concrete picture of what current automated tuning methods can and cannot do once the logical representation is already fixed.
+
+\subsection{Index Optimization}
+
+The survey starts from the observation that index selection is one of the most important physical-design decisions for workload performance, but that the existing literature is still centered mainly on relational databases. We therefore analyzed representative relational, graph, key-value, document, wide-column, multi-model, and multi-modal systems and compared both their supported index types and the workloads for which these indexes are useful. Based on that background, we reviewed state-of-the-art index-selection algorithms and assessed their broader applicability outside the relational setting.
+
+The main conclusion was not that existing methods can be transferred directly, but rather that their transfer is limited and uneven. Many algorithms assume capabilities that are natural in relational systems but unavailable or much weaker elsewhere, such as rich what-if optimization interfaces, stable cost models, or a fairly uniform space of supported index types. At the same time, the survey confirmed that heterogeneous systems still face the same underlying need---they must choose workload-aware physical structures under storage and maintenance constraints, often for much more diverse query patterns than those addressed in classical relational tuning.
+
+Two observations from that paper were especially important for the present chapter. First, cost estimation is the central technical bottleneck. Existing index-selection methods depend heavily on being able to estimate the effect of many alternative configurations cheaply, without fully deploying them. Second, physical tuning alone is not enough for our setting. The survey assumes that the logical representation and database placement are already given, whereas in a multi-model environment these choices may themselves dominate performance. This led us to ask whether the optimization problem should be formulated one level of abstraction higher, over alternative logical representations of the same conceptual schema.
+
+In that sense, \paperRef{dke_2026} serves primarily as motivation and inspiration. It showed us both the value of workload-aware automated optimization and the limits of staying purely on the physical level. Therefore, we decided that, instead of selecting indexes for one fixed representation, we should search over alternative mappings, embeddings, and redundancies of the same conceptual schema across multiple databases. The richer physical-design space identified in \questionRef{sa}{richer-state-space} remains important future work, but it is not the main point of our optimization approach.
+
+\subsection{Problem Formulation}
+
+We assume a fixed conceptual schema, a workload (a set of queries weighted by their frequencies), and a set of available database applications. Let us define \term{configuration} as a set of logical schemas of these databases that, if materialized with the data, would allow the system to answer all queries in the workload. The goal is to find a configuration that minimizes the overall query latency. Based on this problem definition and the insights from the survey, we identified the following open problems:
 
 \defineQuestionPrefix{sa}{A}
 
@@ -19,13 +33,13 @@ In its most basic form, the problem we are trying to solve can be described as f
     
 % \question{sa}{adaptation-timing}{Adaptation timing}{After a better configuration is identified and the cost of migration is estimated, it is still unclear when the adaptation should be executed. Immediate adaptation may react quickly to workload changes but incur excessive migration overhead, while delayed adaptation may miss important optimization opportunities. The system should therefore decide when the expected long-term benefit outweighs the large one-time migration cost.}
 
-\question{sa}{workload-prediction}{Workload prediction}{In practice, workloads are not static. They evolve over time and may contain periodic trends, bursts, or one-off anomalies. A truly autonomous system should reason not only about the present workload, but also about its likely future development, so that it can avoid overfitting to transient patterns and prepare for upcoming changes in advance.}
+\question{sa}{workload-prediction}{Workload prediction}{In practice, workloads are not static. They evolve over time and may contain both periodic trends and one-off anomalies. A truly autonomous system should reason not only about the present workload, but also about its likely future development, so that it can avoid overfitting to transient patterns and prepare for upcoming changes in advance.}
 
 \question{sa}{richer-state-space}{Richer search space}{Database applications offer a wide range of physical design choices beyond the logical model, such as indexes, materialized views, partitioning schemes, replication strategies, knob tuning, etc. These choices are not covered by the current categorical representation, but they can have a significant impact on query performance.}
 
 \subsection{MM-mapsearch}
 
-Based on the open problems above, we propose the following principles:
+Motivated by the open problems above, and by the limitations revealed by the index-selection survey, we propose the following principles:
 \begin{itemize}
     \item A \term{state} is a an element of a finite discrete \term{state space} represented by a matrix. It maps the conceptual schema and the databases to a configuration. State space is then a graph of all possible states connected by the available transitions.
     \item The state space is explored using an algorithm that evaluates the states both directly (by estimating the latency of the corresponding configurations) and indirectly (by the values of neighboring states).
@@ -112,16 +126,6 @@ The precise result is impossible to predict, as it depends on the actual latenci
 
 In real-world scenarios, both data and workloads are much more complex than in \Cref{ex:aimm-result}. Such clear separation of the workload into independent parts is quite rare, so the process will usually result in either several cross-model queries or redundant kinds. The balance between these two options is determined by the relative overhead of cross-model querying vs. the additional cost of migration and maintenance of redundant data.
 
-\subsection{Index Optimization}
-
-The approach described so-far only optimizes the data layout on the logical level; it does not concern itself with the physical level. We addressed this aspect in \paperRef{dke_2026}, where we conducted an in-depth study of indexes, which are crucial for physical level optimizations. We reviewed existing index-selection methods from relational systems and checked how they transfer to \acrshort{nosql} databases.
-
-This line of work complements MM-mapsearch in an important way. While MM-mapsearch searches for a suitable \emph{configuration} in terms of logical schemas, mappings, embedding, and redundancy, index optimization shows that the logical design is only one part of the overall performance problem. Even after a promising configuration is chosen, its efficiency still depends on lower-level physical structures such as indexes. In this sense, \paperRef{dke_2026} primarily relates to \questionRef{sa}{richer-state-space}: it shows that a truly self-adaptive system should eventually optimize not only where and how the data is represented, but also which physical access structures are maintained for the current workload.
-
-At the same time, the paper confirms that the key technical obstacle is, once again, cost estimation. Existing index-selection methods rely heavily on the ability to estimate query costs for many alternative configurations without fully materializing them, which is precisely the same type of requirement as in \questionRef{sa}{latency-estimation}. The difference is that here the alternatives vary on the physical level rather than logical one. This is encouraging for our overall approach---if we are able to estimate the latency of workload queries for candidate multi-model configurations, then the same principle can later be extended to physical-design choices as well.
-
-Therefore, we do not view index optimization as a separate problem unrelated to MM-mapsearch, but rather as its natural continuation towards a richer adaptation space. The categorical representation gives us a principled handle on logical reorganization, whereas the index-selection work identifies what must be added for self-adaptation on the physical level. Together, these two directions suggest a broader long-term vision in which the system first reasons about model placement and structure, and then refines the chosen configuration using physical optimizations tailored to the observed workload.
-
 \subsection{Related Work}
 
 We explored related approaches from three directions. First, physical-design methods such as index selection, materialized-view selection, and related forms of workload-aware tuning optimize performance by modifying structures inside one database system (and usually one logical model). As already discussed in \Cref{sec:foundations-related-work,sec:evolution-related-work}, adjacent work also exists on multi-model representation and evolution. What is still missing, however, is a formulation in which the choice of logical model, embedding, and redundancy becomes the optimization space itself.
@@ -135,6 +139,8 @@ The third relevant direction is multistore and polystore research, which address
 Our approach combines elements that these lines of work usually keep separate. It assumes a fixed conceptual schema, makes mappings first-class objects, defines an explicit search space of alternative configurations, reasons about migration between them, and evaluates candidates with respect to a weighted workload. In contrast to classical physical-design tuning, the search space here includes not only indexes or access paths, but also model assignment, embedding, and cross-model redundancy.
 
 \subsection{Contributions}
+
+We conducted a survey of index selection in heterogeneous database systems (\paperRef{dke_2026}). This survey compared indexing strategies across relational, graph, key-value, document, wide-column, multi-model, and multi-modal systems, assessed how existing index-selection methods transfer beyond the relational setting, and identified the main obstacles to such transfer. In particular, it showed that current approaches depend heavily on cost estimation capabilities and usually assume that the logical representation is already fixed, which helped us delimit the scope of existing physical-design methods and motivated the search for a higher-level optimization approach.
 
 We formulated self-adaptation as a workload-aware optimization problem over the logical schemas and their mappings to a fixed conceptual schema. Instead of treating different data models resp. databases individually, our approach represents alternative configurations of the same conceptual schema in a common search space. This makes it possible to compare heterogeneous designs systematically and to reason about adaptation at the level of the whole multi-model system rather than one store at a time (\paperRef{edbt_2026}).
 
