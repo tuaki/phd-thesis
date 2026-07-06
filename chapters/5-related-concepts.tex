@@ -7,7 +7,7 @@ This section collects two complementary lines of work that support the practical
 
 A novel approach can be interesting and theoretically sound, however, in order to be useful in practice, it must be evaluated on realistic datasets and workloads. In the context of multi-model data management, this is particularly challenging, as there is a lack of real-world multi-model datasets and queries. First of all, most available datasets are single-model, specifically relational. The few existing multi-model benchmarks cover only fixed combinations of models, even though there are many possible combinations of models, embeddings, and other features we need to test.
 
-Next, the current datasets (discussed in \Cref{sec:benchmarking-related-work}) usually use only a few kinds (${\sim} 10$) and define a small number of relatively simple queries (10--30). This makes it difficult to evaluate approaches proposed in the previous sections---the state space of possible configurations for self-adaptation grows exponentially with the number of kinds, so we need to benchmark it on realistic schemas, which can easily have hundreds of kinds. Similarily, the query optimization algorithms require complex cross-model queries to test both their effectivity and efficiency.\\
+Next, the current datasets (discussed in \Cref{sec:benchmarking-related-work}) usually use only a few kinds (${\sim} 10$) and define a small number of relatively simple queries (10--30). This makes it difficult to evaluate approaches proposed in the previous sections---the state space of possible configurations for self-adaptation grows exponentially with the number of kinds, so we need to benchmark it on realistic schemas, which can easily have hundreds of kinds. Similarly, the query optimization algorithms require complex cross-model queries to test both their effectivity and efficiency.\\
 
 Traditional solutions to this problem are either to generate a synthetic dataset, or to use a single-model dataset and transform it into a multi-model representation. However, both approaches have their limitations. Synthetic datasets are often not realistic enough and take a lot of time to design and implement. On the other hand, transforming a single-model dataset into a multi-model representation is not trivial, as it requires preserving the semantics of the original data while changing its logical representation. It also usually involves writing custom transformation scripts, which makes it error-prone and difficult to reproduce.
 
@@ -50,7 +50,7 @@ This makes DortDB especially relevant in scenarios where a fully modeled solutio
 
 \begin{example}
 \label{ex:dortdb-rewrite}
-The query from \Cref{ex:querying-multi} uses SQL for both the \object{User} and \object{Review} data. However, the DortDB query engine allows us to express the same query in multiple different ways. For example, we can express the main query in \acrshort{sql}, while the \object{Review} data is obtained from a nested XQuery subquery:
+The query from \Cref{ex:querying-multi} uses SQL for both the \object{User} and \object{Review} data. However, the DortDB query engine allows us to express the same query in multiple different ways. E.g., we can express the main query in \acrshort{sql}, while the \object{Review} data is obtained from a nested XQuery subquery:
 \begin{alltt}\small\ttfamily
 \sql{SELECT} r.stars, user.name
 \sql{FROM} user
@@ -73,13 +73,13 @@ Or, we can use Cypher in the main query for the \object{Review}, while the \obje
     \keyword{LANG sql}
     \sql{SELECT} user.id, user.name
     \sql{FROM} user
-    \sql{WHERE} user.id = $review:user_id
+    \sql{WHERE} user.id = review.user_id
 ) \cypher{AS} u
 \cypher{RETURN} review.stars \cypher{AS} stars, u.name \cypher{AS} name
 \cypher{ORDER} \cypher{BY} stars \cypher{ASC}
 \end{alltt}
 
-Note the \texttt{\keyword{LANG}} keyword which allows us to switch between languages at any point in the query. In practice, the choice of which language to use for which part of the query can be guided by the users' familiarity with the languages, the expected performance of the underlying engines, or other practical considerations. The DortDB query engine will then translate the entire query into a unified algebra and optimize it as a whole.
+Note the \texttt{\keyword{LANG}} keyword which allows us to switch between languages at any point in the query. In practice, the choice of which language to use for which part of the query can be guided by the users' familiarity with the languages, the expected performance of the underlying engines, or other practical considerations. The DortDB query engine will then translate the entire query into the unified algebra and optimize it as a whole.
 \end{example}
 
 \subsection{Related Work}
