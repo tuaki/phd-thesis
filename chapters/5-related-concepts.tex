@@ -68,17 +68,10 @@ Based on these observations, we identify the following open problems:
 
 \question{sf}{schema-free}{Schema-free querying}{In a highly dynamic environment, the system should be able to query the data even when no stable schema and no explicit mappings have been prepared in advance. Instead, it should recover the structure from the query and the accessed data fragments to make the mixed query meaningful and executable.}
 
-% Figure plan:
-% Compare the two approaches side by side.
-% Left panel: the main MM-cat line with layers "conceptual schema -> logical schemas + mappings -> native queries / evolution / self-adaptation".
-% Emphasize explicit shared semantics, schema evolution, and workload-driven optimization.
-% Right panel: DortDB with heterogeneous sources and languages entering directly into a unified object representation and unified algebra.
-% Emphasize language interoperability, recursive nesting of SQL/XQuery/Cypher, and lightweight query mediation without upfront conceptual modeling.
-% The visual contrast should make clear that MM-cat starts from semantics and derives execution, whereas DortDB starts from existing heterogeneous sources and unifies them at the query-processing layer.
 \begin{figure}[ht]
     \centering
     \fbox{\parbox{0.9\textwidth}{\centering Placeholder: comparison of the schema-centric MM-cat workflow and the schema-free DortDB workflow.}}
-    \caption{Placeholder for a comparison between the main schema-centric approach of this thesis and the schema-free query-unification approach represented by DortDB.}
+    \caption{\todo{}}
     \label{fig:dortdb-comparison}
 \end{figure}
 
