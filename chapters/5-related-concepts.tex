@@ -82,20 +82,6 @@ Our goal was not to define yet another universal user language, but to preserve 
 
 \question{sf}{schema-free}{Schema-free querying}{In a highly dynamic environment, the system should be able to query the data even when no stable schema and no explicit mappings have been prepared in advance. Instead, it should recover the structure from the query and the accessed data fragments to make the mixed query meaningful and executable.}
 
-% Figure plan:
-% Compare the two approaches side by side.
-% Left panel: the main MM-cat line with layers "conceptual schema -> logical schemas + mappings -> native queries / evolution / self-adaptation".
-% Emphasize explicit shared semantics, schema evolution, and workload-driven optimization.
-% Right panel: DortDB with heterogeneous sources and languages entering directly into a unified object representation and unified algebra.
-% Emphasize language interoperability, recursive nesting of SQL/XQuery/Cypher, and lightweight query mediation without upfront conceptual modeling.
-% The visual contrast should make clear that MM-cat starts from semantics and derives execution, whereas DortDB starts from existing heterogeneous sources and unifies them at the query-processing layer.
-% \begin{figure}[ht]
-%     \centering
-%     \fbox{\parbox{0.9\textwidth}{\centering Placeholder: comparison of the schema-centric MM-cat workflow and the schema-free DortDB workflow.}}
-%     \caption{Placeholder for a comparison between the main schema-centric approach of this thesis and the schema-free query-unification approach represented by DortDB.}
-%     \label{fig:dortdb-comparison}
-% \end{figure}
-
 In \paperRef{vldb_2025_dortdb}, we addressed these problems with a novel approach called \term{DortDB}. Rather than introducing yet another user-facing universal language, it treats interoperability itself as the main goal: \acrshort{sql}~\citep{SQL}, XQuery~\citep{XQuery}, and Cypher~\citep{Cypher} can be nested into one another recursively, and the mixed query is then translated into a \emph{unified algebra} covering relational, hierarchical, and graph-style operations~\citep{DBLP:conf/icde/ReSF06,DBLP:conf/edbt/AnglesBGV25,DBLP:conf/sigmod/HolschGS16}. This makes it possible to formulate genuinely cross-model queries without committing to one privileged language, as illustrated later in \Cref{ex:dortdb-rewrite}. It also keeps the setup lightweight---rather than requiring a stable shared schema in advance, DortDB derives the needed local structure from the query and the accessed data fragments.
 
 The unified algebra is the key contribution of this approach. Internally, it acts as a common compilation target over a schema-agnostic object representation of the data. It integrates tuple-oriented operators known from relational algebra, operators for item-oriented and hierarchical processing inspired by XQuery, and path-oriented operators needed for graph traversal. As a result, nested fragments written in different languages are no longer treated as opaque foreign calls; instead, they become parts of one logical plan tree whose operators can be inspected, rearranged, simplified, and executed uniformly, even though the system started without an explicit conceptual schema.
