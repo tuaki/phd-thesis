@@ -5,17 +5,23 @@ This section collects two complementary lines of work that support the practical
 
 \subsection{Benchmarking \& Evaluation}
 
-\defineQuestionPrefix{be}{B}
-
 \todo{Reference nefungují na subsubsection, konkrétně sec:benchmarking-related-work.}
 
-A novel approach can be interesting and theoretically sound, however, in order to be useful in practice, it must be evaluated on realistic datasets and workloads. In the context of multi-model data management, this is particularly challenging, as there is a lack of real-world multi-model datasets and queries. First of all, most available datasets are single-model, specifically relational. The few existing multi-model benchmarks (see \Cref{sec:benchmarking-related-work}) cover only fixed combinations of models, even though there are many possible combinations of models, embeddings, and other features we need to test.
+A novel approach can be interesting and theoretically sound, however, in order to be useful in practice, it must be evaluated on realistic datasets and workloads. In the context of multi-model data management, this is particularly challenging, as there is a lack of real-world multi-model datasets and queries.
 
-Next, the current datasets (discussed in \Cref{sec:benchmarking-related-work}) usually use only a few kinds (${\sim} 10$) and define a small number of relatively simple queries (10--30). This makes it difficult to evaluate approaches proposed in the previous sections---the state space of possible configurations for self-adaptation grows exponentially with the number of kinds, so we need to benchmark it on realistic schemas, which can easily have hundreds of kinds. Similarly, the query optimization algorithms require complex cross-model queries to test both their effectivity and efficiency.
+\subsubsection{Related Work}
 
-Existing practice usually falls back to two imperfect strategies. The first is to generate a synthetic dataset, which is often not realistic enough and takes a lot of time to design and implement. The second is to start from an existing single-model dataset and transform it into a multi-model representation. This usually means writing a new custom transformation script for each dataset and target scenario. Such scripts are difficult to reuse, hard to validate semantically, and often too ad hoc to support reproducible benchmarking across many model combinations.
+Most established benchmarks are single-model. Classical representatives such as TPC-H~\citep{tpch} and TPC-DS~\citep{tpcds} target relational workloads, XMark~\citep{10.5555/1287369.1287455} and DeepBench~\citep{10.1145/3531348.3532176} focus on hierarchical or document-style data, and graph-specific benchmarking is covered by suites such as LDBC-SNB~\citep{10.1145/2723372.2742786} or by surveys of graph generators~\citep{10.1145/3379445}.
 
-Based on these observations, we identify the following open problems:
+Only a few benchmarks target multi-model systems explicitly. BigBench~\citep{10.1145/2463676.2463712} combines relational, semi-structured, and unstructured data, UniBench~\citep{unibench} focuses on a multi-model workload over one integrated scenario, and M2Bench~\citep{10.14778/3574245.3574259} broadens the supported model combinations for analytical workloads. These tools are valuable, but they do not directly address all the possible combinations of multiple models, embeddings, and cross-model query plans that matters in our setting.
+
+Also, the presented datasets consist of only a few kinds (${\sim} 10$) and a small number of relatively simple queries (10--30). This makes it difficult to evaluate approaches proposed in the previous sections---the state space of possible configurations for self-adaptation grows exponentially with the number of kinds, so we need to benchmark it on realistic schemas, which can easily have hundreds of kinds. Similarly, the query optimization algorithms require complex cross-model queries to test both their effectivity and efficiency. Moreover, each of these benchmarks provides only a single version of both schema and queries, which is not sufficient for evaluating evolution management.
+
+\subsubsection{Open Problems}
+
+Existing practice usually falls back to two imperfect strategies. The first is to generate a synthetic dataset, which is often not realistic enough and takes a lot of time to design and implement. The second is to start from an existing dataset and transform it into the required representation. This means writing a new custom transformation script for each dataset and target scenario. Such scripts are difficult to reuse, hard to validate semantically, and often too ad hoc to support reproducible benchmarking across many model combinations. Based on these limitations, we identified the following open problems:
+
+\defineQuestionPrefix{be}{B}
 
 \question{be}{benchmark-coverage}{Benchmark coverage}{Evaluation of multi-model systems should cover realistic combinations of data-models, embeddings, and redundancy patterns. For instance, the approaches discussed in this thesis require evaluation across many alternative logical representations of the conceptually same data, often at much larger schema scales and with more complex cross-model interactions than current multi-model benchmarks provide.}
 
@@ -27,6 +33,9 @@ Based on these observations, we identify the following open problems:
 
 \subsubsection{TransforMMer}
 \todo{Tohle je hodně odbyté. Dala bych sem ty use casy, které to umožňuje simulovat, jak píšeme v paperu, zejména evolution mangement. Chybí příklad a obrázek, takže to nikdo nepochopí. A přidala bych i ukázku nějakého grafu z paperu asi.}
+
+\todo{Cite \citep{is_2026}}
+\todo{Dát správny odkaz na arxiv.}
 
 The main idea behind our approach is to use the categorical framework, described in previous sections, to automate the transformation of a given dataset into a multi-model representation.
 
@@ -48,16 +57,7 @@ An in-depth description of the approach can be found in \paperRef{enase_2025}. T
 % Zlepšili jsme inferenci
 % Můžeme použít aimm obráceně - budeme hledat benchmarky, které challengují konkrétní workloady.
 
-\subsubsection{Related Work}
-\label{sec:benchmarking-related-work}
-
-Existing evaluation practice usually follows two paths---fixed benchmarks and synthetic generators. Most established benchmarks are still single-model. Classical representatives such as TPC-H~\citep{tpch} and TPC-DS~\citep{tpcds} target relational workloads, XMark~\citep{10.5555/1287369.1287455} and DeepBench~\citep{10.1145/3531348.3532176} focus on hierarchical or document-style data, and graph-specific benchmarking is covered by suites such as LDBC-SNB~\citep{10.1145/2723372.2742786} or by surveys of graph generators~\citep{10.1145/3379445}. These tools are valuable, but they do not directly address the combination of multiple models, embeddings, and cross-model query plans that matters in our setting.
-
-Only a few benchmarks target multi-model systems explicitly. BigBench~\citep{10.1145/2463676.2463712} combines relational, semi-structured, and unstructured data, UniBench~\citep{unibench} focuses on a multi-model workload over one integrated scenario, and M2Bench~\citep{10.14778/3574245.3574259} broadens the supported model combinations for analytical workloads. Even so, these benchmarks still fix the benchmark scenarios in advance. Our goal is different---rather than defining one more fixed workload, we want to generate semantically equivalent multi-model representations and related queries from an input dataset, so that the evaluation can be adapted to the particular questions raised by our framework.
-
 \subsection{Schema-free Query Unification}
-
-\defineQuestionPrefix{sf}{S}
 
 This problem is motivated by highly dynamic settings---such as data lakes, browser-side data integration, or loosely coupled collections of services---where heterogeneous data already exists in multiple forms and users need to query it quickly, often without first constructing a stable conceptual schema and explicit mappings~\citep{CSUR-Jiaheng,AWSDataLake}. In such environments, the main obstacle is not only the coexistence of multiple data models, but also the coexistence of multiple query languages and execution paradigms.
 
@@ -67,20 +67,19 @@ Existing approaches to multi-model querying usually follow one of two broad stra
 
 There are also systems that relax this restriction only partially. Apache AGE~\citep{web:apacheage,github:apacheage}, for example, embeds Cypher into PostgreSQL through the \texttt{cypher()} function, but only in the Cypher-to-SQL direction. Systems such as OrientDB~\citep{orientdb} or ArangoDB~\citep{arangodb} support several models as well, yet they do so mainly through proprietary syntax or a system-defined language. BigDAWG~\citep{journals/sigmod/DugganESBHKMMMZ15} comes closer to language plurality by allowing different query islands, but it still separates them into predefined access modes rather than supporting unrestricted recursive combinations inside one query.
 
-% Against this background, DortDB contributes a more symmetric form of language interoperability. Its goal is not to define yet another universal user language, but to preserve existing ones and connect them through a shared algebraic layer. This is precisely where it differs from the main line of this thesis. The categorical framework aims at explicit shared semantics across models, whereas DortDB aims at practical interoperability across languages over already existing heterogeneous data.
-
-% Existing systems often force users either to adopt one dominant top-level language (with one-directional extensions) or to connect several language fragments by ad hoc glue code~\citep{Jiaheng2023Survey,journals/sigmod/DugganESBHKMMMZ15,Kolev2016TheCM}.
-% Based on these observations, we identify the following open problems:
-
 \subsubsection{Open Problems}
 
 Our goal was not to define yet another universal user language, but to preserve existing ones and connect them through a shared algebraic layer. We identified the following open problems:
+
+\defineQuestionPrefix{sf}{S}
 
 \question{sf}{language-interoperability}{Language interoperability}{Different query languages are designed for different data models and therefore have different operators, semantics, and execution paradigms. In a heterogeneous environment, the system should allow users to combine established query languages without limitations on the top-level language, or on the nesting depth or direction.}
 
 \question{sf}{unified-algebra}{Unified algebra}{If multiple query languages are to interoperate in a principled way, they need a shared internal representation that captures their essential operators. Such a representation must be expressive enough to serve as a common compilation target, but also simple enough to support systematic reasoning and execution. The challenge is to design a unified algebra that preserves the core semantics of these languages while making mixed queries analyzable as one plan.}
 
 \question{sf}{schema-free}{Schema-free querying}{In a highly dynamic environment, the system should be able to query the data even when no stable schema and no explicit mappings have been prepared in advance. Instead, it should recover the structure from the query and the accessed data fragments to make the mixed query meaningful and executable.}
+
+\subsubsection{DortDB}
 
 In \paperRef{vldb_2025_dortdb}, we addressed these problems with a novel approach called \term{DortDB}. Rather than introducing yet another user-facing universal language, it treats interoperability itself as the main goal: \acrshort{sql}~\citep{SQL}, XQuery~\citep{XQuery}, and Cypher~\citep{Cypher} can be nested into one another recursively, and the mixed query is then translated into a \emph{unified algebra} covering relational, hierarchical, and graph-style operations~\citep{DBLP:conf/icde/ReSF06,DBLP:conf/edbt/AnglesBGV25,DBLP:conf/sigmod/HolschGS16}. This makes it possible to formulate genuinely cross-model queries without committing to one privileged language, as illustrated later in \Cref{ex:dortdb-rewrite}. It also keeps the setup lightweight---rather than requiring a stable shared schema in advance, DortDB derives the needed local structure from the query and the accessed data fragments.
 
