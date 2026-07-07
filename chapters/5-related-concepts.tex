@@ -59,8 +59,22 @@ Only a few benchmarks target multi-model systems explicitly. BigBench~\citep{10.
 
 \defineQuestionPrefix{sf}{S}
 
-This problem is motivated by highly dynamic settings---such as data lakes, browser-side data integration, or loosely coupled collections of services---where heterogeneous data already exists in multiple forms and users need to query it quickly, often without first constructing a stable conceptual schema and explicit mappings~\citep{CSUR-Jiaheng,AWSDataLake}. In such environments, the main obstacle is not only the coexistence of multiple data models, but also the coexistence of multiple query languages and execution paradigms. Existing systems often force users either to adopt one dominant top-level language (with one-directional extensions) or to connect several language fragments by ad hoc glue code~\citep{Jiaheng2023Survey,journals/sigmod/DugganESBHKMMMZ15,Kolev2016TheCM}.
-Based on these observations, we identify the following open problems:
+This problem is motivated by highly dynamic settings---such as data lakes, browser-side data integration, or loosely coupled collections of services---where heterogeneous data already exists in multiple forms and users need to query it quickly, often without first constructing a stable conceptual schema and explicit mappings~\citep{CSUR-Jiaheng,AWSDataLake}. In such environments, the main obstacle is not only the coexistence of multiple data models, but also the coexistence of multiple query languages and execution paradigms.
+
+\subsubsection{Related Work}
+
+Existing approaches to multi-model querying usually follow one of two broad strategies. Polystores tend to expose a unified access layer over heterogeneous back-end systems, but often keep model-specific languages and execution engines underneath. Multi-model databases, on the other hand, commonly extend one dominant language, usually \acrshort{sql}, with constructs for additional models~\citep{Jiaheng2023Survey}. This includes standards and systems such as SQL/XML~\citep{SQLXML}, SQL/JSON~\citep{SQLJSON}, SQL/PGQ~\citep{SQLPGQ}, Myria~\citep{conf/cidr/WangBBHHHHJMMMM17}, Apache Drill~\citep{Hausenblas2013ApacheDI}, or CloudMdsQL~\citep{Kolev2016TheCM}. All of these are important steps toward practical interoperability, but they usually retain one privileged top-level language and support only limited forms of embedding.
+
+There are also systems that relax this restriction only partially. Apache AGE~\citep{web:apacheage,github:apacheage}, for example, embeds Cypher into PostgreSQL through the \texttt{cypher()} function, but only in the Cypher-to-SQL direction. Systems such as OrientDB~\citep{orientdb} or ArangoDB~\citep{arangodb} support several models as well, yet they do so mainly through proprietary syntax or a system-defined language. BigDAWG~\citep{journals/sigmod/DugganESBHKMMMZ15} comes closer to language plurality by allowing different query islands, but it still separates them into predefined access modes rather than supporting unrestricted recursive combinations inside one query.
+
+% Against this background, DortDB contributes a more symmetric form of language interoperability. Its goal is not to define yet another universal user language, but to preserve existing ones and connect them through a shared algebraic layer. This is precisely where it differs from the main line of this thesis. The categorical framework aims at explicit shared semantics across models, whereas DortDB aims at practical interoperability across languages over already existing heterogeneous data.
+
+% Existing systems often force users either to adopt one dominant top-level language (with one-directional extensions) or to connect several language fragments by ad hoc glue code~\citep{Jiaheng2023Survey,journals/sigmod/DugganESBHKMMMZ15,Kolev2016TheCM}.
+% Based on these observations, we identify the following open problems:
+
+\subsubsection{Open Problems}
+
+Our goal was not to define yet another universal user language, but to preserve existing ones and connect them through a shared algebraic layer. We identified the following open problems:
 
 \question{sf}{language-interoperability}{Language interoperability}{Different query languages are designed for different data models and therefore have different operators, semantics, and execution paradigms. In a heterogeneous environment, the system should allow users to combine established query languages without limitations on the top-level language, or on the nesting depth or direction.}
 
@@ -75,22 +89,16 @@ Based on these observations, we identify the following open problems:
 % Right panel: DortDB with heterogeneous sources and languages entering directly into a unified object representation and unified algebra.
 % Emphasize language interoperability, recursive nesting of SQL/XQuery/Cypher, and lightweight query mediation without upfront conceptual modeling.
 % The visual contrast should make clear that MM-cat starts from semantics and derives execution, whereas DortDB starts from existing heterogeneous sources and unifies them at the query-processing layer.
-\begin{figure}[ht]
-    \centering
-    \fbox{\parbox{0.9\textwidth}{\centering Placeholder: comparison of the schema-centric MM-cat workflow and the schema-free DortDB workflow.}}
-    \caption{Placeholder for a comparison between the main schema-centric approach of this thesis and the schema-free query-unification approach represented by DortDB.}
-    \label{fig:dortdb-comparison}
-\end{figure}
+% \begin{figure}[ht]
+%     \centering
+%     \fbox{\parbox{0.9\textwidth}{\centering Placeholder: comparison of the schema-centric MM-cat workflow and the schema-free DortDB workflow.}}
+%     \caption{Placeholder for a comparison between the main schema-centric approach of this thesis and the schema-free query-unification approach represented by DortDB.}
+%     \label{fig:dortdb-comparison}
+% \end{figure}
 
-In \paperRef{vldb_2025_dortdb}, we addressed these problems with a novel approach called \term{DortDB}. Rather than introducing yet another user-facing universal language, it treats interoperability itself as the main goal: \acrshort{sql}~\citep{SQL}, XQuery~\citep{XQuery}, and Cypher~\citep{Cypher} can be nested into one another recursively, and the mixed query is then translated into a unified algebra covering relational, hierarchical, and graph-style operations~\citep{DBLP:conf/icde/ReSF06,DBLP:conf/edbt/AnglesBGV25,DBLP:conf/sigmod/HolschGS16}. This makes it possible to formulate genuinely cross-model queries without committing to one privileged language, as illustrated later in \Cref{ex:dortdb-rewrite}. It also keeps the setup lightweight---rather than requiring a stable shared schema in advance, DortDB derives the needed local structure from the query and the accessed data fragments.
+In \paperRef{vldb_2025_dortdb}, we addressed these problems with a novel approach called \term{DortDB}. Rather than introducing yet another user-facing universal language, it treats interoperability itself as the main goal: \acrshort{sql}~\citep{SQL}, XQuery~\citep{XQuery}, and Cypher~\citep{Cypher} can be nested into one another recursively, and the mixed query is then translated into a \emph{unified algebra} covering relational, hierarchical, and graph-style operations~\citep{DBLP:conf/icde/ReSF06,DBLP:conf/edbt/AnglesBGV25,DBLP:conf/sigmod/HolschGS16}. This makes it possible to formulate genuinely cross-model queries without committing to one privileged language, as illustrated later in \Cref{ex:dortdb-rewrite}. It also keeps the setup lightweight---rather than requiring a stable shared schema in advance, DortDB derives the needed local structure from the query and the accessed data fragments.
 
 The unified algebra is the key contribution of this approach. Internally, it acts as a common compilation target over a schema-agnostic object representation of the data. It integrates tuple-oriented operators known from relational algebra, operators for item-oriented and hierarchical processing inspired by XQuery, and path-oriented operators needed for graph traversal. As a result, nested fragments written in different languages are no longer treated as opaque foreign calls; instead, they become parts of one logical plan tree whose operators can be inspected, rearranged, simplified, and executed uniformly, even though the system started without an explicit conceptual schema.
-
-Once the query is represented in this form, optimization can be performed in a model-independent way, for example, by operator reordering, elimination of redundant nested evaluations, expression simplification, and index-aware rewriting~\citep{DBLP:conf/sigmod/HolschGS16}. In this sense, DortDB is a contribution on its own; it demonstrates that language-level unification of heterogeneous querying is feasible, practically useful, and not limited to shallow embeddings. These ideas were also validated in a proof-of-concept prototype.
-
-DortDB should not be seen as a replacement for the categorical framework, but rather as a complementary point in the design space. Our main line of work starts from an explicit conceptual schema, derives logical schemas and mappings, and uses this structure to support querying, evolution, and eventually self-adaptation. DortDB starts much lower and more pragmatically---it assumes heterogeneous data is already present, keeps the representation intentionally schema-free, and focuses on making cross-model querying workable with minimal upfront setup. The price is that it does not provide the same semantic guarantees, principled evolution machinery, or explicit reasoning about equivalence between alternative representations. The benefit is speed of adoption and flexibility in dynamic or exploratory settings.
-
-This makes DortDB especially relevant in scenarios where a fully modeled solution would be too costly or too premature. It can be understood as a universal mediator layer for rapid integration of existing sources, prototyping of cross-model workloads, or interactive analysis over data whose structure is still evolving. At the same time, it also broadens the thesis by exploring a more pragmatic branch of multi-model querying, focused on language interoperability rather than on explicit shared semantics. Once the data and workloads stabilize, the schema-first MM-cat approach offers stronger guarantees and deeper automation. Conversely, DortDB shows that there is practical value in supporting heterogeneous querying even before such a full semantic model is available. Its current prototype nature must, however, be kept in mind: the system is intentionally in-memory, read-only, and primarily rule-based in its optimization, so it should be viewed as a lightweight interoperability mechanism, intended for specific use cases, rather than a full replacement for more deeply modeled or more mature database solutions.
 
 \begin{example}
 \label{ex:dortdb-rewrite}
@@ -101,11 +109,8 @@ The query from \Cref{ex:querying-multi} uses SQL for both the \object{User} and 
 \sql{JOIN} (
     \keyword{LANG xquery}
     \xquery{for} $review \xquery{in} $reviews/Review
-    \xquery{where} $review/business_id = 'bus#679' \xquery{and} $review/stars >= 3
-    \xquery{return} \{
-        "user_id": $review/user_id,
-        "stars": $review/stars
-    \}
+    \xquery{where} $review/business_id = 'bus#679' \xquery{and} $review/stars \xquery{ge} 3
+    \xquery{return} $review
 ) r \sql{ON} r.user_id = user.id
 \sql{ORDER BY} r.stars \sql{ASC}
 \end{alltt}
@@ -120,19 +125,24 @@ Or, we can use Cypher in the main query for the \object{Review}, while the \obje
     \sql{WHERE} user.id = review.user_id
 ) \cypher{AS} u
 \cypher{RETURN} review.stars \cypher{AS} stars, u.name \cypher{AS} name
-\cypher{ORDER} \cypher{BY} stars \cypher{ASC}
+\cypher{ORDER BY} stars \cypher{ASC}
 \end{alltt}
 
-Note the \texttt{\keyword{LANG}} keyword which allows us to switch between languages at any point in the query. In practice, the choice of which language to use for which part of the query can be guided by the users' familiarity with the languages, the expected performance of the underlying engines, or other practical considerations. The DortDB query engine will then translate the entire query into the unified algebra and optimize it as a whole.
+Note the \texttt{\keyword{LANG}} keyword which allows us to switch between languages at any point in the query. In practice, the choice of which language to use for which part of the query can be guided by the users' familiarity with the languages, the expected performance of the underlying engines, or other practical considerations. The DortDB query engine will then translate the entire query into the unified algebra and optimize it as a whole. The final plans are displayed in \Cref{fig:dortdb-algebra}.
 \end{example}
 
-\subsubsection{Related Work}
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=\textwidth]{img/commentary-dortdb_algebra.drawio.pdf}
+    \caption{Unified algebra representation of the queries from \Cref{ex:dortdb-rewrite}. The colors correspond to the original languages---\acrshort{sql} (purple), Cypher (blue), and XQuery (green). Some operations (e.g., calculations, tree joins) were omitted for clarity.}
+    \label{fig:dortdb-algebra}
+\end{figure}
 
-Existing approaches to multi-model querying usually follow one of two broad strategies. Polystores tend to expose a unified access layer over heterogeneous back-end systems, but often keep model-specific languages and execution engines underneath. Multi-model databases, on the other hand, commonly extend one dominant language, usually \acrshort{sql}, with constructs for additional models~\citep{Jiaheng2023Survey}. This includes standards and systems such as SQL/XML~\citep{SQLXML}, SQL/JSON~\citep{SQLJSON}, SQL/PGQ~\citep{SQLPGQ}, Myria~\citep{conf/cidr/WangBBHHHHJMMMM17}, Apache Drill~\citep{Hausenblas2013ApacheDI}, or CloudMdsQL~\citep{Kolev2016TheCM}. All of these are important steps toward practical interoperability, but they usually retain one privileged top-level language and support only limited forms of embedding.
+DortDB should not be seen as a replacement for the categorical framework, but rather as a complementary point in the design space. Our main line of work starts from an explicit conceptual schema, derives logical schemas and mappings, and uses this structure to support querying, evolution, and eventually self-adaptation. DortDB starts much lower and more pragmatically---it assumes heterogeneous data is already present, keeps the representation intentionally schema-free, and focuses on making cross-model querying workable with minimal upfront setup. The price is that it does not provide the same semantic guarantees, principled evolution machinery, or explicit reasoning about equivalence between alternative representations. The benefit is speed of adoption and flexibility in dynamic or exploratory settings.
 
-There are also systems that relax this restriction only partially. Apache AGE~\citep{web:apacheage,github:apacheage}, for example, embeds Cypher into PostgreSQL through the \texttt{cypher()} function, but only in the Cypher-to-SQL direction. Systems such as OrientDB~\citep{orientdb} or ArangoDB~\citep{arangodb} support several models as well, yet they do so mainly through proprietary syntax or a system-defined language. BigDAWG~\citep{journals/sigmod/DugganESBHKMMMZ15} comes closer to language plurality by allowing different query islands, but it still separates them into predefined access modes rather than supporting unrestricted recursive combinations inside one query.
+This makes DortDB especially relevant in scenarios where a fully modeled solution would be too costly or too premature. It can be understood as a universal mediator layer for rapid integration of existing sources, prototyping of cross-model workloads, or interactive analysis over data whose structure is still evolving. At the same time, it also broadens the thesis by exploring a more pragmatic branch of multi-model querying, focused on language interoperability rather than on explicit shared semantics. Once the data and workloads stabilize, the schema-first categorical approach offers stronger guarantees and deeper automation. Conversely, DortDB shows that there is practical value in supporting heterogeneous querying even before such a full semantic model is available.
 
-Against this background, DortDB contributes a more symmetric form of language interoperability. Its goal is not to define yet another universal user language, but to preserve existing ones and connect them through a shared algebraic layer. This is precisely where it differs from the main line of this thesis. The categorical framework aims at explicit shared semantics across models, whereas DortDB aims at practical interoperability across languages over already existing heterogeneous data.
+These ideas were also validated in a proof-of-concept prototype. For now, the system is intentionally in-memory and read-only, which allows us to focus on the core interoperability and optimization problems without being distracted by storage or transaction management. However, it already supports the whole unified algebra, thus covering a large portion of the most used operators from \acrshort{sql}, XQuery, and Cypher. Currently, we are finishing a journal paper containing both full description of the unified algebra and its optimizations, as well as comprehensive performance evaluation.
 
 \subsection{Contributions}
 
@@ -140,6 +150,6 @@ This chapter contributes two complementary perspectives that support the rest of
 
 The first perspective concerns evaluation. We formulated benchmarking itself as a multi-model problem: if the proposed methods are to be tested seriously, we need datasets and workloads that can cover many combinations of models, embeddings, redundancies, query patterns, and evolution scenarios rather than one fixed benchmark scenario. \term{TransforMMer} addresses this by using schema inference, conceptual refinement, semantics-preserving transformations, and \acrshort{mmql}-based query derivation to generate multiple related multi-model representations and workloads from a common input dataset. Because these variants can also be versioned at both the conceptual and logical levels, the framework can simulate redesign and migration scenarios instead of benchmarking only one static configuration. In this sense, its contribution is not just another benchmark, but a general mechanism for deriving benchmarks that are adaptable to the specific questions raised by our framework.
 
-The second perspective concerns the limits of explicit semantic modeling. While the main line of the thesis assumes a conceptual schema and explicit mappings, DortDB shows that some practical situations call for a lighter solution that starts directly from already existing heterogeneous data and query languages. Its main contribution is a unified algebraic backbone that makes recursive combinations of established languages executable and optimizable as one mixed query, while deriving the needed local structure on demand instead of requiring a full shared schema in advance. This places DortDB not in opposition to the rest of the thesis, but at a different point in the design space: MM-cat emphasizes explicit shared semantics and long-term manageability, whereas DortDB emphasizes rapid interoperability and exploratory cross-model querying.
+The second perspective concerns the limits of explicit semantic modeling. While the main line of the thesis assumes a conceptual schema and explicit mappings, DortDB shows that some practical situations call for a lighter solution that starts directly from already existing heterogeneous data and query languages. Its main contribution is a unified algebraic backbone that makes recursive combinations of established languages executable and optimizable as one mixed query, while deriving the needed local structure on demand instead of requiring a full shared schema in advance. This places DortDB not in opposition to the rest of the thesis, but at a different point in the design space: the categorical framework emphasizes explicit shared semantics and long-term manageability, whereas DortDB emphasizes rapid interoperability and exploratory cross-model querying.
 
 Taken together, these results broaden the scope of the thesis in two directions. TransforMMer strengthens the empirical basis of the proposed framework by making systematic evaluation more realistic and reproducible. DortDB, in turn, shows that the broader multi-model agenda also includes cases where interoperability must be achieved before a full conceptual model is available. Both contributions therefore complement the central research line while also clarifying its practical context and boundaries.
