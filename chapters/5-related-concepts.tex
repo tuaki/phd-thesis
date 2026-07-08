@@ -5,8 +5,6 @@ This section collects two complementary lines of work that support the practical
 
 \subsection{Benchmarking \& Evaluation}
 
-\todo{Reference nefungují na subsubsection, konkrétně sec:benchmarking-related-work.}
-
 A novel approach can be interesting and theoretically sound, however, in order to be useful in practice, it must be evaluated on realistic datasets and workloads. In the context of multi-model data management, this is particularly challenging, as there is a lack of real-world multi-model datasets and queries.
 
 \subsubsection{Related Work}
@@ -32,26 +30,42 @@ Existing practice usually falls back to two imperfect strategies. The first is t
 \question{be}{benchmarking-queries}{Benchmarking queries}{A useful benchmark consists not only of data, but also of queries that stress the intended capabilities of the evaluated system. In the multi-model setting, these workloads should remain comparable across alternative representations and across evolution steps, including cases where only the logical mapping changes and cases where the conceptual schema itself evolves.}
 
 \subsubsection{TransforMMer}
-\todo{Tohle je hodně odbyté. Dala bych sem ty use casy, které to umožňuje simulovat, jak píšeme v paperu, zejména evolution mangement. Chybí příklad a obrázek, takže to nikdo nepochopí. A přidala bych i ukázku nějakého grafu z paperu asi.}
 
-\todo{Cite \citep{is_2026}}
 \todo{Dát správny odkaz na arxiv.}
 
-The main idea behind our approach is to use the categorical framework, described in previous sections, to automate the transformation of a given dataset into a multi-model representation.
+The main idea behind our approach, proposed in \paperRef{enase_2025} (and further developed in~\citep{is_2026}), is to use the categorical framework, described in previous sections, to automate the transformation of a given dataset into a multi-model representation. The whole process is illustrated in \Cref{ex:transformmer-sc}.
 
-Because not all data models are schema-full, the first step is to infer the schema of the input dataset. For that, we use an existing approach~\citep{mm_infer, koupil2022mminfer}. Unlike most of our previous work, it is not based on category theory, so we adapted it to the categorical framework. It is capable of inferring both conceptual and logical schemas (represented by schema categories), as well as the mappings between them.
+Not all data models are schema-full, so the first step is to infer the schema of the input dataset. For that, we use an existing approach~\citep{mm_infer, koupil2022mminfer}. Unlike most of our previous work, it is not based on category theory, so we adapted it to the categorical framework. It is capable of inferring both conceptual and logical schemas (represented by schema categories), as well as the mappings between them.
 
-The next step requires limited manual refinement, not because the inference is unreliable, but because some semantic decisions cannot be recovered from the data alone. For example, the inference algorithm can identify candidates for references and identifiers, but it cannot always determine which of them are actually intended by the users or the application logic. Therefore, the users confirm the correct ones and add any semantically missing identifiers or references. Another common task is unification of structurally similar schema fragments---e.g., if a document contains multiple nested subdocuments under different keys, the inference algorithm will naturally treat them as separate kinds even when they are semantically the same. This can then be resolved explicitly with operations such as \code{asMap} from \Cref{ex:evolution-map}.
+The next step requires limited manual refinement, not because the inference is unreliable, but because some semantic decisions cannot be recovered from the data alone. For example, the inference algorithm can identify candidates for references and identifiers, but it cannot always determine which of them are actually intended by the users or the application logic. Therefore, the users confirm the correct ones and add any semantically missing identifiers or references. Another common task is unification of structurally similar schema fragments---e.g., if a document contains multiple nested subdocuments under different keys, the inference algorithm will naturally treat them as separate kinds even when they are semantically the same.
 
-\todo{Vůbe nechápu, jak to souvisí s tím předchozím. Vlastně ten odstavec vůbec nechápu.}
-In fact, all changes to the conceptual schema are represented as \acrshort{smo}s, which allow seamless propagation to the logical schemas. Crucially, we only allow changes that keep the logical schemas consistent with the original data. This way, we can always import it to the instance category corresponding to the refined conceptual schema. This also lets us model benchmark evolution explicitly---once the conceptual schema is refined, we can propagate the change to all target representations and compare successive benchmark versions under controlled conditions.
+Crucially, at this stage we only allow changes that are performed via the \emph{light} operations (see \Cref{sec:evolution-propagation}). This way, we can easily update the previously inferred mappings to make them consistent both with the refined conceptual schema and the original logical schema---so that we can use them to import the data to the instance category corresponding to the refined conceptual schema.
 
-\todo{příklad a obrázek.}
 Finally, the users can choose the desired logical representation of the data, and the system will automatically transform it from the instance category to the chosen representation. The users can also choose multiple different representations, or change them over time as workloads or design goals shift. This is a major advantage of our approach---it allows us to present a single dataset in many combinations of data models while keeping semantic equivalence to the original data, and it also makes it possible to simulate migrations from one logical configuration to another.
 
-Queries are generated in a similar way. First, the users use \acrshort{mmql} to define a set of queries over the conceptual schema, which are then evolved together with the schema. Finally, we use the \acrshort{mmql} query engine to generate query plans, which transforms the queries to the chosen logical representation without executing them. This gives us comparable workload variants not only across different representations, but also across successive conceptual and logical versions of the benchmark.
+\begin{example}
+\label{ex:transformmer-sc}
+Let us start with an already existing dataset. Again, we will use the Yelp data in multi-model format (as shown in \Cref{fig:mm-data}), although the initial representation can be arbitrary. The first part of \Cref{fig:transformmer-sc} shows the inferred conceptual schema, consisting of several disconnected components. The three-dots symbol is used as an abbreviation for properties that are not relevant for the example.
 
-An in-depth description of the approach can be found in \paperRef{enase_2025}. There is also a proof-of-concept implementation called \term{TransforMMer}, available in \paperRef{edbt_2025}.
+The system can automatically identify reference candidates, in this case \object{user\_id} refers to \object{id} and \object{business\_id} refers to \object{\_id}. The users can then refine the schema by confirming the reference candidates. This operation can be represented via a functor between the old and the new schema, mapping morphism \signature{2} to \signature{6.1} and morphism \signature{3} to \signature{7.4}. Note that some objects were renamed; this is only a cosmetic change the users can make to improve consistency and readability.
+
+The final conceptual schema can be mapped to any number of logical representations. Let us focus only on the \object{Business}-\object{Attributes} part. The users have chosen to map it to a relational representation with two tables, another relational representation with one table (and all properties of \object{Attributes} embedded as columns), and a document representation with one collection and a nested subdocument for \object{Attributes}. The system will then transform the data to all three representations.
+\end{example}
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=\textwidth]{img/commentary-transformmer_sc.drawio.pdf}
+    \caption{Benchmark creation steps from \Cref{ex:transformmer-sc}: inferred conceptual schema, refined conceptual schema, and three alternative logical representations.}
+    \label{fig:transformmer-sc}
+\end{figure}
+
+This approach is not limited to various logical representations of the same conceptual schema---we can leverage the evolution management techniques described in \Cref{sec:evolution-propagation} to simulate evolution of the conceptual schema as well. The users can apply any of the \acrshort{smo}s to generate multiple different versions of the conceptual schema. The system will take care of propagating the changes to the logical schemas and to the data, so that all representations remain semantically aligned with each other and with the original data.
+
+\todo{Možná obrázek více konceptuálních variant?}
+
+Queries are generated in a similar way. First, the users use \acrshort{mmql} to define a set of queries over the conceptual schema, which are then evolved together with the schema. Finally, we use the \acrshort{mmql} query engine to generate query plans, which transforms the queries to the chosen logical representation without executing them. This gives us comparable workload variants not only across different logical representations, but also across successive conceptual versions of the benchmark.
+
+A proof-of-concept implementation of this approach is described in \paperRef{edbt_2025}. We used it in~\citep{is_2026} to compare the performance of different logical representations in several multi-model scenarios, including evolution of the conceptual schema.
 
 % Potenciálně další contributions:
 % Zlepšili jsme inferenci
@@ -131,10 +145,12 @@ These ideas were also validated in a proof-of-concept prototype. For now, the sy
 
 \subsection{Contributions}
 
-This chapter contributes two complementary perspectives that support the rest of the thesis from outside its main schema-centric core.
+TransfoMMer contributes a transformation-driven approach to benchmark engineering for heterogeneous information systems (\paperRef{enase_2025}). Instead of treating a benchmark as one fixed dataset, it derives families of semantically aligned multi-model variants from existing data (\questionRef{be}{benchmark-coverage}). The categorical basis ensures reusable derivation in a  controlled, repeatable way (\questionRef{be}{reusable-derivation}).
 
-The first perspective concerns evaluation. We formulated benchmarking itself as a multi-model problem: if the proposed methods are to be tested seriously, we need datasets and workloads that can cover many combinations of models, embeddings, redundancies, query patterns, and evolution scenarios rather than one fixed benchmark scenario. \term{TransforMMer} addresses this by using schema inference, conceptual refinement, semantics-preserving transformations, and \acrshort{mmql}-based query derivation to generate multiple related multi-model representations and workloads from a common input dataset. Because these variants can also be versioned at both the conceptual and logical levels, the framework can simulate redesign and migration scenarios instead of benchmarking only one static configuration. In this sense, its contribution is not just another benchmark, but a general mechanism for deriving benchmarks that are adaptable to the specific questions raised by our framework.
+The same framework also supports benchmark evolution as a first-class citizen. By versioning both conceptual and logical variants and by evolving queries together with the schema, it makes it possible to evaluate propagation scenarios (\questionRef{be}{evolution-variants}) and benchmark queries (\questionRef{be}{benchmarking-queries})~\citep{is_2026}.
 
-The second perspective concerns the limits of explicit semantic modeling. While the main line of the thesis assumes a conceptual schema and explicit mappings, DortDB shows that some practical situations call for a lighter solution that starts directly from already existing heterogeneous data and query languages. Its main contribution is a unified algebraic backbone that makes recursive combinations of established languages executable and optimizable as one mixed query, while deriving the needed local structure on demand instead of requiring a full shared schema in advance. This places DortDB not in opposition to the rest of the thesis, but at a different point in the design space: the categorical framework emphasizes explicit shared semantics and long-term manageability, whereas DortDB emphasizes rapid interoperability and exploratory cross-model querying.
+There is a proof-of-concept tool called TransforMMer, described in \paperRef{edbt_2025} and further evaluated in~\citep{is_2026}.\\
 
-Taken together, these results broaden the scope of the thesis in two directions. TransforMMer strengthens the empirical basis of the proposed framework by making systematic evaluation more realistic and reproducible. DortDB, in turn, shows that the broader multi-model agenda also includes cases where interoperability must be achieved before a full conceptual model is available. Both contributions therefore complement the central research line while also clarifying its practical context and boundaries.
+DortDB contributes a lightweight alternative for situations where explicit shared semantics would be too costly or limiting. Its main idea is to preserve established query languages (for now \acrshort{sql}, XQuery, and Cypher) and allow them to interoperate symmetrically, so that they can be nested into one another without a privileged top-level language (\questionRef{sf}{language-interoperability}). It is enabled by a unified algebra that serves as one common compilation target for mixed queries (\questionRef{sf}{unified-algebra}), allowing for seamless integration and comprehensive optimization.
+
+At the same time, DortDB keeps the setup intentionally schema-free. The required local structure is derived from the query itself, making heterogeneous querying possible even in dynamic and loosely integrated settings (\questionRef{sf}{schema-free}). The approach, together with a proof-of-concept prototype, is presented in \paperRef{vldb_2025_dortdb}. Within the thesis, it complements the main schema-centric line by offering a practical alternative for specific use cases, and by exploring what can already be achieved at the query-processing level before a full semantic model is available.
