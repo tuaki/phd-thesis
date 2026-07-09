@@ -1,12 +1,30 @@
 \chapter*{Preface}
 \addcontentsline{toc}{chapter}{Preface}
 
-\todo{department, fakulta, čas od do, supervisor, advisors, atd.? Už je to na začátku práce}
+The work presented in this thesis summarizes the results of author's doctoral research in the field of multi-model data management. The research was conducted at Charles University in a research group consisting of the author, doc. RNDr. Irena Holubová, Ph.D., and Ing. Pavel Koupil, Ph.D. Some of the results are a product of collaboration with other researches, namely the research group around Prof. Dr. Stefanie Scherzinger at the University of Passau. The author also contributed to the supervision of several master's theses~\citep{srutkova-mastersthesis, strobl-mastersthesis, jezek-mastersthesis, mazourek-mastersthesis}.
 
-The work presented in this thesis summarizes the results of author's doctoral research in the field of multi-model database management. It extends an existing approach to modeling, transformations, and querying multi-model data with novel methods for evolution management and self-adaptation.
+The central claim of this thesis is that multi-model data management can be made self-adapting by combining a category-theoretic representation of schemas and mappings with evolution propagation, workload-aware configuration search, and performance estimation. This claim is supported by a collection of ten papers published in peer-reviewed conferences and journals in the years 2022--2026. \Cref{tab:papers} provides an overview of these papers and their roles in the thesis. A full \hyperref[chap:publications]{list of the author's publications} is included at the end of the thesis.
 
-The main part of the thesis is a collection of ten papers (\paperRef{vldb_2024} to \paperRef{vldb_2025_dortdb}) published in peer-reviewed conferences and journals in the years 2022--2026. A full \hyperref[chap:publications]{list of the author's publications} is included at the end of the thesis.
-
-This collection is preceded by a commentary that provides a high-level overview of the research and its contributions. First, it formulates the vision and the overall research goals. Then it describes the existing approach for modeling, transformations, and querying multi-model data that we use as a foundation for our research. Next, it explains the two main research directions---evolution management and self-adaptation. For both of them, it defines the open problems, presents the proposed solutions, and discusses the contributions of the individual papers. Finally, it discusses two related concepts to our research---benchmarking and an alternative approach to multi-model data querying.
+The thesis builds on a previous work of the research group. Specifically, this theoretical foundation includes unified categorical representation, transformations, schema inference, and querying. The original contribution then lies in evolution management, workload-aware mapping selection, supporting benchmarking infrastructure, and schema-free query unification. For each of these topics, we define open problems, propose solutions, and discuss the contributions of the individual papers.
 
 This research was supported by the GAČR grant no.~23-07781S and the GAUK grant no.~292323.
+
+\begin{table}[h]
+    \centering
+    \begin{tabular}{lllc}
+        Paper                           & Topic  & Role       & Used in section \\
+        \hline
+        \paperRef{vldb_2024}            & vision             & supporting & \labelcref{sec:vision} \\
+        \paperRef{cikm_2022}            & schema evolution   & core       & \labelcref{sec:evolution-management} \\
+        \paperRef{edbt_2024}            & query evolution    & core       & \labelcref{sec:evolution-management} \\
+        \paperRef{rcis_2025}            & change propagation & core       & \labelcref{sec:evolution-management} \\
+        \paperRef{vldb_2025_fdephunter} & FD cleaning        & supporting & \labelcref{sec:evolution-management} \\
+        \paperRef{edbt_2026}            & self-adaptation    & core       & \labelcref{sec:self-adaptation} \\
+        \paperRef{dke_2026}             & index selection    & supporting & \labelcref{sec:self-adaptation} \\
+        \paperRef{enase_2025}           & dataset generation & boundary   & \labelcref{sec:related-concepts} \\
+        \paperRef{edbt_2025}            & benchmarking       & boundary   & \labelcref{sec:related-concepts} \\
+        \paperRef{vldb_2025_dortdb}     & query unification  & boundary   & \labelcref{sec:related-concepts} \\
+    \end{tabular}
+    \caption{Core vs. supporting papers of the thesis.}
+    \label{tab:papers}
+\end{table}

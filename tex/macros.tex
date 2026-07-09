@@ -359,8 +359,12 @@
   }%
 }
 
+\newcounter{publication}
 \newcommand{\publication}[1]{%
-\noindent\fullcite{#1}\par
+\refstepcounter{publication}%
+\noindent\makebox[2em][l]{\textbf{\arabic{publication}.}}%
+\hangindent=2em\hangafter=1\relax%
+\fullcite{#1}\par
 \vspace{1em}
 }
 

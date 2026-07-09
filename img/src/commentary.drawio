@@ -2584,7 +2584,7 @@
     </mxGraphModel>
   </diagram>
   <diagram id="2TF1IqpYkTuQn3CKaQOw" name="dortdb_algebra">
-    <mxGraphModel dx="685" dy="426" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="500" pageHeight="228" math="1" shadow="0">
+    <mxGraphModel dx="562" dy="355" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="500" pageHeight="228" math="1" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -2637,12 +2637,6 @@
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="245" y="19" as="sourcePoint" />
             <mxPoint x="245" y="-21" as="targetPoint" />
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="RA3OrKn_GWkhSYpkQZD5-27" edge="1" parent="1" source="RA3OrKn_GWkhSYpkQZD5-9" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;">
-          <mxGeometry relative="1" as="geometry">
-            <mxPoint x="235" y="59" as="sourcePoint" />
-            <mxPoint x="305" y="69" as="targetPoint" />
           </mxGeometry>
         </mxCell>
         <mxCell id="RA3OrKn_GWkhSYpkQZD5-28" edge="1" parent="1" source="RA3OrKn_GWkhSYpkQZD5-1" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;" target="-IDkv8ttLN33_PPQv1Yt-1">

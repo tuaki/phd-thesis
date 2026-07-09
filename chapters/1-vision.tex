@@ -32,6 +32,7 @@ The theoretical data models have to be implemented in actual database systems, w
 In fact, more than half of the 50 most popular database systems~\citep{DBEngines2026} are considered multi-model, i.e., supporting more than one data model. Therefore, we have to consider not only different data models, but also different combinations of models, and their respective implementations in various database systems---vast majority of these databases are not \emph{natively} multi-model, but rather started as single-model systems and later added support for other models. This means that multi-model support is often limited, supporting only a subset of the features of the additional models. Internally, the secondary models are typically implemented as just an interface to the primary model, which can lead to performance and consistency issues.
 
 \subsection{Research Questions}
+\label{sec:research-questions}
 
 The above-described vision is based on~\paperRef{vldb_2024} and depicts the long-term goals of our research. Let us now refine it to concrete research questions. Some of them have already been addressed by previous works of our research group~\citep{mm_cat, mm_cat_journal, mm_quecat, koupil2023universal}:
 \begin{itemize}
