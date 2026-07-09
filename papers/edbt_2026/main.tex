@@ -260,7 +260,7 @@ Together with this simplified schema, the user provides a workload $Q = \{(q_i, 
 
 
 \subsection{Mapping-Space Exploration using MCTS}
-\pLabel(sec:mcts)
+\pLabel{sec:mcts}
 Given the simplified schema and workload, \textit{MM-mapsearch} employs MCTS to explore possible model assignments and embedding configurations that jointly determine the multi-model mapping.
 Each \textit{state} $S = (R,E)$ consists of two vectors: $R[i] \in \{\text{rel}, \text{doc}, \text{grp}\}$ encodes the logical model of the $i$-th complex property, and $E[i] \in \{-1,0,\ldots,n-1\}$ specifies its embedding parent, with $E[i] = -1$ indicating a top-level property. \textit{Actions} modify the state by changing a model assignment or altering an embedding relation.
 Each node in the search graph maintains its \emph{visit count}, \emph{total reward}, and \emph{average reward}, while edges store their own visit counts. This enables a UCT2-style~\citep{DBLP:conf/cig/ChildsBK08} adaptation of the \textit{upper confidence bound} (UCB) for DAGs, ensuring consistent exploration even when different action sequences lead to the same decomposition. Before the search begins, the predicted latency of the root state is computed to establish the initial baseline. The reward is defined as $r = \frac{100}{t_{\mathrm{m}} \,+\, t_{\mathrm{e}} \,+\, 0.001}$, where $t_{\mathrm{m}}$ is the migration cost and $t_{\mathrm{e}}$ is the weighted query latency (both in seconds).
