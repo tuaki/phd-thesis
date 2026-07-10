@@ -249,6 +249,8 @@
 
 \newcount\paperRefCount
 
+\newcommand{\paperRefNumber}[1]{\hyperref[\detokenize{#1}]{\ref{\detokenize{#1}@display}}}
+
 \newcommand{\paperRef}[1]{%
   \edef\trimmedArguments{\zap@space#1 \@empty}%
   \paperRefCount=0\relax
@@ -264,7 +266,7 @@
     \ifnum\paperRefCount>1
       ,\penalty0\ %
     \fi
-    \hyperref[\paper]{\ref{\paper @display}}%
+    \paperRefNumber{\paper}%
   }%
 }
 

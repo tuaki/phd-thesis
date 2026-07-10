@@ -1,7 +1,7 @@
 \chapter*{Preface}
 \addcontentsline{toc}{chapter}{Preface}
 
-The work presented in this thesis summarizes the results of author's doctoral research in the field of multi-model data management. The research was conducted at Charles University in a research group consisting of the author, doc. RNDr. Irena Holubová, Ph.D., and Ing. Pavel Koupil, Ph.D. Some of the results are a product of collaboration with other researchers, namely the research group around Prof. Dr. Stefanie Scherzinger at the University of Passau. The author also contributed to the supervision of several master's theses~\citep{srutkova-mastersthesis, strobl-mastersthesis, jezek-mastersthesis, mazourek-mastersthesis}.
+The work presented in this thesis summarizes the results of author's doctoral research in the field of multi-model data management. The research was conducted at Charles University in the Adaptive Data Management (ADaM) RG, particularly with senior researchers doc. RNDr. Irena Holubová, Ph.D. and Ing. Pavel Koupil, Ph.D. Some of the results are a product of collaboration with members of the Scalable Database Systems RG led by Prof. Dr. Stefanie Scherzinger at the University of Passau. The author also cooperated on the supervision of several related master's theses~\citep{srutkova-mastersthesis, strobl-mastersthesis, jezek-mastersthesis, mazourek-mastersthesis}.
 
 The central claim of this thesis is that multi-model data management can be made self-adapting by combining a category-theoretic representation of schemas and mappings with evolution propagation, workload-aware configuration search, and performance estimation. This claim is supported by a collection of ten papers published in peer-reviewed conferences and journals in the years 2022--2026. \Cref{tab:papers} provides an overview of these papers and their roles in the thesis. A full \hyperref[chap:publications]{list of the author's publications} is included at the end of the thesis.
 
@@ -10,21 +10,22 @@ The thesis builds on a previous work of the research group. Specifically, this t
 This research was supported by the GAČR grant no.~23-07781S and the GAUK grant no.~292323.
 
 \begin{table}[h]
+    \small
     \centering
-    \begin{tabular}{lllc}
-        Paper                           & Topic  & Role       & Used in section \\
+    \begin{tabular}{lllllll}
+        Paper                           & Role in thesis & \multicolumn{3}{l}{Published at (CORE/SJR)} & Section of use, Topic \\
         \hline
-        \paperRef{vldb_2024}            & vision             & supporting & \labelcref{sec:vision} \\
-        \paperRef{cikm_2022}            & schema evolution   & core       & \labelcref{sec:evolution-management} \\
-        \paperRef{edbt_2024}            & query evolution    & core       & \labelcref{sec:evolution-management} \\
-        \paperRef{rcis_2025}            & change propagation & core       & \labelcref{sec:evolution-management} \\
-        \paperRef{vldb_2025_fdephunter} & FD cleaning        & supporting & \labelcref{sec:evolution-management} \\
-        \paperRef{edbt_2026}            & self-adaptation    & core       & \labelcref{sec:self-adaptation} \\
-        \paperRef{dke_2026}             & index selection    & supporting & \labelcref{sec:self-adaptation} \\
-        \paperRef{enase_2025}           & dataset generation & boundary   & \labelcref{sec:related-concepts} \\
-        \paperRef{edbt_2025}            & benchmarking       & boundary   & \labelcref{sec:related-concepts} \\
-        \paperRef{vldb_2025_dortdb}     & query unification  & boundary   & \labelcref{sec:related-concepts} \\
+        \paperRefNumber{vldb_2024}            & supporting & VLDB  & 2024 & (A*) & \labelcref{sec:vision},               vision             \\
+        \paperRefNumber{cikm_2022}            & core       & CIKM  & 2022 & (A)  & \labelcref{sec:evolution-management}, schema evolution   \\
+        \paperRefNumber{edbt_2024}            & core       & EDBT  & 2024 & (A)  & \labelcref{sec:evolution-management}, query evolution    \\
+        \paperRefNumber{rcis_2025}            & core       & RCIS  & 2025 & (B)  & \labelcref{sec:evolution-management}, change propagation \\
+        \paperRefNumber{vldb_2025_fdephunter} & supporting & VLDB  & 2025 & (A*) & \labelcref{sec:evolution-management}, FD cleaning        \\
+        \paperRefNumber{edbt_2026}            & core       & EDBT  & 2026 & (B)  & \labelcref{sec:self-adaptation},      self-adaptation    \\
+        \paperRefNumber{dke_2026}             & supporting & DKE   & 2026 & (Q1) & \labelcref{sec:self-adaptation},      index selection    \\
+        \paperRefNumber{enase_2025}           & boundary   & ENASE & 2025 & (B)  & \labelcref{sec:related-concepts},     dataset generation \\
+        \paperRefNumber{edbt_2025}            & boundary   & EDBT  & 2025 & (A)  & \labelcref{sec:related-concepts},     benchmarking       \\
+        \paperRefNumber{vldb_2025_dortdb}     & boundary   & VLDB  & 2025 & (A*) & \labelcref{sec:related-concepts},     query unification  \\
     \end{tabular}
-    \caption{Core vs. supporting papers of the thesis.}
+    \caption{Papers of the thesis.}
     \label{tab:papers}
 \end{table}
