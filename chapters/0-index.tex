@@ -1,5 +1,6 @@
 \chapter*{Commentary}
 \addcontentsline{toc}{chapter}{Commentary}
+\label{chap:commentary}
 
 Data management is a broad field that encompasses various aspects of handling data, such as modeling, storage, querying, and evolution. For years, the focus of data management research has been on relational data, which is structured in tables with fixed schemas~\citep{DBLP:persons/Codd71a}. In the early 2000s, the rise of \acrshort{nosql} databases~\citep{PolyglotPersistance} popularized new data models and formats, such as document, graph, key-value, and wide-column.
 
@@ -27,10 +28,13 @@ The architectural decision to use a separate database for each model is called \
 
 \subsubsection{Outline}
 
-The rest of this chapter provides a high-level overview of the whole thesis; the next ten chapters, consisting of the individual papers, go into more detail.
-\Cref{sec:vision} formulates the vision and research goals of our overall research (\paperRef{vldb_2024}), as well as the challenges of multi-model data management.
-\Cref{sec:foundations} defines the common terminology and describes our previous work on modeling and querying of multi-model data.
-\Cref{sec:evolution-management} proposes an approach to evolution management (\paperRef{cikm_2022}), which is then extended with propagation to queries (\paperRef{edbt_2024}) and the ability to choose between different propagation strategies (\paperRef{rcis_2025}). This is enabled by a novel take on functional dependency discovery (\paperRef{vldb_2025_fdephunter}).
-\Cref{sec:self-adaptation} first reflects on our survey of index selection in heterogeneous database systems (\paperRef{dke_2026}) and then proposes an algorithm that allows the system to automatically choose a suitable multi-model configuration for a given workload (\paperRef{edbt_2026}).
-\Cref{sec:related-concepts} discusses generating synthetic multi-model data and queries (\paperRef{enase_2025, edbt_2025}), which is crucial for benchmarking and testing the proposed approach. Then it goes beyond our approach by exploring a different way of multi-model data querying (\paperRef{vldb_2025_dortdb}).
-Finally, \hyperref[chap:conclusion]{Conclusion} summarizes the contributions of this thesis and outlines future research directions.
+The rest of the \hyperref[chap:commentary]{Commentary} chapter provides a high-level overview of the whole thesis:
+\begin{itemize}
+    \item \Cref{sec:vision} formulates the vision and research goals of our overall research (\paperRef{vldb_2024}), as well as the challenges of multi-model data management.
+    \item \Cref{sec:foundations} defines the common terminology and describes our previous work on modeling and querying of multi-model data.
+    \item \Cref{sec:evolution-management} proposes an approach to evolution management (\paperRef{cikm_2022}), which is then extended with propagation to queries (\paperRef{edbt_2024}) and the ability to choose between different propagation strategies (\paperRef{rcis_2025}). This is enabled by a novel take on functional dependency discovery (\paperRef{vldb_2025_fdephunter}).
+    \item \Cref{sec:self-adaptation} first reflects on our survey of index selection in heterogeneous database systems (\paperRef{dke_2026}) and then proposes an algorithm that allows the system to automatically choose a suitable multi-model configuration for a given workload (\paperRef{edbt_2026}).
+    \item \Cref{sec:related-concepts} discusses generating synthetic multi-model data and queries (\paperRef{enase_2025, edbt_2025}), which is crucial for benchmarking and testing the proposed approach. Then it goes beyond our approach by exploring a different way of multi-model data querying (\paperRef{vldb_2025_dortdb}).
+\end{itemize}
+
+The next ten chapters, consisting of the individual papers (adapted to the thesis format), go into more detail. Finally, \hyperref[chap:conclusion]{Conclusion} summarizes the contributions of this thesis and outlines future research directions.
