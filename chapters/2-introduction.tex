@@ -58,10 +58,7 @@ The categories do not have to be the same size---for example, we can map multipl
 
 The basic idea of our approach is to create a \emph{unified model} of multi-model data on both conceptual and logical levels, and to use it as the basis for all the operations on the data, including querying and evolution. This unified model is based on category theory, which allows us to capture the semantics of all existing data models in a consistent way.
 
-The conceptual schema is a small category called \term{schema category}\footnotei{This definition of schema category slightly differs from the original~\citep{mm_cat, mm_cat_journal} which required that each morphism had a counterpart in the opposite direction (called \term{dual morphism}) and allowed each morphism to specify \term{cardinality} in the same way as an \acrshort{er} would (e.g., \code{0..*}). This is intentional, as the original definition was later refined (see \paperRef{cikm_2022}).
-
-The current version does have the concept of dual morphisms, and the cardinalities are limited to \code{0..1} and \code{1..1} \emph{in the direction of the morphism}. For example, in \Cref{fig:schema-category}, we can immediately see that each instance of \object{User} can have at most one instance of \object{name} (even without providing any further information). This limitation is crucial to ensure that the conceptual schema can be mapped to any data model, because it requires each N:N projection to be decomposed to an intermediate complex type with two N:1 projections. A more fine-grained cardinality control is achieved via categorical concepts like \term{monomorphism} and \term{epimorphism}.}{.}
-Its objects represent the concepts in the domain of interest---complex and simple types, while its morphisms represent projections between these concepts. An object represents a simple type if there is no morphism from it to any other object; otherwise, it represents a complex type.
+The conceptual schema is a small category called \term{schema category}. Its objects represent the concepts in the domain of interest---complex and simple types, while its morphisms represent projections between these concepts. An object represents a simple type if there is no morphism from it to any other object; otherwise, it represents a complex type.
 
 \begin{example}
 \label{ex:schema-category}
@@ -76,6 +73,10 @@ Morphisms (representing projections between types) are displayed as arrows. For 
     \caption{Schema category from \Cref{ex:schema-category}, modeling the data from \Cref{fig:mm-data} on the conceptual level.}
     \label{fig:schema-category}
 \end{figure}
+
+This definition of schema category slightly differs from the original~\citep{mm_cat, mm_cat_journal} which required that each morphism had a counterpart in the opposite direction (called \term{dual morphism}) and allowed each morphism to specify \term{cardinality} in the same way as an \acrshort{er} would (e.g., \code{0..*}). This is intentional, as the original definition was refined in \paperRef{cikm_2022}.
+
+The current version does have the concept of dual morphisms, and the cardinalities are limited to \code{0..1} and \code{1..1} \emph{in the direction of the morphism}. For example, in \Cref{fig:schema-category}, we can immediately see that each instance of \object{User} can have at most one instance of \object{name} (even without providing any further information). This limitation is crucial to ensure that the conceptual schema can be mapped to any data model, because it requires each N:N projection to be decomposed to an intermediate complex type with two N:1 projections. A more fine-grained cardinality control is achieved via categorical concepts like \term{monomorphism} and \term{epimorphism}.
 
 On the logical level, each kind has its own logical schema. A logical schema is also a schema category, but it is defined over a specific data model. Therefore, its objects and morphisms have a very specific semantics; e.g., in a relational model, there would be a complex type representing the table, simple types representing its columns, and projections between them, meaning that the columns belong to the table. Because the underlying kinds are always trees (e.g., a row is just a tree with depth 1), the schema categories of logical schemas are also trees with a distinguished \term{root object}.
 

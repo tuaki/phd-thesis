@@ -74,7 +74,7 @@
 }
 
 % Draw black "slugs" whenever a line overflows, so that we can spot it easily.
-\overfullrule=1mm
+% \overfullrule=1mm
 
 %%% Macros for definitions, theorems, claims, examples, ... (requires amsthm package)
 
@@ -212,16 +212,17 @@
 \makeatletter
 \newcounter{Paper}
 
-% label, title, authors, publication, [doi]
-\newcommand{\paperChapter}[4]{%
+% [TOC title], label, title, authors, publication
+\newcommand*{\paperChapter}[5][]{%
 \refstepcounter{chapter}%
 % This code is straight from latex2e source.
-\addcontentsline{toc}{chapter}{\protect\numberline{\thechapter}#2}%
+% Well, there just `#3` instead of `\ifx...' in the source. However, this leads to overlapping of the title and the chapter number in the TOC, so we have to fix this with a custom TOC title.
+\addcontentsline{toc}{chapter}{\protect\numberline{\thechapter}\ifx&#1&#3\else#1\fi}%
 \refstepcounter{Paper}%
 \edef\thisdisplay{\Roman{Paper}}%
-\label{\detokenize{#1}}%
+\label{\detokenize{#2}}%
 \protected@write\@auxout{}{%
-  \string\newlabel{#1@display}{{\thisdisplay}{\thepage}}%
+  \string\newlabel{#2@display}{{\thisdisplay}{\thepage}}%
 }%
 \begin{center}
 \hspace{0pt}
@@ -231,16 +232,16 @@
 
 \bigbreak
 
-{\Large\bfseries #2\par}
-
-\bigbreak\bigbreak
-
-#3
+{\Large\bfseries #3\par}
 
 \bigbreak\bigbreak
 
 #4
-% {\it #4\ifx&#5&\else,\par doi: \href{https://doi.org/#5}{#5}\fi}
+
+\bigbreak\bigbreak
+
+#5
+% {\it #5\ifx&#6&\else,\par doi: \href{https://doi.org/#6}{#6}\fi}
 
 \vfill
 \hspace{0pt}
