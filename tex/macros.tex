@@ -212,11 +212,12 @@
 \makeatletter
 \newcounter{Paper}
 
-% [TOC title], label, title, authors, publication
+% Usage: \paperChapter[<TOC title>]{<label>}{<title>}{<authors>}{<publication>}
+% Provide custom TOC title if the title is too long (it can overlap with the chapter number in the TOC).
 \newcommand*{\paperChapter}[5][]{%
 \refstepcounter{chapter}%
 % This code is straight from latex2e source.
-% Well, there just `#3` instead of `\ifx...' in the source. However, this leads to overlapping of the title and the chapter number in the TOC, so we have to fix this with a custom TOC title.
+% Well, there is just `#3` instead of `\ifx...' in the source. However, this leads to overlapping of the title and the chapter number in the TOC, so we have to fix this with a custom TOC title.
 \addcontentsline{toc}{chapter}{\protect\numberline{\thechapter}\ifx&#1&#3\else#1\fi}%
 \refstepcounter{Paper}%
 \edef\thisdisplay{\Roman{Paper}}%
@@ -241,7 +242,6 @@
 \bigbreak\bigbreak
 
 #5
-% {\it #5\ifx&#6&\else,\par doi: \href{https://doi.org/#6}{#6}\fi}
 
 \vfill
 \hspace{0pt}
@@ -250,8 +250,10 @@
 
 \newcount\paperRefCount
 
+% Prints link to the given paper. Format: "I", "II", "III", ...
 \newcommand{\paperRefNumber}[1]{\hyperref[\detokenize{#1}]{\ref{\detokenize{#1}@display}}}
 
+% Prints reference to the given paper(s). Format: "Paper I", "Paper II", "Papers I, II, III". Only the number is hyperlinked.
 \newcommand{\paperRef}[1]{%
   \edef\trimmedArguments{\zap@space#1 \@empty}%
   \paperRefCount=0\relax
@@ -278,7 +280,8 @@
 
 \newcommand{\publishedAs}[1]{\noindent\textbf{Published as} \fullcite{#1}}
 
-% Usage: \labeledFootnote[<label>]{<text>} to create a footnote with a specific label. If the label is not provided, it will be generated automatically.
+% Usage: \labeledFootnote[<label>]{<text>}
+% Creates a footnote with a specific label. If the label is not provided, it will be generated automatically (a number).
 \NewDocumentCommand{\labeledFootnote}{O{} m}{%
   % Determine label
   \def\currentLabel{#1}%
@@ -292,7 +295,8 @@
   \footnote{\label{\currentLabel}#2}%
 }
 
-% Usage: \footnoteRef[<label>] to create a reference to a footnote with the given label. If the label is not provided, it will refer to the last created `\labeledFootnote`.
+% Usage: \footnoteRef[<label>]
+% Creates a reference to a footnote with the given label. If the label is not provided, it will refer to the last created `\labeledFootnote`.
 \NewDocumentCommand{\footnoteRef}{O{}}{%
   \def\currentLabel{#1}%
   \ifx\currentLabel\empty
@@ -315,9 +319,12 @@
 % Width to use for a figure in a fbox to make it fit the page without overflowing. Measured experimentally to a sufficient precision.
 \def\framedWidth{0.999275\textwidth}
 
-% Decides whether to include the papers.
+% Decides whether to include the papers. See metadata.tex for the actual switch.
 % Overrides labels and refs for papers.
 \def\true{true}
+
+% Usage: \paperInput{<label>}{<path>}
+% Includes a paper from the given path. All \pLabel and \pRef commands in the paper will be prefixed with the given label.
 \newcommand{\paperInput}[2]{%
 \ifx\includePapers\true
 \newpage
@@ -338,24 +345,27 @@
 \fi
 }
 
-% A solution for the nested labels and refs.
+% Use this instead of \label and \ref in the included papers.
 \newcommand{\pLabel}[1]{\label{\inputPrefix#1}}
 \newcommand{\pRef}[1]{\ref{\inputPrefix#1}}
 
-% Define a new question prefix
+% Usage: \defineQuestionPrefix{<prefix>}{<marker>}
+% Defines a new marker for the given question prefix. E.g., if the marker is "Q", the questions will be numbered as "Q1", "Q2", etc.
 \newcommand{\defineQuestionPrefix}[2]{%
   \newcounter{question@#1}%
   \expandafter\def\csname questionprefix@#1\endcsname{#2}%
 }
 
-% Create a question
+% Usage: \question{<prefix>}{<label>}{<human-readable label>}{<question text>}
+% Creates a question
 \newcommand{\question}[4]{%
   \refstepcounter{question@#1}%
   \par\medskip
   \noindent\textbf{\csname questionprefix@#1\endcsname\arabic{question@#1}}\label{#1:#2} \ \emph{#3} \ #4\par\medskip
 }
 
-% Reference a question
+% Usage: \questionRef{<prefix>}{<label>}
+% References a question
 \newcommand{\questionRef}[2]{%
   \hyperref[#1:#2]{%
     \csname questionprefix@#1\endcsname\ref{#1:#2}%
