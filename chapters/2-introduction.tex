@@ -1,7 +1,8 @@
 \section{Foundations}
 \label{sec:foundations}
 
-Our work is based on a preexisting approach to multi-model data modeling~\citep{mm_cat, mm_cat_journal} and querying~\citep{mm_quecat, koupil2023universal}. In this section, we introduce its main concepts and describe how it evolved into a comprehensive multi-model data management framework called \term{MM-cat}. We first clarify the terminology and the levels of abstraction used throughout the thesis. Next, we briefly introduce the categorical ideas on which the approach is built. We then show how the same conceptual representation supports both modeling and querying, which is the key reason it also later serves as the basis for evolution management and self-adaptation.
+Our work is based on a preexisting approach to multi-model data modeling~\citep{mm_cat, mm_cat_journal}, querying~\citep{mm_quecat, koupil2023universal}, and inference~\citep{mm_infer, koupil2022mminfer}.\footnote{Unless explicitly stated otherwise, we use \uv{we} and \uv{our} to reference the previous work of our research group on these topics.}
+In this section, we introduce its main concepts and describe how it evolved into a comprehensive multi-model data management framework called \term{MM-cat}. We first clarify the terminology and the levels of abstraction used throughout the thesis. Next, we briefly introduce the categorical ideas on which the approach is built. We then show how the same conceptual representation supports both modeling and querying, which is the key reason it also later serves as the basis for evolution management and self-adaptation.
 
 \subsubsection{Common terminology}
 
@@ -74,7 +75,8 @@ Morphisms (representing projections between types) are displayed as arrows. For 
     \label{fig:schema-category}
 \end{figure}
 
-This definition of schema category slightly differs from the original~\citep{mm_cat, mm_cat_journal}, which required that each morphism had a counterpart in the opposite direction (called \term{dual morphism}) and allowed each morphism to specify \term{cardinality} in the same way as an \acrshort{er} model would (e.g., \code{0..*}). This is intentional, as the original definition was refined in \paperRef{cikm_2022}.
+This definition of schema category slightly differs from the original~\citep{mm_cat, mm_cat_journal}, which required that each morphism had a counterpart in the opposite direction (called \term{dual morphism}) and allowed each morphism to specify \term{cardinality} in the same way as an \acrshort{er} model would (e.g., \code{0..*}). This is intentional, as we\footnote{This \uv{we} refers to the work presented in this thesis.}
+refined the original definition in \paperRef{cikm_2022}.
 
 The current version does have the concept of dual morphisms, and the cardinalities are limited to \code{0..1} and \code{1..1} \emph{in the direction of the morphism}. For example, in \Cref{fig:schema-category}, we can immediately see that each instance of \object{User} can have at most one instance of \object{name} (even without providing any further information). This limitation is crucial to ensure that the conceptual schema can be mapped to any data model, because it requires each N:N projection to be decomposed to an intermediate complex type with two N:1 projections. A more fine-grained cardinality control is achieved through categorical concepts such as \term{monomorphism} and \term{epimorphism}.
 
@@ -86,11 +88,9 @@ Finally, each logical schema is connected to the conceptual schema via a \term{m
 
 \begin{example}
 \label{ex:mapping}
-%Continuing \Cref{ex:schema-category}, 
 \Cref{fig:mapping} displays a logical schema category for the wide-column database from \Cref{fig:mm-data} (in red), mapped to the conceptual schema category from \Cref{fig:schema-category}. The root object of the logical schema is \object{review}, which is mapped directly to the \object{Review} object in the conceptual schema.
 
 The column family \object{review} cannot have a column \object{user}, because \object{User} is a complex type and the wide-column model does not support nested structures. However, we can \term{embed} the simple type \object{id} into \object{review} by defining the object \object{user\_id}, mapped to the object \object{id} from the conceptual schema, and the morphism \signature{3.4}, mapped to the morphism from \object{Review} to \object{id} in the conceptual schema. The dot symbol represents a composite morphism---in this case, morphism \signature{3.4} corresponds to the composition of morphisms \signature{3} and \signature{4}.
-% Possible meaning-affecting alternative: if the distinction between the conceptual type \object{User} and the logical attribute \object{user} is intentional here, keep the original lowercase form.
 
 Because the schema category of a logical schema is always a tree, we can express both it and its mapping to the conceptual schema in a single \acrshort{json}-like structure. It shows the root object, its attributes, and the morphism signatures to it on the right side of the figure.
 \end{example}
@@ -173,7 +173,8 @@ This time, we need \code{FILTER} and \code{ORDER BY} clauses to filter and order
     \label{fig:query-multi}
 \end{figure}
 
-Optimizing query plans is crucial to the performance of any database system. In our case, it is even more important, as we have to manage multiple databases simultaneously. We do not try to optimize the native queries themselves, as that is the responsibility of the underlying systems. Instead, we have explored, implemented, and evaluated several techniques to improve the performance of the \acrshort{mmql} query engine~\citep{strobl_2026}:
+Optimizing query plans is crucial to the performance of any database system. In our case, it is even more important, as we have to manage multiple databases simultaneously. We do not try to optimize the native queries themselves, as that is the responsibility of the underlying systems. Instead, we\footnote{This \uv{we} refers to the work presented in this thesis.}
+have explored, implemented, and evaluated several techniques to improve the performance of the \acrshort{mmql} query engine~\citep{strobl_2026}:
 \begin{itemize}
     \item \term{Predicate pushdown} -- In general, it is more efficient to filter the data as early as possible, ideally in the underlying databases, so we push predicates down along the query plan tree. Not all operations can be pushed down to the databases (e.g., cross-database joins), so they are executed in the query engine. In some cases, the databases do not support certain operations (e.g., aggregation) or perform them inefficiently (e.g., lookups in MongoDB), so we have to execute them ourselves as well.
     \item \term{Dependent joins} -- If one side of a join depends on the results of the other side, we might be able to push this as a \uv{filter} to the database. For example, when two kinds are joined on a key, we can query one of them first and then use the possible key values as a filter for the second one. This is especially beneficial when the first kind is already heavily filtered by other predicates. This is shown in \Cref{fig:query-multi}.
