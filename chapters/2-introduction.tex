@@ -8,8 +8,7 @@ Our work is based on a preexisting approach to multi-model data modeling~\citep{
 % "Model" defines the language and structure of a data representation, while a "schema" is a specific instance of that model, describing how data is organized within that framework.
 
 We distinguish three abstraction levels commonly used in database design: \term{conceptual}, \term{logical}, and \term{physical}. There is no universal agreement on their exact definitions; in this thesis, we use the following interpretation. A conceptual schema is a \emph{platform-independent} description of the domain of interest. It captures business concepts and their relationships without committing to any particular database technology. Logical schemas are \emph{platform-specific} descriptions of how selected parts of the conceptual schema are represented in concrete data models. For example, a classical relational representation is flat, whereas a document representation can naturally express nesting. Moreover, particular database systems may further restrict or extend these schemas through their specific features. Finally, a physical schema describes the specific data structures used to store the data and implement indexes. In this thesis, we focus on the conceptual and logical levels; however, we also discuss physical aspects when they are relevant to the overall approach.
-
-These levels can be roughly mapped to the terminology defined by \acrshort{mda}~\citep{MDA}---the conceptual level corresponds to the \acrshort{pim}, while the other two levels correspond to the \acrshort{psm}. Nevertheless, we do not use \acrshort{mda} terminology in the rest of the thesis.
+\footnote{These levels can be roughly mapped to the terminology defined by \acrshort{mda}~\citep{MDA}---the conceptual level corresponds to the \acrshort{pim}, while the other two levels correspond to the \acrshort{psm}. Nevertheless, we do not use \acrshort{mda} terminology in the rest of the thesis.}
 
 Each data model, or even each database system, has its own terminology for the concepts and data structures it uses. Let us define the following unifying terms:
 \begin{itemize}
@@ -29,9 +28,7 @@ Finally, the terminology on the conceptual level is defined in a way that abstra
     \item \term{properties} {[}of a complex type{]} -- a set of all simple types that are connected to the given complex type via a projection.
 \end{itemize}
 
-While a kind has to correspond to a complex type, an attribute can correspond to either a complex type (e.g., a nested document in a document database) or a simple type (e.g., a column in a relational table).
-
-Relationships can be expressed in many ways (e.g., references, embedding), so we do not define a single term for them.
+While a kind has to correspond to a complex type, an attribute can correspond to either a complex type (e.g., a nested document in a document database) or a simple type (e.g., a column in a relational table). Relationships can be expressed in many ways (e.g., references, embedding), so we do not define a single term for them.
 
 For illustration, let us show how these terms correspond to the classical \acrshort{er} model~\citep{ER} on the conceptual level:
 \begin{itemize}
@@ -59,7 +56,7 @@ The categories do not have to be the same size---for example, we can map multipl
 \subsection{Modeling}
 \label{sec:modeling}
 
-The basic idea of our approach is to create a \emph{unified model} of multi-model data at both the conceptual and logical levels, and to use it as the basis for all operations on the data, including querying and evolution. This unified model is based on category theory, enabling us to capture the semantics of all existing data models consistently.
+The basic idea of our approach is to create a \emph{unified model} of multi-model data at both the conceptual and logical levels, and to use it as the basis for all operations on the data, including querying and evolution. This unified model is based on category theory, enabling us to capture the semantics of all popular data models consistently.
 
 The conceptual schema is a small category called \term{schema category}. Its objects represent the concepts in the domain of interest---complex and simple types---while its morphisms represent projections between them. An object represents a simple type if there is no morphism from it to any other object; otherwise, it represents a complex type.
 
@@ -123,7 +120,7 @@ Note that the \object{Attributes} complex type is represented by the \object{att
 
 In our approach, transformations are a direct consequence of modeling. We defined the \term{instance category}~\citep{mm_cat, mm_cat_journal} to have the same structure as the schema category, while also containing the actual data records. We also developed algorithms that leverage the above-mentioned mappings between the conceptual and logical schemas to transform data from a database to an instance category and back~\citep{mm_cat_journal}. This allows us to transform data between any two models by first converting it to the instance category and then to the target model. The mappings ensure that the semantics of the data are preserved during this process.
 
-The transformation algorithms are mostly database-independent, but they have a few database-specific parts, namely the concrete data structures and the \acrshort{ddl} and \acrshort{dml} statements. Therefore, for each supported database, we must define a \term{wrapper} that implements all the database-specific functionality. The same approach is used elsewhere as well---for example, during querying, which will be explained later, the algorithms are database-independent; only the translation into the native query languages is database-specific and implemented in the wrapper. Evolution management also works in the same way. Crucially, the underlying algorithms are general enough to support \emph{all} major data models considered in this thesis; the wrappers handle only the technical details of each database.
+The transformation algorithms are mostly database-independent, but they have a few database-specific parts, namely the concrete data structures and the \acrshort{ddl} and \acrshort{dml} statements. Therefore, for each supported database, we must construct a \term{wrapper} that implements all the database-specific functionality. The same approach is used elsewhere as well---for example, during querying, which will be explained later, the algorithms are database-independent; only the translation into the native query languages is database-specific and implemented in the wrapper. Evolution management also works in the same way. Crucially, the underlying algorithms are general enough to support \emph{all} major data models considered in this thesis; the wrappers handle only the technical details of each database.
 
 \subsection{Querying}
 \label{sec:querying}
