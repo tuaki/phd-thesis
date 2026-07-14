@@ -9,9 +9,9 @@ Our work is based on a preexisting approach to multi-model data modeling~\citep{
 
 We distinguish three abstraction levels commonly used in database design: \term{conceptual}, \term{logical}, and \term{physical}. There is no universal agreement on their exact definitions; in this thesis, we use the following interpretation. A conceptual schema is a \emph{platform-independent} description of the domain of interest. It captures business concepts and their relationships without committing to any particular database technology. Logical schemas are \emph{platform-specific} descriptions of how selected parts of the conceptual schema are represented in concrete data models. For example, a classical relational representation is flat, whereas a document representation can naturally express nesting. Moreover, particular database systems may further restrict or extend these schemas through their specific features. Finally, a physical schema describes the specific data structures used to store the data and implement indexes. In this thesis, we focus on the conceptual and logical levels; however, we also discuss physical aspects when they are relevant to the overall approach.
 
-These levels can be mapped to the terminology defined by \acrshort{mda}~\citep{MDA}---the conceptual level corresponds to the \acrshort{pim}, while the other two levels correspond to the \acrshort{psm}. Nevertheless, we do not use \acrshort{mda} terminology in the rest of the thesis.
+These levels can be roughly mapped to the terminology defined by \acrshort{mda}~\citep{MDA}---the conceptual level corresponds to the \acrshort{pim}, while the other two levels correspond to the \acrshort{psm}. Nevertheless, we do not use \acrshort{mda} terminology in the rest of the thesis.
 
-Each data model, or even each database system, has its own terminology for the concepts and data structures it uses. Let us define the following terms:
+Each data model, or even each database system, has its own terminology for the concepts and data structures it uses. Let us define the following unifying terms:
 \begin{itemize}
     \item \term{kind} -- a class of items (e.g., a relational table, a collection of documents, or a collection of nodes/edges with the same label),
     \item \term{attribute} -- a field of a kind (e.g., a column in a table, a field in a document, or a property of a node/edge).
@@ -29,7 +29,9 @@ Finally, the terminology on the conceptual level is defined in a way that abstra
     \item \term{properties} {[}of a complex type{]} -- a set of all simple types that are connected to the given complex type via a projection.
 \end{itemize}
 
-While a kind has to correspond to a complex type, an attribute can correspond to either a complex type (e.g., a nested document in a document database) or a simple type (e.g., a column in a relational table). Relationships can be expressed in many different ways (e.g., references, embedding, etc.), so we do not define a unified term for them.
+While a kind has to correspond to a complex type, an attribute can correspond to either a complex type (e.g., a nested document in a document database) or a simple type (e.g., a column in a relational table).
+
+Relationships can be expressed in many ways (e.g., references, embedding), so we do not define a single term for them.
 
 For illustration, let us show how these terms correspond to the classical \acrshort{er} model~\citep{ER} on the conceptual level:
 \begin{itemize}
@@ -41,24 +43,25 @@ The most significant difference is that we use complex types for both entity and
 
 \subsubsection{Category Theory}
 
-Category theory gives us a compact language for describing structures together with the relationships between their parts. In this thesis, we use it as a modeling tool---it lets us describe data from different models in one common formalism while still keeping enough structure for querying, evolution, and transformations.
+Category theory provides a concise language for describing structures and the relationships between their parts. In this thesis, we use it as a modeling tool---it lets us describe data from different models in a common formalism while still preserving enough structure for querying, evolution, and transformation.
 
 Let us start with a definition. A \term{small category} $\mathcal{C} = (\mathcal{O}, \mathcal{M}, \circ)$ consists of a set of \term{objects} $\mathcal{O}$, a set of \term{morphisms} $\mathcal{M}$, and a composition operation $\circ$ over morphisms. A morphism $f \in \mathcal{M}$ is a directed connection between two objects $A, B \in \mathcal{O}$, denoted $f : A \to B$. For each object $A \in \mathcal{O}$, there is an \term{identity morphism} $1_A : A \to A$. Finally, the composition operation $\circ$ is associative and has the identity morphisms as its neutral elements.
 
 In full generality, a \term{category} can have \emph{collections} of objects and morphisms instead of \emph{sets}. In this thesis, however, we only work with small categories. For intuition, it is often helpful to picture such a category as a directed multigraph with objects as nodes and morphisms as edges. However, we still have to keep in mind that a category is not given only by the nodes and edges; it also explicitly captures which paths can be composed and guarantees that composition behaves consistently.
 
-In our setting, morphisms directly specified by the schema are called \term{base morphisms}, while morphisms obtained by composition are called \term{composite morphisms}. This distinction is practical rather than purely theoretical. Base morphisms capture the explicitly modeled projections, whereas composite morphisms let us refer to longer semantic paths through the schema.\\
+In our setting, morphisms directly specified by the schema are called \term{base morphisms}, while morphisms obtained by composition are called \term{composite morphisms}. This distinction is practical rather than purely theoretical. Base morphisms capture explicitly modeled projections, whereas composite morphisms allow us to refer to longer semantic paths through the schema.
 
 A second key notion is a \term{functor}. A functor provides a structure-preserving mapping between categories. It is a function that maps all objects from the first category to objects in the second category (and similarly for morphisms), such that both identity morphisms and composition of morphisms are preserved.
 
-The categories do not have to be the same size---for example, we can map multiple objects to a single object and the morphisms between them to the identity morphism on that object. Alternatively, we can map two objects connected by a base morphism to two objects connected by a composite morphism, which effectively expands the two objects into a more complex structure. In any case, the preservation of identity and composition ensures that objects in both categories have the same \emph{semantics}.
+The categories do not have to be the same size---for example, we can map multiple objects to a single object and the morphisms between them to the identity morphism on that object. Alternatively, we can map two objects connected by a base morphism to two objects connected by a composite morphism, which effectively expands the two objects into a more complex structure. In any case, the preservation of identity and composition ensures structural consistency of objects in both categories. 
+%have the same \emph{semantics}.
 
 \subsection{Modeling}
 \label{sec:modeling}
 
-The basic idea of our approach is to create a \emph{unified model} of multi-model data on both conceptual and logical levels, and to use it as the basis for all the operations on the data, including querying and evolution. This unified model is based on category theory, which allows us to capture the semantics of all existing data models in a consistent way.
+The basic idea of our approach is to create a \emph{unified model} of multi-model data at both the conceptual and logical levels, and to use it as the basis for all operations on the data, including querying and evolution. This unified model is based on category theory, enabling us to capture the semantics of all existing data models consistently.
 
-The conceptual schema is a small category called \term{schema category}. Its objects represent the concepts in the domain of interest---complex and simple types---while its morphisms represent projections between these concepts. An object represents a simple type if there is no morphism from it to any other object; otherwise, it represents a complex type.
+The conceptual schema is a small category called \term{schema category}. Its objects represent the concepts in the domain of interest---complex and simple types---while its morphisms represent projections between them. An object represents a simple type if there is no morphism from it to any other object; otherwise, it represents a complex type.
 
 \begin{example}
 \label{ex:schema-category}
@@ -69,34 +72,35 @@ Morphisms (representing projections between types) are displayed as arrows. For 
 
 \begin{figure}[ht]
     \centering
-    \includegraphics[width=\textwidth]{img/commentary-schema_category.drawio.pdf}
+    \includegraphics[width=0.8\textwidth]{img/commentary-schema_category.drawio.pdf}
     \caption{Schema category from \Cref{ex:schema-category}, modeling the data from \Cref{fig:mm-data} on the conceptual level.}
     \label{fig:schema-category}
 \end{figure}
 
 This definition of schema category slightly differs from the original~\citep{mm_cat, mm_cat_journal}, which required that each morphism had a counterpart in the opposite direction (called \term{dual morphism}) and allowed each morphism to specify \term{cardinality} in the same way as an \acrshort{er} model would (e.g., \code{0..*}). This is intentional, as the original definition was refined in \paperRef{cikm_2022}.
 
-The current version does have the concept of dual morphisms, and the cardinalities are limited to \code{0..1} and \code{1..1} \emph{in the direction of the morphism}. For example, in \Cref{fig:schema-category}, we can immediately see that each instance of \object{User} can have at most one instance of \object{name} (even without providing any further information). This limitation is crucial to ensure that the conceptual schema can be mapped to any data model, because it requires each N:N projection to be decomposed to an intermediate complex type with two N:1 projections. A more fine-grained cardinality control is achieved via categorical concepts like \term{monomorphism} and \term{epimorphism}.
+The current version does have the concept of dual morphisms, and the cardinalities are limited to \code{0..1} and \code{1..1} \emph{in the direction of the morphism}. For example, in \Cref{fig:schema-category}, we can immediately see that each instance of \object{User} can have at most one instance of \object{name} (even without providing any further information). This limitation is crucial to ensure that the conceptual schema can be mapped to any data model, because it requires each N:N projection to be decomposed to an intermediate complex type with two N:1 projections. A more fine-grained cardinality control is achieved through categorical concepts such as \term{monomorphism} and \term{epimorphism}.
 
 On the logical level, each kind has its own logical schema. A logical schema is also a schema category, but it is defined over a specific data model. Therefore, its objects and morphisms have very specific semantics; e.g., in a relational model, there would be a complex type representing the table, simple types representing its columns, and projections between them, meaning that the columns belong to the table. Because the underlying kinds are always trees (e.g., a row is just a tree with depth 1), the schema categories of logical schemas are also trees with a distinguished \term{root object}.
 
 The logical schema category has to conform to the constraints of the underlying data model. For example, in a traditional relational model, columns cannot contain array values, so there cannot be a morphism from a \uv{column object} (i.e., an object representing a column) to a table object. However, in a document model, there is no such restriction, so we can have a morphism from a field object to a document object, representing the fact that the field is an array nested inside the document. We can also rename objects in the logical schema to conform to the naming conventions of the underlying database system or to avoid name clashes with attributes of different kinds.
 
-Finally, each logical schema is connected to the conceptual schema via a \term{mapping}, which is a functor that maps objects and morphisms between the two schema categories (from the logical to the conceptual). This allows us to preserve the semantics of the conceptual schema while still being able to use the specific features of the underlying data model.
+Finally, each logical schema is connected to the conceptual schema via a \term{mapping}, which is a functor that maps objects and morphisms between the two schema categories (from the logical to the conceptual). This allows us to preserve the semantics of the conceptual schema while still leveraging the specific features of the underlying data model.
 
 \begin{example}
 \label{ex:mapping}
-Continuing \Cref{ex:schema-category}, \Cref{fig:mapping} displays a logical schema category for the wide-column database from \Cref{fig:mm-data} (in red), mapped to the conceptual schema category from \Cref{fig:schema-category}. The root object of the logical schema is \object{review}, which is mapped directly to the \object{Review} object in the conceptual schema.
+%Continuing \Cref{ex:schema-category}, 
+\Cref{fig:mapping} displays a logical schema category for the wide-column database from \Cref{fig:mm-data} (in red), mapped to the conceptual schema category from \Cref{fig:schema-category}. The root object of the logical schema is \object{review}, which is mapped directly to the \object{Review} object in the conceptual schema.
 
 The column family \object{review} cannot have a column \object{user}, because \object{User} is a complex type and the wide-column model does not support nested structures. However, we can \term{embed} the simple type \object{id} into \object{review} by defining the object \object{user\_id}, mapped to the object \object{id} from the conceptual schema, and the morphism \signature{3.4}, mapped to the morphism from \object{Review} to \object{id} in the conceptual schema. The dot symbol represents a composite morphism---in this case, morphism \signature{3.4} corresponds to the composition of morphisms \signature{3} and \signature{4}.
 % Possible meaning-affecting alternative: if the distinction between the conceptual type \object{User} and the logical attribute \object{user} is intentional here, keep the original lowercase form.
 
-Because the schema category of a logical schema is always a tree, we can express both it and its mapping to the conceptual schema in a single \acrshort{json}-like structure. It shows the root object, its attributes, and the signatures of the morphisms to them, displayed on the right side of the figure.
+Because the schema category of a logical schema is always a tree, we can express both it and its mapping to the conceptual schema in a single \acrshort{json}-like structure. It shows the root object, its attributes, and the morphism signatures to it on the right side of the figure.
 \end{example}
 
 \begin{figure}[ht]
     \centering
-    \includegraphics[width=\textwidth]{img/commentary-mapping.drawio.pdf}
+    \includegraphics[width=0.8\textwidth]{img/commentary-mapping.drawio.pdf}
     \caption{A mapping between a logical schema for the wide-column database from \Cref{fig:mm-data} and the conceptual schema from \Cref{fig:schema-category}. Complex types \object{Friend} and \object{Attributes} are omitted for simplicity.}
     \label{fig:mapping}
 \end{figure}
@@ -105,21 +109,21 @@ Because the schema category of a logical schema is always a tree, we can express
 \label{ex:mapping-other}
 Logical schemas of other kinds from \Cref{fig:mm-data} can be mapped to the conceptual schema in a similar way. \Cref{fig:mapping-other} shows the logical schema for the relational database (in purple), the document database (in green), and the graph database (in blue). The mappings are omitted for simplicity, but they are similar to the one in \Cref{fig:mapping}.
 
-Note that the \object{Attributes} complex type is represented by the \object{attributes} document, which is nested inside the \object{business} document. This is a common pattern in document databases, where related data is often stored together in a single document for performance reasons. In addition, the graph database contains two logical schemas---one for the node label \object{User} and one for the edge label \object{FRIEND}. Lastly, the column \object{yelping\_since} from the relational database is mapped to the simple type \object{createdAt}, showing that objects in the conceptual schema can be renamed whenever necessary.
+Note that the \object{Attributes} complex type is represented by the \object{attributes} document, which is nested inside the \object{business} document. This is a common pattern in document databases, where related data is often stored together in a single document for performance reasons. In addition, the graph database contains two logical schemas---one for the node label \object{User} and one for the edge label \object{FRIEND}. Lastly, the column \object{yelping\_since} in the relational database is mapped to the simple type \object{createdAt}, demonstrating that objects in the conceptual schema can be renamed as needed.
 \end{example}
 
 \begin{figure}[ht]
     \centering
-    \includegraphics[width=\textwidth]{img/commentary-mapping_other.drawio.pdf}
+    \includegraphics[width=0.8\textwidth]{img/commentary-mapping_other.drawio.pdf}
     \caption{Logical schemas for the relational, document, and graph databases from \Cref{fig:mm-data}.}
     \label{fig:mapping-other}
 \end{figure}
 
 \subsection{Transformations}
 
-In our approach, transformations are a direct consequence of modeling. We defined the \term{instance category}~\citep{mm_cat, mm_cat_journal} to have the same structure as the schema category, while also containing the actual data records. We also developed algorithms that leverage the above-mentioned mappings between the conceptual and logical schemas to transform data from a database to an instance category and back~\citep{mm_cat_journal}. This allows us to transform data between any two models by first transforming it into the instance category and then transforming it into the target model. The mappings ensure that the semantics of the data are preserved during this process.
+In our approach, transformations are a direct consequence of modeling. We defined the \term{instance category}~\citep{mm_cat, mm_cat_journal} to have the same structure as the schema category, while also containing the actual data records. We also developed algorithms that leverage the above-mentioned mappings between the conceptual and logical schemas to transform data from a database to an instance category and back~\citep{mm_cat_journal}. This allows us to transform data between any two models by first converting it to the instance category and then to the target model. The mappings ensure that the semantics of the data are preserved during this process.
 
-The transformation algorithms are mostly database-independent, but they have a few database-specific parts, namely the concrete data structures and the \acrshort{ddl} and \acrshort{dml} statements. Therefore, for each supported database, we have to define a \term{wrapper} that implements all of the database-specific parts. The same approach is used elsewhere as well---for example, during querying, which will be explained later, the algorithms are database-independent; only the translation into the native query languages is database-specific and implemented in the wrapper. Evolution management also works in the same way. Crucially, the underlying algorithms are general enough to support \emph{all} major data models considered in this thesis; the wrappers handle only the technical details of each database.
+The transformation algorithms are mostly database-independent, but they have a few database-specific parts, namely the concrete data structures and the \acrshort{ddl} and \acrshort{dml} statements. Therefore, for each supported database, we must define a \term{wrapper} that implements all the database-specific functionality. The same approach is used elsewhere as well---for example, during querying, which will be explained later, the algorithms are database-independent; only the translation into the native query languages is database-specific and implemented in the wrapper. Evolution management also works in the same way. Crucially, the underlying algorithms are general enough to support \emph{all} major data models considered in this thesis; the wrappers handle only the technical details of each database.
 
 \subsection{Querying}
 \label{sec:querying}
@@ -128,23 +132,23 @@ Although most relational databases use the standard query language (\acrshort{sq
 
 In the case of \acrshort{nosql} databases, the situation is even more complex. Each database system has its own query language, tailored to its specific data model. From \acrshort{sql} to XQuery~\citep{XQuery}, these languages differ substantially in both syntax and semantics. Even within the same data model, query languages such as SPARQL~\citep{sparql} and Cypher~\citep{Cypher} for the graph model offer very different features~\citep{Jiaheng2023Survey}.
 
-There are attempts to unify query languages across different data models, most notably by extending \acrshort{sql} with additional features for specific data models. However, these extensions are often limited in scope and do not cover all possible queries across all data models. For example, SQL/JSON~\citep{SQLJSON} allows querying both relational and JSON data, but it does not support other data models like graph. Similarly, SQL/PGQ~\citep{SQLPGQ} allows querying property graphs, but it does not support documents.
+There are attempts to unify query languages across different data models, most notably by extending \acrshort{sql} with features tailored to specific data models. However, these extensions are often limited in scope and do not cover all possible queries across all data models. For example, SQL/JSON~\citep{SQLJSON} allows querying both relational and JSON data, but it does not support other data models, such as graphs. Similarly, SQL/PGQ~\citep{SQLPGQ} supports querying property graphs but not documents.
 
-Within a system based on polyglot persistence, querying multi-model data requires running multiple queries in different query languages and then manually combining their results, which is a complex and error-prone task. Moreover, mastering multiple query languages takes a great deal of time and effort, and it is not realistic to expect users to be proficient in all of them. This is a major barrier to using multi-model data efficiently. To address this issue, we want to be able to query multi-model data using a single, unified query language. Such a language should be expressive enough to cover queries across all data models, and it should recognize all possible data structures that can be returned by those queries.
+In a polyglot persistence system, querying multi-model data requires running multiple queries in different query languages and manually combining their results, a complex, error-prone task. Moreover, mastering multiple query languages takes significant time and effort, and it is unrealistic to expect users to be proficient in all of them. This is a major barrier to the efficient use of multi-model data. To address this issue, we want to be able to query multi-model data using a single, unified query language. Such a language should be expressive enough to cover queries across all data models and recognize all possible data structures returned by those queries.
 
-Lastly, one of the primary motivations for using multi-model data is the performance benefit of using the best model for a given task. Therefore, to fully realize these benefits, the overhead of using the unified query language should be minimal, ideally negligible compared with a native solution.
+Lastly, one of the primary motivations for using multi-model data is the performance gain from selecting the best model for a given task. Therefore, to fully realize these benefits, the overhead of using the unified query language should be minimal, ideally negligible compared with a native solution.
 
 \subsubsection{MMQL}
 
-These requirements led us to the development of \term{multi-model query language} (\term{\acrshort{mmql}})~\citep{mm_quecat, koupil2023universal}. \acrshort{mmql} is a query language over the schema category, making it independent of both the underlying data models and the specific databases. After parsing, the query engine splits the query into maximal subqueries that can be executed on a single database, translates them to the native query languages, executes them, and finally combines the results.
+These requirements led us to develop the \term{multi-model query language} (\term{\acrshort{mmql}})~\citep{mm_quecat, koupil2023universal}, a query language for the schema category, making it independent of both the underlying data models and the specific databases. After parsing, the query engine splits the query into maximal subqueries that can be executed on a single database, translates them to the native query languages, executes them, and finally combines the results.
 
-The syntax of \acrshort{mmql} is based on SPARQL~\citep{sparql}, as it is a well-known and widely used query language for graph data, and the schema category can be represented as a multigraph. Each triple pattern in the query corresponds to a morphism in the schema category, together with its source and target objects. However, the similarity to SPARQL is purely syntactic, as both objects and morphisms in the schema category can have very different semantics depending on the underlying data models and databases. For example, one morphism can represent a join in a relational database, a relationship kind in a property graph database, or a nested document in a document database.
+The syntax of \acrshort{mmql} is based on SPARQL~\citep{sparql}, a well-known and widely used query language for graph data, and the schema category can be represented as a multigraph. Each triple pattern in the query corresponds to a morphism in the schema category, together with its source and target objects. However, the similarity to SPARQL is purely syntactic, as both objects and morphisms in the schema category can have very different semantics depending on the underlying data models and databases. For example, a single morphism can represent a join in a relational database, a relationship kind in a property graph database, or a nested document in a document database.
 
 A single \term{query plan} is created by matching the patterns in the query to the available logical schemas via the mappings from the schema category. Because of redundancy, more than one combination might be possible. If that happens, multiple query plans are created, and the best one is chosen based on the estimated cost.
 
 \begin{example}
 \label{ex:querying-single}
-Returning to the schema category from \Cref{fig:schema-category}, we can query the following information: \emph{Find all businesses that allow dogs. For each business, return its name and whether it has TV available}. This process is displayed in \Cref{fig:query-single}.
+Returning to the schema category from \Cref{fig:schema-category}, we can query the following information: \emph{Find all businesses that allow dogs. For each business, return its name and whether it has a TV available.} This process is displayed in \Cref{fig:query-single}.
 
 First, we use the \code{WHERE} clause to express the pattern we want to match in the logical schemas. The names of the variables (prefixed with the \code{?} symbol) are arbitrary, as the triples are identified by the signatures of the morphisms. The \code{true} literal acts as an implicit filter. Next, the \code{SELECT} clause describes the structure of the result, which is an object with two fields---\code{name} and \code{hasTV}.
 
@@ -160,7 +164,7 @@ In the example, the \code{WHERE} pattern is matched to the logical schema of the
 
 \begin{example}
 \label{ex:querying-multi}
-\Cref{fig:query-multi} shows another query: \emph{Find all reviews with at least 3 stars about a business with id \code{bus\#679}, ordered by the number of stars (ascending). For each review, return the stars and the author's name}. 
+\Cref{fig:query-multi} shows another query: \emph{Find all reviews with at least 3 stars about a business with id \code{bus\#679}, ordered by the number of stars (ascending). For each review, return the stars and the author's name.} 
 
 This time, we need \code{FILTER} and \code{ORDER BY} clauses to filter and order the results. There is no logical schema that contains all the required information, so the query engine splits the query into two subqueries---one for the wide-column database and one for the relational database. The query engine then joins the results of both subqueries based on the \object{id} of \object{User} and projects them into the output structure.
 \end{example}
@@ -174,9 +178,9 @@ This time, we need \code{FILTER} and \code{ORDER BY} clauses to filter and order
 
 Optimizing query plans is crucial to the performance of any database system. In our case, it is even more important, as we have to manage multiple databases simultaneously. We do not try to optimize the native queries themselves, as that is the responsibility of the underlying systems. Instead, we have explored, implemented, and evaluated several techniques to improve the performance of the \acrshort{mmql} query engine~\citep{strobl-mastersthesis}:
 \begin{itemize}
-    \item \term{Predicate pushdown} -- In general, it is more efficient to filter the data as early as possible, ideally in the underlying databases, so we push predicates down along the query plan tree. Not all operations can be pushed to the databases (e.g., cross-database joins), so those operations are executed in the query engine. In some cases, the databases do not support certain operations (e.g., aggregation), or they might not perform them very efficiently (e.g., lookups in MongoDB), so we have to execute them ourselves as well.
+    \item \term{Predicate pushdown} -- In general, it is more efficient to filter the data as early as possible, ideally in the underlying databases, so we push predicates down along the query plan tree. Not all operations can be pushed down to the databases (e.g., cross-database joins), so they are executed in the query engine. In some cases, the databases do not support certain operations (e.g., aggregation) or perform them inefficiently (e.g., lookups in MongoDB), so we have to execute them ourselves as well.
     \item \term{Dependent joins} -- If one side of a join depends on the results of the other side, we might be able to push this as a \uv{filter} to the database. For example, when two kinds are joined on a key, we can query one of them first and then use the possible key values as a filter for the second one. This is especially beneficial when the first kind is already heavily filtered by other predicates. This is shown in \Cref{fig:query-multi}.
-    \item \term{Cost estimation} -- The cost of plans and subplans is the most important factor for plan creation and selection. We have implemented cache-based cost estimation, allowing us to reuse the results of previous queries and to learn from them over time. We have also implemented a simple cost model based on the cost estimated by the databases and the number of records processed by each operation, which is used when there is no information in the cache.
+    \item \term{Cost estimation} -- The cost of plans and subplans is the most important factor for plan creation and selection. We have implemented cache-based cost estimation, allowing us to reuse the results of previous queries and to learn from them over time. We have also implemented a simple cost model based on the database-estimated costs and the number of records processed by each operation, used when there is no information in the cache.
 \end{itemize}
 
 \subsection{MM-cat framework}
@@ -192,11 +196,11 @@ The \term{MM-cat} framework is an umbrella term for a family of tools based on t
     \item \term{MM-mapsearch} (\paperRef{edbt_2026}) explores the concept of self-adaptation.
 \end{itemize}
 
-The overall architecture of the system is shown in \Cref{fig:architecture}. There are three levels of abstraction---conceptual, logical, and physical---each with its own artifacts: schema categories, mappings, and data. The arrows show interactions between various parts of the system enabled by the tools. For example, MM-infer observes the data and infers both the conceptual and logical schema categories. The MM-cat tool has two distinct components, \emph{modeling} and \emph{transformations}, which are displayed separately. The colors of the arrows do not have any particular meaning; they are used only to distinguish between different interactions. Although the tools roughly correspond to the capabilities described in \Cref{sec:vision}, in practice they are better understood as different \emph{use cases} of one unified system rather than as a set of separate tools.
+The overall architecture of the system is shown in \Cref{fig:architecture}. There are three levels of abstraction---conceptual, logical, and physical---each with its own artifacts: schema categories, mappings, and data. The arrows show interactions between various parts of the system enabled by the tools. For example, MM-infer observes the data and infers both the conceptual and logical schema categories. The MM-cat tool has two distinct components, \emph{modeling} and \emph{transformations}, which are displayed separately. The colors of the arrows do not have any particular meaning; they are used only to distinguish between different interactions. Although the tools roughly correspond to the capabilities described in \Cref{sec:vision}, in practice they are better understood as different \emph{use cases} of a unified system rather than as separate tools.
 
 \begin{figure}[ht]
     \centering
-    \includegraphics[width=\textwidth]{img/commentary-architecture.drawio.pdf}
+    \includegraphics[width=0.95\textwidth]{img/commentary-architecture.drawio.pdf}
     \caption{Architecture of the MM-cat framework, showing the main tools and their interactions.}
     \label{fig:architecture}
 \end{figure}
@@ -206,9 +210,9 @@ The overall architecture of the system is shown in \Cref{fig:architecture}. Ther
 
 Traditional conceptual modeling is based, among other approaches, on \acrshort{er}~\citep{ER} or \acrshort{uml}~\citep{UML}. These formalisms remain important because they provide a technology-independent description of the domain, but they were not designed as a unifying framework for heterogeneous multi-model systems with explicit cross-model mappings, embedding, or redundancy. They are therefore useful mainly as inspiration for the conceptual level, not as a complete solution to the broader problem addressed in this thesis.
 
-Besides these classical approaches, several proposals target multi-model data more directly. Probably the closest practical line is represented by \term{U-schema}~\citep{DBLP:journals/is/CandelRM22} and its extensions, such as the \term{Orion} language~\citep{DBLP:conf/er/ChillonRM21a, 10.1109/TKDE.2024.3362273} for evolution and \term{SkiQL}~\citep{skiql} for schema querying. Their main difference from our framework is the chosen level of unification. U-schema primarily unifies data models at the \emph{logical} rather than the \emph{conceptual} level. This leads either to an inability to tailor the representation to the specific features of each data model (if we use one logical schema for multiple databases), or to redundancy and a loss of semantics (if we use multiple disconnected logical schemas). Our approach keeps a platform-independent conceptual schema and connects it to specialized logical representations through explicit mappings. This separation gives us more freedom to tailor each logical schema to the capabilities of a concrete database system while still preserving one shared conceptual view.
+Besides these classical approaches, several proposals target multi-model data more directly. Probably the closest practical line is represented by \term{U-schema}~\citep{DBLP:journals/is/CandelRM22} and its extensions, such as the \term{Orion} language~\citep{DBLP:conf/er/ChillonRM21a, 10.1109/TKDE.2024.3362273} for evolution and \term{SkiQL}~\citep{skiql} for schema querying. Their main difference from our framework is the level of unification they choose. U-schema primarily unifies data models at the \emph{logical} rather than the \emph{conceptual} level. This leads either to an inability to tailor the representation to the specific features of each data model (if we use a single logical schema across multiple databases) or to redundancy and a loss of semantics (if we use multiple disconnected logical schemas). Our approach keeps a platform-independent conceptual schema and connects it to specialized logical representations through explicit mappings. This separation gives us more freedom to tailor each logical schema to the capabilities of a concrete database system while still preserving one shared conceptual view.
 
-A second difference lies in the querying capabilities. SkiQL is a \emph{schema} query language, meaning that it can query only the structure of the data, not its content. This is a very important distinction, as our focus is the opposite---we query only the contents of the data, not its structure. However, this is not a limitation of our approach, as we can still obtain the structure either from our internal model or from the data (i.e., by inference).
+A second difference lies in the querying capabilities. SkiQL is a \emph{schema} query language, meaning that it can query only the structure of the data, not its content. This is a very important distinction, as our focus is the opposite---we query only the contents of the data, not its structure. However, this is not a limitation of our approach, as we can still obtain the structure from either our internal model or the data (i.e., by inference).
 
 There is also a more theoretical category-theoretic approach to heterogeneous data management~\citep{DBLP:journals/corr/abs-2201-04905}. A recently published version~\citep{lu2025part1, lu2025part2} is much more rigorous and comprehensive while also exploring querying multi-model data. It introduces categorical algebra and calculus as an extension of relational algebra and calculus via multi-model predicates. These works provide valuable formal foundations for representing multiple models and reasoning about transformations between them. Compared with our work, however, they focus more on the formal apparatus itself than on an integrated toolset for modeling, querying, schema inference, and evolution over practical multi-model systems.
 
