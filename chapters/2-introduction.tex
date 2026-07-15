@@ -72,7 +72,7 @@ Morphisms (representing projections between types) are displayed as arrows. For 
 
 \begin{figure}[ht]
     \centering
-    \includegraphics[width=\textwidth]{img/commentary-schema_category.drawio.pdf}
+    \includegraphics[width=\textwidth]{img/commentary-schema_category.pdf}
     \caption{Schema category from \Cref{ex:schema-category}, modeling the data from \Cref{fig:mm-data} on the conceptual level.}
     \label{fig:schema-category}
 \end{figure}
@@ -100,7 +100,7 @@ Because the schema category of a logical schema is always a tree, we can express
 
 \begin{figure}[ht]
     \centering
-    \includegraphics[width=\textwidth]{img/commentary-mapping.drawio.pdf}
+    \includegraphics[width=\textwidth]{img/commentary-mapping.pdf}
     \caption{A mapping between a logical schema for the wide-column database from \Cref{fig:mm-data} and the conceptual schema from \Cref{fig:schema-category}. Complex types \object{Friend} and \object{Attributes} are omitted for simplicity.}
     \label{fig:mapping}
 \end{figure}
@@ -114,7 +114,7 @@ Note that the \object{Attributes} complex type is represented by the \object{att
 
 \begin{figure}[ht]
     \centering
-    \includegraphics[width=\textwidth]{img/commentary-mapping_other.drawio.pdf}
+    \includegraphics[width=\textwidth]{img/commentary-mapping_other.pdf}
     \caption{Logical schemas for the relational, document, and graph databases from \Cref{fig:mm-data}.}
     \label{fig:mapping-other}
 \end{figure}
@@ -157,7 +157,7 @@ In the example, the \code{WHERE} pattern is matched to the logical schema of the
 
 \begin{figure}[ht]
     \centering
-    \includegraphics[width=\textwidth]{img/commentary-query_single.drawio.pdf}
+    \includegraphics[width=\textwidth]{img/commentary-query_single.pdf}
     \caption{A \acrshort{mmql} query from \Cref{ex:querying-single} and its translation to the MongoDB query language~\citep{MQL}.}
     \label{fig:query-single}
 \end{figure}
@@ -171,7 +171,7 @@ This time, we need \code{FILTER} and \code{ORDER BY} clauses to filter and order
 
 \begin{figure}[ht]
     \centering
-    \includegraphics[width=\textwidth]{img/commentary-query_multi.drawio.pdf}
+    \includegraphics[width=\textwidth]{img/commentary-query_multi.pdf}
     \caption{A \acrshort{mmql} query from \Cref{ex:querying-multi} and its translation to \acrshort{sql} for a relational and a wide-column database.}
     \label{fig:query-multi}
 \end{figure}
@@ -202,7 +202,7 @@ The overall architecture of the system is shown in \Cref{fig:architecture}. Ther
 
 \begin{figure}[ht]
     \centering
-    \includegraphics[width=\textwidth]{img/commentary-architecture.drawio.pdf}
+    \includegraphics[width=\textwidth]{img/commentary-architecture.pdf}
     \caption{Architecture of the MM-cat framework, showing the main tools and their interactions.}
     \label{fig:architecture}
 \end{figure}

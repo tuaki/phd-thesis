@@ -38,7 +38,7 @@ The latter concerns only changes in the query \emph{workload}, not in the \acrsh
 
 \begin{figure}[ht]
     \centering
-    \includegraphics[width=\textwidth]{img/commentary-evolution_hierarchy.drawio.pdf}
+    \includegraphics[width=\textwidth]{img/commentary-evolution_hierarchy.pdf}
     \caption{Hierarchy of components for evolution management. All changes are mediated by atomic operations (\acrshort{smo}, \acrshort{ddl}, \acrshort{dml}), which are propagated downward. Direct changes originating outside the system (i.e., data, query workloads) are observed and propagated upward by inferring the corresponding atomic operations.}
     \label{fig:evolution-hierarchy}
 \end{figure}
@@ -72,14 +72,14 @@ Although \object{Review} is used in the \acrshort{mmql} query from \Cref{fig:que
 
 \begin{figure}[ht]
     \centering
-    \includegraphics[width=\textwidth]{img/commentary-evolution_add.drawio.pdf}
+    \includegraphics[width=\textwidth]{img/commentary-evolution_add.pdf}
     \caption{Schema from \Cref{fig:schema-category} is extended via the \code{createProperty} operation. The change is propagated to the logical schema.}
     \label{fig:evolution-add}
 \end{figure}
 
 \begin{figure}[ht]
     \centering
-    \includegraphics[width=\textwidth]{img/commentary-query_propagation_multi.drawio.pdf}
+    \includegraphics[width=\textwidth]{img/commentary-query_propagation_multi.pdf}
     \caption{The \acrshort{mmql} query from \Cref{fig:query-multi} is manually updated to use the new \object{deletedAt} property added in \Cref{fig:evolution-add}.}
     \label{fig:query-propagation-multi}
 \end{figure}
@@ -93,14 +93,14 @@ After that, the old \object{Attributes} complex type is deleted. The logical sch
 
 \begin{figure}[ht]  
     \centering
-    \includegraphics[width=\textwidth]{img/commentary-evolution_map.drawio.pdf}
+    \includegraphics[width=\textwidth]{img/commentary-evolution_map.pdf}
     \caption{Schema from \Cref{fig:schema-category} is transformed via the \code{asMap} operation. The change is propagated to the logical schema.}
     \label{fig:evolution-map}
 \end{figure}
 
 \begin{figure}[ht]
     \centering
-    \includegraphics[width=\textwidth]{img/commentary-query_propagation_single.drawio.pdf}
+    \includegraphics[width=\textwidth]{img/commentary-query_propagation_single.pdf}
     \caption{The \acrshort{mmql} query from \Cref{fig:query-single} is automatically fixed so that it uses the new \object{Attribute} map created in \Cref{fig:evolution-map}.}
     \label{fig:query-propagation-single}
 \end{figure}
