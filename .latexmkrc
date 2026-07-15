@@ -13,4 +13,4 @@ ensure_path('TEXINPUTS', 'tex//:');
 # Let's just fix that manually. Be sure to include all the nested chapters etc. in the script:
 system("./setup.sh $aux_dir");
 
-@default_files = ('thesis.tex');
+@default_files = ('thesis.tex', 'abstract.tex', 'abstract-cs.tex');

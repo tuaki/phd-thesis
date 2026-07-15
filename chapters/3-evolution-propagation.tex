@@ -1,10 +1,9 @@
 \section{Evolution Management}
 \label{sec:evolution-management}
+\defineQuestionPrefix{ep}{E}
 
 Everything is subject to change, and multi-model data is no exception. Changes can occur in any part of the system, such as the conceptual or logical schema, the data itself, or the queries. \term{Evolution management} involves detecting these changes, formally describing them, and propagating them to all affected components to maintain the system's consistency and correctness. The %last part, 
 \term{change propagation} is especially challenging in a multi-model environment, where component relationships can be complex, and changes can have far-reaching consequences. Based on the related work (\Cref{sec:evolution-related-work}), we identified the following research challenges:
-
-\defineQuestionPrefix{ep}{E}
 
 \question{ep}{smos}{Model-agnostic evolution}{Changes in a multi-model system should be described and propagated in a way that is independent of the underlying data models, yet still precise enough to preserve consistency and correctness. Existing systems usually handle evolution separately for each supported model or for a narrow family of models. In contrast, a genuinely multi-model solution needs a shared conceptual view in which analogous changes can be treated uniformly despite differences in structure, constraints, and redundancy patterns across the participating models.}
 
@@ -164,4 +163,4 @@ Another contribution is the extension of our evolution-management approach to qu
 Finally, we validated the proposed ideas with a proof-of-concept implementation of the tools MM-evocat (\paperRef{cikm_2022}) and MM-evoque (\paperRef{edbt_2024}). The implementation and experimental evaluation demonstrated that the evolution process can be handled systematically, reducing manual, error-prone intervention when propagating changes across schemas, mappings, data, and queries. The experiments then compared the efficiency of the considered synchronization strategies and provided initial evidence of the approach's practical feasibility.
 
 \contribution{Dependency-guided Adaptation}
-Another, more focused contribution is FDepHunter (\paperRef{vldb_2025_fdephunter}), which strengthens the learning-based component of our approach by providing more accurate information about functional dependencies in real-world data. Although this is only a partial solution, it fits the broader evolution framework naturally---such dependencies provide exactly the kind of semantic insight needed for ambiguous query synchronization tasks and other situations where purely rule-based propagation is no longer sufficient. In this sense, FDepHunter is both a standalone tool for dependency discovery, and a supporting component that allows the system to make informed adaptation decisions.
+Another, more focused contribution is FDepHunter (\paperRef{vldb_2025_fdephunter}), which strengthens the learning-based component of our approach by providing more accurate information about functional dependencies in real-world data. Although this is only a partial solution, it fits the broader evolution framework naturally---such dependencies provide exactly the kind of semantic insight needed for ambiguous query synchronization tasks and other situations where purely rule-based propagation is no longer sufficient. In this sense, FDepHunter is both a standalone tool for functional dependency discovery, and a supporting component that improves the system's ability to make informed adaptation decisions.

@@ -1,5 +1,6 @@
 \section{Self-adaptation}
 \label{sec:self-adaptation}
+\defineQuestionPrefix{sa}{A}
 
 With the categorical representation of multi-model data and the capabilities for querying and evolution, we have a solid foundation for managing multi-model data. Now we can focus on optimizing it.
 
@@ -20,8 +21,6 @@ In that sense, \paperRef{dke_2026} serves primarily as motivation and inspiratio
 \subsection{Problem Formulation}
 
 We assume a fixed conceptual schema, a workload (a set of queries weighted by their frequencies), and a set of available database applications. Let us define a \term{configuration} as a set of logical schemas of these databases that, if materialized with the data, would allow the system to answer all queries in the workload. The goal is to find a configuration that minimizes the overall query latency. Based on this problem definition and the insights from the survey, we identified the following research challenges:
-
-\defineQuestionPrefix{sa}{A}
 
 \question{sa}{search-space}{Search space}{The space of possible configurations is, in principle, unbounded and, even after removing obviously equivalent or strictly worse alternatives, still grows exponentially with the size of the conceptual schema. The system, therefore, needs a deterministic finite representation that still captures the main structural choices relevant to performance, especially model assignment, embedding, and cross-model redundancy, together with their maintenance costs.}
 
@@ -95,8 +94,8 @@ A more detailed description of the algorithm can be found in \Cref{edbt_2026:sec
 \label{ex:aimm-search}
 \Cref{fig:aimm-search} shows a simplified version of the searched \acrshort{dag}. The left part shows the initial state from \Cref{fig:aimm-state} (node with label 0) and all its possible modifications of \object{User}. That is, we can either remove it from PostgreSQL (and get to state 1), or add it to ClickHouse (2) or MongoDB (3). Notably, we cannot remove it from Neo4j, as that would require removing \object{Friend} first, because it is represented there as a relationship. For the same reason, we cannot embed it into \object{Friend} in Neo4j. Next, nodes 4--6 are all the states reachable by two consecutive modifications of \object{User}. As we can see, we can get to them in multiple ways.
 
-The right part shows the first modification of \object{Friend}: we can add it to all databases where it is not already stored (states 7--9). However, we cannot remove it from Neo4j, because then it would not be stored in any database. We also cannot embed it into \object{User} in either Neo4j or PostgreSQL, because they do not support array values%
-\footnotei{Technically, PostgreSQL \emph{does} support arrays, but we use it here as an example of a generic relational database.}{,}
+The right part shows the first modification of \object{Friend}: we can add it to all databases where it is not already stored (states 7--9). However, we cannot remove it from Neo4j, because then it would not be stored in any database. We also cannot embed it into \object{User} in either Neo4j or PostgreSQL, because they do not support array values,%
+\footnote{Technically, PostgreSQL \emph{does} support arrays, but we use it here as an example of a generic relational database.}
 and one user can have multiple friends.
 \end{example}
 

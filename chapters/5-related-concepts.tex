@@ -1,5 +1,7 @@
 \section{Complementary Approaches to Multi-Model Data Management}
 \label{sec:related-concepts}
+\defineQuestionPrefix{be}{B}
+\defineQuestionPrefix{sf}{S}
 
 This section collects two complementary lines of work that support the practical side of the thesis. The first concerns evaluation---if our modeling, querying, and self-adaptation techniques are to be useful, we need datasets and workloads that are both realistic and sufficiently diverse. The second concerns a more lightweight approach to cross-model querying. While the main line of the thesis is based on explicit schemas and mappings, we also wanted to explore a more pragmatic route focused on rapid interoperability over already existing heterogeneous data.
 
@@ -18,8 +20,6 @@ Also, the presented datasets consist of only a few kinds (${\sim} 10$) and a sma
 \subsubsection{Research Challenges}
 
 Existing practice usually falls back to two imperfect strategies. The first is to generate a synthetic dataset, which is often not realistic enough and takes a lot of time to design and implement. The second is to start from an existing dataset and transform it into the required representation. This means writing a new custom transformation script for each dataset and target scenario. Such scripts are difficult to reuse, hard to validate semantically, and often too ad hoc to support reproducible benchmarking across many model combinations. Based on these limitations, we identified the following research challenges:
-
-\defineQuestionPrefix{be}{B}
 
 \question{be}{benchmark-coverage}{Benchmark coverage}{Evaluation of multi-model systems should cover a diverse set of relevant combinations of data models, embeddings, and redundancy patterns. For instance, the approaches discussed in this thesis require evaluation across many alternative logical representations of the same data on the conceptual level, often at much larger schema scales and with more complex cross-model interactions than current multi-model benchmarks provide.}
 
@@ -82,8 +82,6 @@ There are also systems that relax this restriction only partially. Apache AGE~\c
 \subsubsection{Research Challenges}
 
 Our goal was not to define yet another universal user language, but to preserve existing ones and connect them through a shared algebraic layer. We identified the following research challenges:
-
-\defineQuestionPrefix{sf}{S}
 
 \question{sf}{language-interoperability}{Language interoperability}{Different query languages are designed for different data models and therefore have different operators, semantics, and execution paradigms. In a heterogeneous environment, the system should allow users to combine established query languages without limitations on the top-level language, or on the nesting depth or direction.}
 

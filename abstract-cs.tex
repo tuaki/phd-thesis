@@ -4,8 +4,8 @@
 \input metadata.tex
 
 % Generate metadata in XMP format for use by the pdfx package
-\let\OrigThesisTitleXMP=\ThesisTitleXMP
-\def\ThesisTitleXMP{\OrigThesisTitleXMP\space (abstract)}
+\let\OrigThesisTitleCSXMP=\ThesisTitleCSXMP
+\def\ThesisTitleXMP{\OrigThesisTitleCSXMP\space (abstrakt)}
 \def\AbstractXMP{}
 \def\ThesisKeywordsXMP{}
 \input xmp.tex
@@ -31,7 +31,6 @@
 \begin{document}
 
 % By default, we create the abstract from the metadata
-\Abstract
+\AbstractCS
 
 \end{document}
-
