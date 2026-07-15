@@ -10,7 +10,7 @@
         <mxCell id="pSQdyxJYgTJmQ3UN0v3r-3" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="Conceptual schema" vertex="1">
           <mxGeometry height="30" width="120" x="130" y="27" as="geometry" />
         </mxCell>
-        <mxCell id="pSQdyxJYgTJmQ3UN0v3r-4" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="Logical models" vertex="1">
+        <mxCell id="pSQdyxJYgTJmQ3UN0v3r-4" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="Logical schema" vertex="1">
           <mxGeometry height="30" width="120" x="130" y="97" as="geometry" />
         </mxCell>
         <mxCell id="pSQdyxJYgTJmQ3UN0v3r-5" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="Data" vertex="1">
