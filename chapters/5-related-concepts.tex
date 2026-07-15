@@ -5,7 +5,7 @@ This section collects two complementary lines of work that support the practical
 
 \subsection{Benchmarking \& Evaluation}
 
-A novel approach can be interesting and theoretically sound; however, to be useful in practice, it must be evaluated on realistic datasets and workloads. In the context of multi-model data management, this is particularly challenging, as there are only few real-world multi-model datasets and queries.
+A novel approach can be interesting and theoretically sound; however, to be useful in practice, it must be evaluated on realistic datasets and workloads. In the context of multi-model data management, this is particularly challenging, as there are only a few real-world multi-model datasets and queries.
 
 \subsubsection{Related Work}
 
@@ -156,4 +156,4 @@ There is a proof-of-concept tool called TransforMMer, described in \paperRef{edb
 DortDB contributes a lightweight alternative for situations where explicit shared semantics would be too costly or limiting. Its main idea is to preserve established query languages (for now \acrshort{sql}, XQuery, and Cypher) and allow them to interoperate symmetrically, so that they can be nested into one another without a privileged top-level language (\questionRef{sf}{language-interoperability}). It is enabled by a unified algebra~\citep{jezek_2026} that serves as a common compilation target for mixed queries (\questionRef{sf}{unified-algebra}), allowing for seamless integration and comprehensive optimization.
 
 \contribution{Schema-free Querying}
-At the same time, DortDB keeps the setup intentionally schema-free. The required local structure is derived from the query itself, making heterogeneous querying possible even in dynamic and loosely integrated settings (\questionRef{sf}{schema-free}). The approach, together with a proof-of-concept prototype, is presented in \paperRef{vldb_2025_dortdb}. Within the thesis, it complements the main schema-centric line by offering a practical alternative for specific use cases, and by exploring what can already be achieved at the query-processing level before a full semantic model is available.
+At the same time, DortDB keeps the setup intentionally schema-free. The required local structure is derived from the query itself, enabling heterogeneous querying even in dynamic, loosely integrated settings (\questionRef{sf}{schema-free}). The approach, together with a proof-of-concept prototype, is presented in \paperRef{vldb_2025_dortdb}. Within the thesis, it complements the main schema-centric line by offering a practical alternative for specific use cases, and by exploring what can already be achieved at the query-processing level before a full semantic model is available.
