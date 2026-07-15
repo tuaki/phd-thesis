@@ -393,3 +393,11 @@
 
 \definecolor{xquery}{HTML}{82B366}
 \newcommand{\xquery}[1]{\textcolor{xquery}{\bfseries #1}}
+
+\newcounter{contribution}[section]
+\newcommand{\contribution}[1]{%
+  \refstepcounter{contribution}%
+  \paragraph{\arabic{contribution}}\emph{#1} \ %
+}
+  % \par\medskip
+  % \noindent\textbf{\arabic{contribution}} \ \emph{#1} \ #2\par\medskip

@@ -144,14 +144,20 @@ Our approach combines elements that these lines of work usually keep separate. I
 
 \subsection{Contributions}
 
+\contribution{Index-selection Survey}
 We conducted a survey of index selection in heterogeneous database systems (\paperRef{dke_2026}). This survey compared indexing strategies across relational, graph, key-value, document, wide-column, multi-model, and multi-modal systems, assessed how existing index-selection methods transfer beyond the relational setting, and identified the main obstacles to such transfer. In particular, it showed that current approaches depend heavily on cost-estimation capabilities and usually assume that the logical representation is already fixed, which helped us delimit the scope of existing physical-design methods and motivated the search for a higher-level optimization approach.
 
+\contribution{Problem Formulation}
 We formulated self-adaptation as a workload-aware optimization problem over the logical schemas and their mappings to a fixed conceptual schema. Instead of treating different data models resp. databases individually, our approach represents alternative configurations of the same conceptual schema in a common search space. This makes it possible to systematically compare heterogeneous designs and reason about adaptation at the level of the whole multi-model system rather than one store at a time (\paperRef{edbt_2026}).
 
+\contribution{Finite Configuration Space}
 The categorical framework allowed us to define a state representation that captures the essential aspects of a configuration, including model assignment, embedding, and cross-model redundancy. This representation is both expressive enough to cover the most important design choices and compact enough to keep the search space finite (\questionRef{sa}{search-space}). It also provides a principled way to migrate data between configurations.
 
+\contribution{MCTS-based Optimization}
 On top of this representation, we introduced an automated optimization process that derives configuration changes from weighted workloads and explores them using \acrshort{mcts}. This algorithm enables us to systematically explore the search space, favors promising regions, and reduces the risk of being trapped in local maxima (\questionRef{sa}{search-strategy}).
 
+\contribution{Learned Cost Estimation}
 Because evaluating every configuration directly on the databases would be too expensive, we complement the search with learned performance estimation. In particular, we extend a plan-structured neural predictor~\citep{10.14778/3342263.3342646} for non-relational databases, so that configurations can be evaluated solely from the query plans of the workload queries (\questionRef{sa}{latency-estimation}). However, a method that would not require full materialization to obtain query plans remains future work. A similar approach is used to estimate cross-model queries (\questionRef{sa}{cross-model}) and the cost of migrating to and maintaining a configuration (\questionRef{sa}{migration-cost}).
 
+\contribution{Prototype Validation}
 Lastly, we implemented these ideas in a proof-of-concept prototype MM-mapsearch that integrates workload analysis, generation of schema variants, neural latency prediction, and an interactive interface for inspecting the recommended alternatives. Together, these results provide an initial practical foundation for automatic adaptation of multi-model data layouts under evolving workloads.

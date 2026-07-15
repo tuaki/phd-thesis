@@ -148,18 +148,20 @@ Overall, the existing literature is strong in isolated parts of the problem---so
 
 \subsection{Contributions}
 
+\contribution{Unified Evolution Model}
 We proposed a novel approach to evolution management in multi-model data management systems. It is based on a unified categorical representation of multi-model data, which allows us to include all supported data models and their combinations within a single framework. Thanks to the shared abstraction of logical models, we can express analogous modifications uniformly, rather than redefining them separately for each model, thereby improving both the expressiveness and the compactness of the overall operation set (\paperRef{rcis_2025}).
 
+\contribution{Atomic Propagation Operations}
 We defined a comprehensive set of atomic operations for modifying the conceptual and logical schemas, data, and queries (\questionRef{ep}{smos}). These operations can be propagated across all components of the system systematically (ensuring consistency and correctness) and with varying levels of automation (reducing the manual work and expertise required from users) (\questionRef{ep}{evolution-automation}).
 
+\contribution{Higher-level Evolution Operations}
 Besides atomic operations, we also defined more user-friendly composite and complex operations (\questionRef{ep}{smo-intent}), which are reduced to atomic operations during propagation. They can be used to express common changes in a more natural way while still being propagated through the system consistently.
 
+\contribution{Query Synchronization}
 Another contribution is the extension of our evolution-management approach to query synchronization (\questionRef{ep}{query-propagation}). When schema changes propagate through the system, the corresponding queries must also be adapted to preserve their intended results whenever possible. We focused especially on situations with decreasing information capacity, where some information may be removed or become unavailable after the change. For these cases, we investigated several rewriting and synchronization strategies in the multi-model context and showed how they fit into the broader evolution process.
 
+\contribution{Prototype Validation}
 Finally, we validated the proposed ideas with a proof-of-concept implementation of the tools MM-evocat (\paperRef{cikm_2022}) and MM-evoque (\paperRef{edbt_2024}). The implementation and experimental evaluation demonstrated that a substantial portion of the evolution process can be handled systematically, reducing manual, error-prone intervention when propagating changes across schemas, mappings, data, and queries. The experiments then compared the efficiency of the considered synchronization strategies and provided initial evidence of the approach's practical feasibility.
 
-%\\
-
-Another, more focused contribution is FDepHunter (\paperRef{vldb_2025_fdephunter}), which strengthens the learning-based component of our approach by providing more accurate information about functional dependencies in real-world data. Although this is only a partial solution, it fits the broader evolution framework naturally---such dependencies provide exactly the kind of semantic insight needed for ambiguous query synchronization tasks and other situations where purely rule-based propagation is no longer sufficient. In this sense, FDepHunter is 
-%not a standalone side result, but 
-a supporting component that improves the system's ability to make informed adaptation decisions.
+\contribution{Dependency-guided Adaptation}
+Another, more focused contribution is FDepHunter (\paperRef{vldb_2025_fdephunter}), which strengthens the learning-based component of our approach by providing more accurate information about functional dependencies in real-world data. Although this is only a partial solution, it fits the broader evolution framework naturally---such dependencies provide exactly the kind of semantic insight needed for ambiguous query synchronization tasks and other situations where purely rule-based propagation is no longer sufficient. In this sense, FDepHunter is both a standalone tool for dependency discovery, and a supporting component that allows the system to make informed adaptation decisions.
