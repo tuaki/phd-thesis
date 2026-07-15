@@ -107,7 +107,7 @@ The right part shows the first modification of \object{Friend}: we can add it to
 
 Similarly to the search strategy, we treat latency estimation as a black-box function that can be implemented in various ways. So far, we have tried two approaches: a plan-structured neural network (see \Cref{edbt_2026:sec:neural-network}) and a random decision tree.
 
-Both approaches estimate query latency from the query plan, which must be obtained from the database. Although current databases still require the configuration to be materialized in order to obtain the query plan, there is no fundamental reason why this should be the case. In general, databases generate query plans based on the schema and the statistics of the data. This information can be obtained once (e.g., from the database where the data is currently stored) and then used as input to the planning engines of other databases.
+Both approaches estimate query latency from the query plan, which must be obtained from the database. Although current databases still require the configuration to be materialized in order to obtain the query plan, there is no fundamental reason why this should be the case. In general, databases generate query plans based on the schema and data statistics. This information can be obtained once (e.g., from the database where the data is currently stored) and then used as input to the planning engines of other databases.
 
 Although this is still very much an open research question, we are optimistic that it can be solved in the near future, which would make the search process much more efficient. Until then, we can use explicit materialization to train, test, and validate the latency estimation models.\\
 
