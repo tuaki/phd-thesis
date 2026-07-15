@@ -6,48 +6,55 @@
 % Generate metadata in XMP format for use by the pdfx package
 \input tex/xmp.tex
 
-% \iffalse
-\iftrue
+% Choose one of: simplex, duplex, centered-duplex
+\def\thesislayoutmode{centered-duplex}
+
+\def\thesislayoutsimplex{simplex}
+\def\thesislayoutduplex{duplex}
+\def\thesislayoutcenteredduplex{centered-duplex}
+
+\ifx\thesislayoutmode\thesislayoutsimplex
 
 %% Settings for single-side (simplex) printing
 % Margins: left 40mm, right 25mm, top and bottom 25mm
 % (but beware, LaTeX adds 1in=25.4mm implicitly)
 \documentclass[12pt,a4paper]{report}
-\setlength\textwidth{145mm}
-\setlength\textheight{247mm}
 \setlength\oddsidemargin{14.6mm}
 \setlength\evensidemargin{14.6mm}
-\setlength\topmargin{0mm}
-\setlength\headsep{0mm}
-\setlength\headheight{0mm}
 % \openright makes the following text appear on a right-hand page
 \let\openright=\clearpage
 
-\else
+\else\ifx\thesislayoutmode\thesislayoutduplex
 
 %% Settings for two-sided (duplex) printing
 \documentclass[12pt,a4paper,twoside,openright]{report}
-\setlength\textwidth{145mm}
-\setlength\textheight{247mm}
 \setlength\oddsidemargin{14.6mm}
 \setlength\evensidemargin{0mm}
-\setlength\topmargin{0mm}
-\setlength\headsep{0mm}
-\setlength\headheight{0mm}
 \let\openright=\cleardoublepage
 
+\else
+
+%% Settings for centered two-sided layout
+% Same pagination behavior as duplex, but with symmetric margins.
+\documentclass[12pt,a4paper,twoside,openright]{report}
+\setlength\oddsidemargin{7.1mm}
+\setlength\evensidemargin{7.1mm}
+\let\openright=\cleardoublepage
+
+\fi
 \fi
 
 %% If the thesis has no printed version, symmetric margins look better
 % \documentclass[12pt,a4paper]{report}
-% \setlength\textwidth{145mm}
-% \setlength\textheight{247mm}
 % \setlength\oddsidemargin{7.1mm}
 % \setlength\evensidemargin{7.1mm}
-% \setlength\topmargin{0mm}
-% \setlength\headsep{0mm}
-% \setlength\headheight{0mm}
 % \let\openright=\clearpage
+
+\setlength\textwidth{145mm}
+\setlength\textheight{247mm}
+\setlength\topmargin{0mm}
+\setlength\headsep{0mm}
+\setlength\headheight{0mm}
 
 %% Generate PDF/A-2u
 \usepackage[a-2u]{pdfx}
