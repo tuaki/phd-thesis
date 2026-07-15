@@ -139,11 +139,7 @@ DortDB should not be seen as a replacement for the categorical framework, but ra
 
 This makes DortDB especially relevant in scenarios where a fully modeled solution would be too costly or too premature. It can be understood as a universal mediator layer for rapid integration of existing sources, prototyping of cross-model workloads, or interactive analysis over data whose structure is still evolving. At the same time, it broadens the thesis by exploring a more pragmatic branch of multi-model querying, focused on language interoperability rather than on explicit shared semantics. Once the data and workloads stabilize, the schema-first categorical approach offers stronger guarantees and deeper automation. Conversely, DortDB shows that there is practical value in supporting heterogeneous querying even before such a full semantic model is available.
 
-<<<<<<< Updated upstream
-These ideas were also validated in a proof-of-concept prototype. For now, the system is intentionally in-memory and read-only, allowing us to focus on core interoperability and optimization problems without being distracted by storage or transaction management. However, it already supports the whole unified algebra, thus covering a large portion of the most commonly used operators from \acrshort{sql}, XQuery, and Cypher. We have submitted a journal paper that provides a full description of the unified algebra and its optimizations, along with a comprehensive performance evaluation.
-=======
 These ideas were also validated, as well as evaluated in terms of performance~\citep{jezek_2026}, in a proof-of-concept prototype. For now, the system is intentionally in-memory and read-only, allowing us to focus on core interoperability and optimization problems without being distracted by storage or transaction management. However, it already supports the whole unified algebra, thus covering a large portion of the most commonly used operators from \acrshort{sql}, XQuery, and Cypher.
->>>>>>> Stashed changes
 
 \subsection{Contributions}
 
