@@ -23,7 +23,7 @@ We assume a fixed conceptual schema, a workload (a set of queries weighted by th
 
 \defineQuestionPrefix{sa}{A}
 
-\question{sa}{search-space}{Search space}{The unrestricted design space of possible configurations is extremely large. Even after removing obviously equivalent or strictly worse alternatives, it still grows exponentially with the size of the conceptual schema. The system, therefore, needs a deterministic finite representation that still captures the main structural choices relevant to performance, especially model assignment, embedding, and cross-model redundancy, together with their maintenance costs.}
+\question{sa}{search-space}{Search space}{The space of possible configurations is, in principle, unbounded and, even after removing obviously equivalent or strictly worse alternatives, still grows exponentially with the size of the conceptual schema. The system, therefore, needs a deterministic finite representation that still captures the main structural choices relevant to performance, especially model assignment, embedding, and cross-model redundancy, together with their maintenance costs.}
 
 \question{sa}{search-strategy}{Search strategy}{Even in a finite state space, the number of configurations grows too quickly for exhaustive evaluation, so the system must explore alternatives systematically while balancing exploitation and exploration. This is particularly important in multi-model settings, where small changes often result in cross-model queries. Those are generally more expensive than single-model ones, thus creating local maxima that can be escaped only by larger structural changes.}
 
