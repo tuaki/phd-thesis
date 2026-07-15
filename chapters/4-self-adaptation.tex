@@ -25,7 +25,7 @@ We assume a fixed conceptual schema, a workload (a set of queries weighted by th
 
 \question{sa}{search-space}{Search space}{The space of possible configurations is, in principle, unbounded and, even after removing obviously equivalent or strictly worse alternatives, still grows exponentially with the size of the conceptual schema. The system, therefore, needs a deterministic finite representation that still captures the main structural choices relevant to performance, especially model assignment, embedding, and cross-model redundancy, together with their maintenance costs.}
 
-\question{sa}{search-strategy}{Search strategy}{Even in a finite state space, the number of configurations grows too quickly for exhaustive evaluation, so the system must explore alternatives systematically while balancing exploitation and exploration. This is particularly important in multi-model settings, where small changes often result in cross-model queries. Those are generally more expensive than single-model ones, thus creating local maxima that can be escaped only by larger structural changes.}
+\question{sa}{search-strategy}{Search strategy}{Even in a finite state space, the number of configurations grows too quickly for exhaustive evaluation, so the system must explore alternatives systematically while balancing exploitation and exploration. This is particularly important in multi-model settings, where small changes may temporarily place jointly queried kinds in different databases, resulting in cross-model queries. Those are generally more expensive than single-model ones, thus creating local maxima that can be escaped only by larger structural changes.}
 
 \question{sa}{latency-estimation}{Latency estimation}{To evaluate a configuration, the system has to at least estimate the latency of the queries in the workload. A naive solution (executing the queries) is too expensive. A much more efficient approach is required to make the search process feasible. Specifically, this solution cannot require the actual materialization of the configuration, as that, by itself, is too expensive.}
 
@@ -61,8 +61,8 @@ In our approach, we consider complex types, not simple types, to be the most bas
 
 This representation of a state has one major issue: it does not support cross-model redundancy, so if kinds used in a query are stored across multiple databases, the query must be cross-model, resulting in a significant performance penalty. Such a penalty is likely to outweigh the benefits of using multiple databases, so the search process would lead to single-database configurations. To address this issue, we have replaced the previous two vectors with a \term{state matrix}. Its columns correspond to the complex types, while its rows correspond to the databases. The values are one of:
 \begin{itemize}
-    \item \code{0} (i.\,e., \code{false}), if the kind (for the given complex type) is not stored in this database at all,
-    \item \code{1} (i.\,e., \code{true}), if the kind is stored in this database, but not embedded into any other kind, and
+    \item \code{0} (i.e., \code{false}), if the kind (for the given complex type) is not stored in this database at all,
+    \item \code{1} (i.e., \code{true}), if the kind is stored in this database, but not embedded into any other kind, and
     \item the identifier of another kind, if the kind is stored in this database and embedded into that other kind.
 \end{itemize}
 This allows us to represent both cross-model redundancy and embedding while keeping the state space finite. The number of possible states is further reduced by a handful of constraints, such as that a kind cannot be embedded into itself, or that all complex types must be represented by at least one kind. The resulting state space is still large, but it is manageable and can be explored systematically.
