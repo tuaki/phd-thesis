@@ -3,7 +3,9 @@
 
 With the categorical representation of multi-model data and the capabilities for querying and evolution, we have a solid foundation for managing multi-model data. Now we can focus on optimizing it.
 
-Before developing our own search-based solution, we first studied a narrower but closely related workload-aware optimization problem at the physical level, namely index selection. In \paperRef{dke_2026}, we surveyed state-of-the-art index-selection methods, compared how major database systems implement and use indexes, and evaluated how far existing approaches transfer from relational systems to \acrshort{nosql}, multi-model, and multi-modal\footnote{Multi-modal systems combine different \emph{modalities} (e.g., text, image, video, and geospatial data).} settings. This gave us a concrete picture of what current automated tuning methods can and cannot do once the logical representation is already fixed.
+Before developing our own search-based solution, we first studied a narrower but closely related workload-aware optimization problem at the physical level, namely index selection. In \paperRef{dke_2026}, we surveyed state-of-the-art index-selection methods, compared how major database systems implement and use indexes, and evaluated how far existing approaches transfer from relational systems to \acrshort{nosql}, multi-model, and multi-modal%
+\footnote{Multi-modal systems combine different \emph{modalities} (e.g., text, image, video, and geospatial data).}
+settings. This gave us a concrete picture of what current automated tuning methods can and cannot do once the logical representation is already fixed.
 
 \subsection{Index Optimization}
 
@@ -13,7 +15,7 @@ The main conclusion was not that existing methods can be transferred directly, b
 
 Two observations from that paper were especially important for the present chapter. First, cost estimation is the central technical bottleneck. Existing index-selection methods depend heavily on the ability to estimate the effects of many alternative configurations cheaply, without fully deploying them. Second, physical tuning alone is not enough for our setting. The survey assumes that the logical representation and database placement are already given, whereas in a multi-model environment, these choices may themselves dominate performance. This led us to ask whether the optimization problem should be formulated at a higher level of abstraction, over alternative logical representations of the same conceptual schema.
 
-In that sense, \paperRef{dke_2026} serves primarily as motivation and inspiration. It showed us both the value of workload-aware automated optimization and the limits of staying at the purely physical level. Therefore, we decided that, instead of selecting indexes for a single fixed representation, we should search over alternative mappings, embeddings, and redundancies of the same conceptual schema across multiple databases. The richer physical-design space identified in \questionRef{sa}{richer-state-space} remains important future work, but it is not the main point of our optimization approach.
+In that sense, \paperRef{dke_2026} serves primarily as motivation and inspiration. It showed us both the value of workload-aware automated optimization and the limits of staying purely at the physical level. Therefore, we decided that, instead of selecting indexes for a single fixed representation, we should search over alternative mappings, embeddings, and redundancies of the same conceptual schema across multiple databases. The richer physical-design space identified in \questionRef{sa}{richer-state-space} remains important future work, but it is not the main point of our optimization approach.
 
 \subsection{Problem Formulation}
 
@@ -33,7 +35,7 @@ We assume a fixed conceptual schema, a workload (a set of queries weighted by th
     
 % \question{sa}{adaptation-timing}{Adaptation timing}{After a better configuration is identified and the cost of migration is estimated, it is still unclear when the adaptation should be executed. Immediate adaptation may react quickly to workload changes but incur excessive migration overhead, while delayed adaptation may miss important optimization opportunities. The system should therefore decide when the expected long-term benefit outweighs the large one-time migration cost.}
 
-\question{sa}{workload-prediction}{Workload prediction}{In practice, workloads are not static. They evolve over time and may contain both periodic trends and one-off anomalies. A truly autonomous system should reason not only about the present workload but also about its likely future development, so it can avoid overfitting to transient patterns and prepare for upcoming changes.}
+\question{sa}{workload-prediction}{Workload prediction}{In practice, workloads are not static. They evolve over time and may contain both periodic trends and one-off anomalies. A truly autonomous system should reason not only about the present workload but also about its likely future development, so it can avoid overfitting to transient patterns and prepare for upcoming changes in advance.}
 
 \question{sa}{richer-state-space}{Richer search space}{Database applications offer a wide range of physical design choices beyond the logical model, such as indexes, materialized views, partitioning schemes, replication strategies, knob tuning, etc. These choices are not currently covered by the categorical representation, but they can significantly impact query performance.}
 
@@ -93,7 +95,9 @@ A more detailed description of the algorithm can be found in \Cref{edbt_2026:sec
 \label{ex:aimm-search}
 \Cref{fig:aimm-search} shows a simplified version of the searched \acrshort{dag}. The left part shows the initial state from \Cref{fig:aimm-state} (node with label 0) and all its possible modifications of \object{User}. That is, we can either remove it from PostgreSQL (and get to state 1), or add it to ClickHouse (2) or MongoDB (3). Notably, we cannot remove it from Neo4j, as that would require removing \object{Friend} first, because it is represented there as a relationship. For the same reason, we cannot embed it into \object{Friend} in Neo4j. Next, nodes 4--6 are all the states reachable by two consecutive modifications of \object{User}. As we can see, we can get to them in multiple ways.
 
-The right part shows the first modification of \object{Friend}: we can add it to all databases where it is not already stored (states 7--9). However, we cannot remove it from Neo4j, because then it would not be stored in any database. We also cannot embed it into \object{User} in either Neo4j or PostgreSQL, because they do not support array values\footnotei{Technically, PostgreSQL \emph{does} support arrays, but we use it here as an example of a generic relational database.}{,} and one user can have multiple friends.
+The right part shows the first modification of \object{Friend}: we can add it to all databases where it is not already stored (states 7--9). However, we cannot remove it from Neo4j, because then it would not be stored in any database. We also cannot embed it into \object{User} in either Neo4j or PostgreSQL, because they do not support array values%
+\footnotei{Technically, PostgreSQL \emph{does} support arrays, but we use it here as an example of a generic relational database.}{,}
+and one user can have multiple friends.
 \end{example}
 
 \begin{figure}[ht]

@@ -8,7 +8,9 @@ These models offer distinct advantages for certain types of applications and wor
 
 \begin{example}
 \label{ex:mm-data}
-The \emph{Yelp Academic Dataset}\footnote{\url{https://www.kaggle.com/datasets/yelp-dataset/yelp-dataset}} consists of \acrshort{json} collections representing \emph{businesses} (e.g., restaurants), \emph{users} (who write \emph{reviews} and tips about the \emph{businesses}), and the reviews and tips themselves. It also includes a social network of \emph{friends}, as well as a set of \emph{check-ins} and \emph{photos} associated with the businesses.
+The \emph{Yelp Academic Dataset}%
+\footnote{\url{https://www.kaggle.com/datasets/yelp-dataset/yelp-dataset}}
+consists of \acrshort{json} collections representing \emph{businesses} (e.g., restaurants), \emph{users} (who write \emph{reviews} and tips about the \emph{businesses}), and the reviews and tips themselves. It also includes a social network of \emph{friends}, as well as a set of \emph{check-ins} and \emph{photos} associated with the businesses.
 
 For the rest of this thesis, we use a subset of this dataset, shown in \Cref{fig:mm-data}. Originally, the data was stored in a document model, but we transformed it into a multi-model representation. The \code{user} is a table in a relational model, the \code{business} is a collection in a document model, the \code{FRIEND} is a relationship in a graph model, and the \code{review} is a column family in a wide-column model. Crucially, the data from different models is linked via the same identifiers, allowing us to combine results from multiple queries.
 \end{example}
