@@ -23,7 +23,7 @@ At the same time, DortDB explored the limits of the overall research direction. 
 
 \subsubsection{Future Work}
 
-The remaining work follows directly from the open questions identified in the previous chapters. Some of these questions are only partially addressed by the current results, while the rest remain mostly open.
+The remaining work follows directly from the research challenges identified in the previous chapters. Some of these questions are only partially addressed by the current results, while the rest remain mostly open.
 
 \questionRef{ep}{data-propagation} -- Propagation to data is still incomplete. The current framework can preserve consistency by transforming data to the common representation of the new schema, but it does not yet provide a general way to perform the same changes in place through efficient sequences of \acrshort{ddl} and \acrshort{dml} statements. A major next step is therefore to synthesize database-level migration plans that keep the guarantees of the current approach while avoiding full rematerialization whenever possible. The general idea is to define a set of model-independent operations over data, compile the \acrshort{smo}s into a sequence of such operations, optimize it, and then translate it into a model-specific \acrshort{ddl} and \acrshort{dml} sequence.
 

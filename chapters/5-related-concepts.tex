@@ -15,9 +15,9 @@ Only a few benchmarks explicitly target multi-model systems. BigBench~\citep{10.
 
 Also, the presented datasets consist of only a few kinds (${\sim} 10$) and a small number of relatively simple queries (10--30). This makes it difficult to evaluate the approaches proposed in the previous sections---the state space of possible configurations for self-adaptation grows exponentially with the number of kinds, so we need to benchmark them on realistic schemas with substantially more kinds and structural variation than current multi-model benchmarks provide. Similarly, the query-optimization algorithms require complex cross-model queries to test both their effectiveness and efficiency. Moreover, each of these benchmarks provides only a single version of both the schema and the queries, which is not sufficient for evaluating evolution management.
 
-\subsubsection{Open Problems}
+\subsubsection{Research Challenges}
 
-Existing practice usually falls back to two imperfect strategies. The first is to generate a synthetic dataset, which is often not realistic enough and takes a lot of time to design and implement. The second is to start from an existing dataset and transform it into the required representation. This means writing a new custom transformation script for each dataset and target scenario. Such scripts are difficult to reuse, hard to validate semantically, and often too ad hoc to support reproducible benchmarking across many model combinations. Based on these limitations, we identified the following open problems:
+Existing practice usually falls back to two imperfect strategies. The first is to generate a synthetic dataset, which is often not realistic enough and takes a lot of time to design and implement. The second is to start from an existing dataset and transform it into the required representation. This means writing a new custom transformation script for each dataset and target scenario. Such scripts are difficult to reuse, hard to validate semantically, and often too ad hoc to support reproducible benchmarking across many model combinations. Based on these limitations, we identified the following research challenges:
 
 \defineQuestionPrefix{be}{B}
 
@@ -79,9 +79,9 @@ Existing approaches to multi-model querying usually follow one of two broad stra
 
 There are also systems that relax this restriction only partially. Apache AGE~\citep{web:apacheage,github:apacheage}, for example, embeds Cypher into PostgreSQL through the \texttt{cypher()} function, but only in the Cypher-to-SQL direction. Systems such as OrientDB~\citep{orientdb} or ArangoDB~\citep{arangodb} support several models as well, yet they do so mainly through proprietary syntax or a system-defined language. BigDAWG~\citep{journals/sigmod/DugganESBHKMMMZ15} comes closer to language plurality by allowing different query islands, but it still separates them into predefined access modes rather than supporting unrestricted recursive combinations inside one query.
 
-\subsubsection{Open Problems}
+\subsubsection{Research Challenges}
 
-Our goal was not to define yet another universal user language, but to preserve existing ones and connect them through a shared algebraic layer. We identified the following open problems:
+Our goal was not to define yet another universal user language, but to preserve existing ones and connect them through a shared algebraic layer. We identified the following research challenges:
 
 \defineQuestionPrefix{sf}{S}
 

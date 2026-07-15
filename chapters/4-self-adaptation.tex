@@ -19,7 +19,7 @@ In that sense, \paperRef{dke_2026} serves primarily as motivation and inspiratio
 
 \subsection{Problem Formulation}
 
-We assume a fixed conceptual schema, a workload (a set of queries weighted by their frequencies), and a set of available database applications. Let us define a \term{configuration} as a set of logical schemas of these databases that, if materialized with the data, would allow the system to answer all queries in the workload. The goal is to find a configuration that minimizes the overall query latency. Based on this problem definition and the insights from the survey, we identified the following open problems:
+We assume a fixed conceptual schema, a workload (a set of queries weighted by their frequencies), and a set of available database applications. Let us define a \term{configuration} as a set of logical schemas of these databases that, if materialized with the data, would allow the system to answer all queries in the workload. The goal is to find a configuration that minimizes the overall query latency. Based on this problem definition and the insights from the survey, we identified the following research challenges:
 
 \defineQuestionPrefix{sa}{A}
 
@@ -41,7 +41,7 @@ We assume a fixed conceptual schema, a workload (a set of queries weighted by th
 
 \subsection{MM-mapsearch}
 
-Motivated by the open problems above and by the limitations revealed by the index-selection survey, we propose the following principles:
+Motivated by the research challenges above and by the limitations revealed by the index-selection survey, we propose the following principles:
 \begin{itemize}
     \item A \term{state} is an element of a finite discrete \term{state space} represented by a matrix. It maps the conceptual schema and the databases to a configuration. The state space is then a graph of all possible states connected by the available transitions.
     \item The state space is explored using an algorithm that evaluates the states both directly (by estimating the latency of the corresponding configurations) and indirectly (by the values of neighboring states).
