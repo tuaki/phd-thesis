@@ -1,5 +1,5 @@
 $silent = 1;
-$aux_dir = 'tmp';
+$aux_dir = 'aux';
 $pdf_mode = 4;
 
 # If your TeX environment does not provide working LuaLaTeX, uncomment this:

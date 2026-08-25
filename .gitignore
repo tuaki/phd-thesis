@@ -2,7 +2,7 @@
 
 notes/
 
-tmp/
+aux/
 /*.pdf
 /*.aux
 /*.bcf
@@ -15,3 +15,5 @@ tmp/
 /*.xmpdata
 /*.xmpi
 /*.synctex.gz
+
+*.drawio.bkp
