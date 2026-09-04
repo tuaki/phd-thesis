@@ -1,0 +1,22 @@
+%% Generate PDF/A-2u
+\usepackage[a-2u]{pdfx}
+
+%% Prefer Latin Modern fonts
+\usepackage{lmodern}
+% If we are not using LuaTeX, we need to set up character encoding:
+\usepackage{iftex}
+\ifpdftex
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{textcomp}
+\fi
+
+%% Further useful packages (included in most LaTeX distributions)
+\usepackage{amsmath}        % extensions for typesetting of math
+\usepackage{amsfonts}       % math fonts
+\usepackage{amsthm}         % theorems, definitions, etc.
+
+% Split URLs at hyphens (and maybe other characters?) to avoid overfull lines.
+% \PassOptionsToPackage{hyphens}{url}
+\usepackage{xurl}           % Better line breaking of URLs. 
+

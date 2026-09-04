@@ -1,0 +1,62 @@
+{\InfoPageFont
+
+\vtop to 0.5\vsize{
+\setlength\parindent{0mm}
+\setlength\parskip{5mm}
+
+Title:
+\ThesisTitle
+
+Author:
+\ThesisAuthor
+
+\DeptType:
+\Department
+
+Supervisor:
+\Supervisor, \SupervisorsDepartment
+
+Advisors:
+\AdvisorA, \AdvisorADepartment, and \AdvisorB, \AdvisorBDepartment
+
+Abstract:
+\Abstract
+
+Keywords:
+{\def\sep{\unskip, }\ThesisKeywords}
+
+\vfil
+}
+
+% In Czech study programmes, it is mandatory to include Czech meta-data:
+
+\ifx\StudyLanguage\LangCS
+
+\vtop to 0.49\vsize{
+\setlength\parindent{0mm}
+\setlength\parskip{5mm}
+
+Název práce:
+\ThesisTitleCS
+
+Autor:
+\ThesisAuthor
+
+\DeptTypeCS:
+\DepartmentCS
+
+Vedoucí \ThesisTypeCSGenitive{} práce:
+\Supervisor, \SupervisorsDepartmentCS
+
+Abstrakt:
+\AbstractCS
+
+Klíčová slova:
+{\def\sep{\unskip, }\ThesisKeywordsCS}
+
+\vfil
+}
+
+\fi
+
+}

@@ -1,6 +1,46 @@
 %%% This file contains definitions of various useful macros and environments %%%
 %%% Please add more macros here instead of cluttering other files with them. %%%
 
+\usepackage[HTML]{xcolor}   % typesetting in color
+\usepackage{cleveref}       % better references
+
+% The hyperref package for clickable links in PDF and also for storing
+% metadata to PDF (including the table of contents).
+% Most settings are pre-set by the pdfx package.
+\hypersetup{
+    unicode,
+    breaklinks,
+    colorlinks,
+    linkcolor=blue,
+    citecolor=blue!60!white,
+    urlcolor=blue,
+}
+
+% Set up formatting of bibliography (references to literature)
+% Details can be adjusted in macros.tex.
+%
+% BEWARE: Different fields of research and different university departments
+% have their own customs regarding bibliography. Consult the bibliography
+% format with your supervisor.
+%
+% The basic format according to the ISO 690 standard with numbered references
+% \usepackage[natbib,style=iso-numeric,sorting=none]{biblatex}
+% ISO 690 with alphanumeric references (abbreviations of authors' names)
+%\usepackage[natbib,style=iso-alphabetic]{biblatex}
+% ISO 690 with references Author (year)
+%\usepackage[natbib,style=iso-authoryear]{biblatex}
+%
+% Some fields of research prefer a simple format with numbered references
+% (sorting=none tells that bibliography should be listed in citation order)
+\usepackage[natbib,style=numeric,sorting=none,urldate=long]{biblatex}
+% Numbered references, but [1,2,3,4,5] is compressed to [1-5]
+%\usepackage[natbib,style=numeric-comp,sorting=none]{biblatex}
+% A simple format with alphanumeric references:
+%\usepackage[natbib,style=alphabetic]{biblatex}
+
+% Load the file with bibliography entries
+\addbibresource{bibliography.bib}
+
 %%% Switches based on thesis type
 
 \def\TypeBc{bc}

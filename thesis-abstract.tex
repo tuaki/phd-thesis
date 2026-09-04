@@ -10,7 +10,7 @@
 \input{tex/xmp}
 
 % Choose one of: simplex, duplex, centered-duplex
-\def\thesislayoutmode{centered-duplex}
+\def\thesislayoutmode{duplex}
 
 \def\thesislayoutsimplex{simplex}
 \def\thesislayoutduplex{duplex}
@@ -105,65 +105,125 @@
     {}{}
 \makeatother
 
-% Remove the padding around the framed image, so that the frame is tight to the image.
+% Remove the padding around framed images, so that the frame is tight to the image.
 \setlength{\fboxsep}{0pt}
 
 \input{tex/macros}
-
-\input{glossary}
 
 % Only page numbers should be used as links in LOF and LOT.
 \hypersetup{linktoc=page}
 
 \begin{document}
 
-\include{title}
+\pagestyle{plain}
+\thispagestyle{empty}
+\pagenumbering{roman}
+\hypersetup{pageanchor=false}
 
-\include{chapters/preface}
+\input{pages/title}
 
-\include{chapters/0-index}
-\include{chapters/1-vision}
-\include{chapters/2-introduction}
-\include{chapters/3-evolution-propagation}
-\include{chapters/4-self-adaptation}
-\include{chapters/5-related-concepts}
+\newpage
 
-\include{papers/vldb_2024/index}
+\openright
 
-\include{papers/cikm_2022/index}
-\include{papers/edbt_2024/index}
-\include{papers/rcis_2025/index}
-\include{papers/vldb_2025-fdephunter/index}
+\todo{a5paper?}
 
-\include{papers/dke_2026/index}
-\include{papers/edbt_2026/index}
+\noindent
+The results of the thesis were achieved in the period of a doctoral study at the Faculty of Mathematics and Physics, Charles University in Prague in years 2022-2026.
 
-\include{papers/enase_2025/index}
-\include{papers/edbt_2025/index}
+\bigskip
 
-\include{papers/vldb_2025-dortdb/index}
+{\centerline{\vbox{\halign{\hbox to 0.2\hsize{\hfil #}&\hskip 1em\parbox[t]{0.75\hsize}{\raggedright #}\cr
+Student:&
+\ThesisAuthor\\
+\Department\\
+\MffAddress
+\cr
+\noalign{\bigskip}
+Supervisor:&
+\Supervisor\\
+\SupervisorsDepartment\\
+\MffAddress
+\cr
+\noalign{\bigskip}
+Advisors:&
+\AdvisorA\\
+\AdvisorADepartment\\
+\MffAddress
+\cr
+\noalign{\bigskip}
+&
+\AdvisorB\\
+\AdvisorBDepartment\\
+\MffAddress
+\cr
+\noalign{\bigskip}
+Opponents:&
+Dr. Eric Pardede\\
+Department of Computer Science and Information Technology\\
+School of Computing, Engineering \& Mathematical Sciences\\
+La Trobe University\\
+Melbourne Victoria 3086, Australia
+\cr
+\noalign{\bigskip}
+&
+prof. RNDr. Tomáš Pitner, Ph.D.\\
+Department of Informatics\\
+Faculty of Business and Economics\\
+Mendel University in Brno\\
+Zemědělská 1665/1, 613 00 Brno, Czech Republic
+\cr
+}}}}
 
-\include{chapters/conclusion}
+\bigskip
+
+\noindent
+The thesis defense will take place on the
+22nd of September 2025 at 16:00
+in front of a committee for thesis defense in the branch P4I2 (Software Systems) at the
+Faculty of Mathematics and Physics, Charles University, Malostranské náměstí 25, 11800 Prague 1, Czechia
+
+\todo{zoom link?
+
+\url{https://cesnet.zoom.us/j/95963533434?pwd=vyBFHoKvKcMj0fHbuGboMpWvA9hwQG.1}
+}
+
+{\centerline{\vbox{\halign{\hbox to 0.2\hsize{\hfil #}&\hskip 1em\parbox[t]{0.75\hsize}{\raggedright #}\cr
+Chairman of Academic Council P4I2:&\cr
+&
+doc. RNDr. Jan Kofroň, Ph.D.\\
+Department of Distributed and Dependable Systems\\
+\MffAddress
+\cr
+}}}}
+
+\bigskip
+
+\noindent
+The thesis can be viewed at the Study Department of Doctoral Studies of the Faculty of Mathematics and Physics, Charles University, Ke Karlovu 3, Prague 2. This abstract was distributed on the \todo{16th} of September 2026.
+
+\newpage
+
+\input{pages/info}
+
+\newpage
+
+\tableofcontents
+
+\newpage
+
+%%% Further pages will be numbered
+\pagestyle{plain}
+\pagenumbering{arabic}
+\setcounter{page}{1}
+
+\include{abstract-content}
 
 \include{bibliography}
 
-%%% Figures used in the thesis (consider if this is needed)
-\listoffigures
-
-%%% Tables used in the thesis (consider if this is needed)
-\listoftables
-
-%%% Abbreviations used in the thesis, if any, including their explanation
-\printnoidxglossary[type=\acronymtype, title=List of Abbreviations, toctitle=List of Abbreviations]
-
-%%% Doctoral theses must contain a list of author's publications
-\ifx\ThesisType\TypePhD
 \chapwithtoc{List of Publications}
-\label{chap:publications}
 
 \input{pages/publications}
-
-\fi
 
 %%% Attachments to the thesis, if any. Each attachment must be referred to
 %%% at least once from the text of the thesis. Attachments are numbered.
