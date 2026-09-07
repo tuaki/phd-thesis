@@ -106,47 +106,20 @@
 }}
 \makeatother
 
-% This macro defines a chapter, which is not numbered, but is included
-% in the table of contents.
-\def\chapwithtoc#1{
+% A chapter, which is not numbered, but is included in the table of contents.
+\def\chapterWithToc#1{
 \chapter*{#1}
 \addcontentsline{toc}{chapter}{#1}
 }
 
+% A section, which is not numbered, but is included in the table of contents.
+\def\sectionWithToc#1{
+\section*{#1}
+\addcontentsline{toc}{section}{#1}
+}
+
 % Draw black "slugs" whenever a line overflows, so that we can spot it easily.
 % \overfullrule=1mm
-
-%%% Macros for definitions, theorems, claims, examples, ... (requires amsthm package)
-
-% \theoremstyle{plain}
-% \newtheorem{thm}{Theorem}
-% \newtheorem{lemma}[thm]{Lemma}
-% \newtheorem{claim}[thm]{Claim}
-% \newtheorem{defn}{Definition}
-
-% \theoremstyle{remark}
-% \newtheorem*{cor}{Corollary}
-% \newtheorem*{rem}{Remark}
-
-\newtheoremstyle{examplestyle}% name
-  {6pt}% Space above
-  {6pt}% Space below
-  {\small}% Body font
-  {}% Indent amount
-  {\bfseries}% Head font
-  {.}% Punctuation after head
-  {.5em}% Space after head
-  {}% Head spec
-
-\theoremstyle{examplestyle}
-\newtheorem{exampleinner}{Example}[chapter]
-
-\newenvironment{example}
-  {\pushQED{\qed}\begin{exampleinner}}
-  {\popQED\end{exampleinner}}
-
-\crefname{exampleinner}{example}{examples}
-\Crefname{exampleinner}{Example}{Examples}
 
 %%% Style of captions of floating objects (figures etc.)
 
@@ -416,6 +389,8 @@
 \newcommand{\publication}[1]{%
 \refstepcounter{publication}%
 \noindent\makebox[2em][l]{\textbf{\arabic{publication}.}}%
+% The paper can be referenced separately from the paper chapter. This is important forr the thesis report, where the paper chapters are not included, but the list of publications is.
+\label{pub:#1}%
 \hangindent=2em\hangafter=1\relax%
 \fullcite{#1}\par
 \vspace{1em}

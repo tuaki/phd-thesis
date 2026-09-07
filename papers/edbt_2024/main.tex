@@ -111,7 +111,7 @@ To cover all the popular models and their combinations, \textit{MM-evoque} is ba
 Unlocking the power of multi-model database management systems (DBMSs)\footnote{\url{https://db-engines.com/en/ranking}} is not just about keeping pace with the present majority; it is a strategic leap into the future of data complexity.
 Regrettably, our extensive survey~\citep{CSUR-Jiaheng} reveals significant variations in multi-model database management systems (DBMSs) even in the core aspects -- the supported models, the way they are combined, as well as the multi-model query languages.
 %This diversity arises from three main factors: (1) these DBMSs are grounded in different core single models, each tailored for specific application domains; (2) the combined models often present conflicting features; and (3) a lack of an acknowledged standard results in varied approaches to supporting model combinations, cross-model querying, or multi-model indices.
-This situation brings many new challenges to multi-model data management. We have already proposed several solutions based on the categorical representation of multi-model data, the so-called \textit{schema category}~\citep{mm_cat_journal}. This abstract graph representation backed by the formalism of category theory enabled us to build a family of tools for modelling and transformations~\citep{mm_cat}, schema inference~\citep{mm_infer}, data migration under evolving schema~\citep{mm_evocat}, or querying using SPARQL-like query language MMQL~\citep{koupil2023universal}. 
+This situation brings many new challenges to multi-model data management. We have already proposed several solutions based on the categorical representation of multi-model data, the so-called \textit{schema category}~\citep{mm_cat_journal}. This abstract graph representation backed by the formalism of category theory enabled us to build a family of tools for modelling and transformations~\citep{mm_cat}, schema inference~\citep{mm_infer}, data migration under evolving schema~\citep{cikm_2022}, or querying using SPARQL-like query language MMQL~\citep{koupil2023universal}. 
 
 
 In this paper, we further extend our toolset with a new complementary member called \textit{MM-evoque}\footnote{\url{https://www.ksi.mff.cuni.cz/~koupil/mm-evoque/} (including a demo video)}. It extends the functionalities we already provide with an important novel feature -- propagation of changes in the multi-model schema to respective queries. The main contributions can be summarised as follows:
@@ -145,7 +145,7 @@ In this paper, we further extend our toolset with a new complementary member cal
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Related Work}
 The evolution management is challenging even for a single model. There exist approaches, e.g., for relational DBMSs~\citep{spivak2015relational}, NoSQL systems~\citep{storl2022darwin}, 
-and first approaches for multi-model DBMSs~\citep{mm_evocat}. But they focus primarily on data adaptation/migration.
+and first approaches for multi-model DBMSs~\citep{cikm_2022}. But they focus primarily on data adaptation/migration.
 
 Considering also queries, we can encounter related approaches with different aims and motivations. \textit{Query rewriting}~\citep{10.1007/s00778-021-00676-3} focuses on transforming a query to a more efficient version.
 \textit{Query adaptation}~\citep{10.5555/1331939.1331940} focuses on adapting query plans to changing environmental conditions at runtime. In contrast, in this paper, we aim at \textit{query synchronisation} reflecting the evolution of the schema, in particular of multi-model data. Several approaches also exist here, though subtly less represented. Most of them focus on a single model (relational or XML)~\citep{10.14778/1921071.1921078}; some consider aggregate-oriented NoSQL models~\citep{DBLP:conf/er/MollerKHS19}, or polystores~\citep{9252014}.
@@ -229,7 +229,7 @@ Figure~\pRef{fig:query:workflow3B} on the right shows two MMQL queries $q_1$: \u
 \end{example}
 
 \paragraph{Multi-Model Schema Evolution Language (MMSEL)}
-The MMSEL~\citep{mm_evocat} consists of 8 basic \textit{schema modification operations} (SMOs) -- see Table~\pRef{tab:basicSMOs} -- that enable the gradual creation (and deletion) of any \textit{consistent} schema category. Hence, each operation is assigned with prerequisites that must be fulfilled. 
+The MMSEL~\citep{cikm_2022} consists of 8 basic \textit{schema modification operations} (SMOs) -- see Table~\pRef{tab:basicSMOs} -- that enable the gradual creation (and deletion) of any \textit{consistent} schema category. Hence, each operation is assigned with prerequisites that must be fulfilled. 
 
 % \BLUE{
 
@@ -300,7 +300,7 @@ In addition, we have operations $\textit{addMapping}()$ and $\textit{deleteMappi
 %addSchemaMapping(LS, S, root)
 %deleteSchemaMapping(m)
 
-Basic SMOs form more user-friendly \textit{composite SMOs}, such as, e.g., (un)group or join/split~\citep{mm_evocat}. \textit{Correct} composition ensures that we only need to define the propagation of basic SMOs.
+Basic SMOs form more user-friendly \textit{composite SMOs}, such as, e.g., (un)group or join/split~\citep{cikm_2022}. \textit{Correct} composition ensures that we only need to define the propagation of basic SMOs.
 
 
 
@@ -366,7 +366,7 @@ Figure~\pRef{fig:query:workflow1} shows a naive relational schema with several r
 
 %Oba pro nás zajímavé dotazy pak vyjadřujeme ve SPARQL-like dotazovacím jazyce MMQL, který je založen na pattern matching a umožňuje vyjádřit model-agnostic výraz (tj. uživatel si nemusí být vědom logické reprezentace dat a dotaz bude podle logické reprezentace dat přeložen do konkrétního DSL).
 
-In Figure~\pRef{fig:query:workflow2}, we decided on the normalisation of the data. We applied the respective SMOs to $\mathbf{S}$ (version 2) and triggered their propagation to data~\citep{mm_evocat}. Their propagation to queries ensured by \textit{MM-evoque} does not change $q_1$. But for $q_2$, it adds the new relationship tables to the selection of MMQL; thus, the SQL translation contains more joins.
+In Figure~\pRef{fig:query:workflow2}, we decided on the normalisation of the data. We applied the respective SMOs to $\mathbf{S}$ (version 2) and triggered their propagation to data~\citep{cikm_2022}. Their propagation to queries ensured by \textit{MM-evoque} does not change $q_1$. But for $q_2$, it adds the new relationship tables to the selection of MMQL; thus, the SQL translation contains more joins.
 
 %Ve druhé verzi jsme se rozhodli pro větší normalizaci dat, a za tímto účelem jsme provedli úpravy schématu pomocí schema modification operations a transformovali data, aby odpovídala nové verzi schématu. 
 

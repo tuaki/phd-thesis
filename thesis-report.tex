@@ -4,7 +4,7 @@
 \input{metadata}
 
 % Generate metadata in XMP format for use by the pdfx package
-\def\TitleXMP{\ThesisTitleXMP}
+\def\TitleXMP{\ThesisTitleXMP\space (report)}
 \def\SubjectXMP{\AbstractXMP}
 \def\KeywordsXMP{\ThesisKeywordsXMP}
 \input{tex/xmp}
@@ -21,7 +21,7 @@
 %% Settings for single-side (simplex) printing
 % Margins: left 40mm, right 25mm, top and bottom 25mm
 % (but beware, LaTeX adds 1in=25.4mm implicitly)
-\documentclass[12pt,a4paper]{report}
+\documentclass[12pt,a4paper]{article}
 \setlength\oddsidemargin{14.6mm}
 \setlength\evensidemargin{14.6mm}
 % \openright makes the following text appear on a right-hand page
@@ -30,7 +30,7 @@
 \else\ifx\thesislayoutmode\thesislayoutduplex
 
 %% Settings for two-sided (duplex) printing
-\documentclass[12pt,a4paper,twoside,openright]{report}
+\documentclass[12pt,a4paper,twoside]{article}
 \setlength\oddsidemargin{14.6mm}
 \setlength\evensidemargin{0mm}
 \let\openright=\cleardoublepage
@@ -39,7 +39,7 @@
 
 %% Settings for centered two-sided layout
 % Same pagination behavior as duplex, but with symmetric margins.
-\documentclass[12pt,a4paper,twoside,openright]{report}
+\documentclass[12pt,a4paper,twoside]{article}
 \setlength\oddsidemargin{7.1mm}
 \setlength\evensidemargin{7.1mm}
 \let\openright=\cleardoublepage
@@ -48,7 +48,7 @@
 \fi
 
 %% If the thesis has no printed version, symmetric margins look better
-% \documentclass[12pt,a4paper]{report}
+% \documentclass[12pt,a4paper]{article}
 % \setlength\oddsidemargin{7.1mm}
 % \setlength\evensidemargin{7.1mm}
 % \let\openright=\clearpage
@@ -92,10 +92,6 @@
 \usepackage{lstautogobble}
 \usepackage{alltt}          % like verbatim but with LaTeX commands for custom formatting
 
-% Prefix figures with the chapter number + reset figure numbering in each chapter.
-\usepackage{chngcntr}
-\counterwithin{figure}{chapter}
-
 % This fixes the inconsistent line spacing in the listings. Basically, "frame = l" would result in dashed line, while frame = single would be fine.
 \usepackage{etoolbox}
 \makeatletter
@@ -109,6 +105,53 @@
 \setlength{\fboxsep}{0pt}
 
 \input{tex/macros}
+
+\edef\ThesisTypeTitleOriginal{\ThesisTypeTitle}
+\def\ThesisTypeTitle{\ThesisTypeTitleOriginal\space (REPORT)}
+
+% Custom macros for the thesis report.
+% The point of these changes is:
+% - The \paperChapter command now doesn't print anything. It just stores the paper number for the given label.
+% - The \paperRef command now points to the paper in the list of publications, instead of the paper chapter in the report.
+
+\makeatletter
+
+\def\includePapers{false}
+
+% Usage: \paperChapter[<TOC title>]{<label>}{<title>}{<authors>}{<publication>}
+% Provide custom TOC title if the title is too long (it can overlap with the chapter number in the TOC).
+\renewcommand*{\paperChapter}[5][]{%
+\refstepcounter{Paper}%
+\edef\thisdisplay{\Roman{Paper}}%
+\protected@write\@auxout{}{%
+  \string\newlabel{#2@display}{{\thisdisplay}{\thepage}}%
+}%
+}
+
+% Prints reference to the given paper(s). Format: "Paper I", "Paper II", "Papers I, II, III". Only the number is hyperlinked.
+\renewcommand{\paperRef}[1]{%
+  \edef\trimmedArguments{\zap@space#1 \@empty}%
+  \paperRefCount=0\relax
+  \@for\paper:=\trimmedArguments\do{\advance\paperRefCount by 1}%
+  \ifnum\paperRefCount=1
+    Paper~%
+  \else
+    Papers~%
+  \fi
+  \paperRefCount=0\relax
+  \@for\paper:=\trimmedArguments\do{%
+    \advance\paperRefCount by 1
+    \ifnum\paperRefCount>1
+      ,\penalty0\ %
+    \fi
+    % The `pub:` allows us to reference the paper in the list of publications, instead of the paper chapter in the report.
+    \hyperref[pub:\paper]{\ref{\paper @display}}%
+  }%
+}
+
+\makeatother
+
+\input{glossary}
 
 % Only page numbers should be used as links in LOF and LOT.
 \hypersetup{linktoc=page}
@@ -125,8 +168,6 @@
 \newpage
 
 \openright
-
-\todo{a5paper?}
 
 \noindent
 The results of the thesis were achieved in the period of a doctoral study at the Faculty of Mathematics and Physics, Charles University in Prague in years 2022-2026.
@@ -183,10 +224,7 @@ The thesis defense will take place on the
 in front of a committee for thesis defense in the branch P4I2 (Software Systems) at the
 Faculty of Mathematics and Physics, Charles University, Malostranské náměstí 25, 11800 Prague 1, Czechia
 
-\todo{zoom link?
-
-\url{https://cesnet.zoom.us/j/95963533434?pwd=vyBFHoKvKcMj0fHbuGboMpWvA9hwQG.1}
-}
+\bigskip
 
 {\centerline{\vbox{\halign{\hbox to 0.2\hsize{\hfil #}&\hskip 1em\parbox[t]{0.75\hsize}{\raggedright #}\cr
 Chairman of Academic Council P4I2:&\cr
@@ -200,13 +238,15 @@ Department of Distributed and Dependable Systems\\
 \bigskip
 
 \noindent
-The thesis can be viewed at the Study Department of Doctoral Studies of the Faculty of Mathematics and Physics, Charles University, Ke Karlovu 3, Prague 2. This abstract was distributed on the \todo{16th} of September 2026.
+The thesis can be viewed at the Study Department of Doctoral Studies of the Faculty of Mathematics and Physics, Charles University, Ke Karlovu 3, Prague 2. This abstract was distributed on the 8th of September 2026.
 
 \newpage
 
 \input{pages/info}
 
 \newpage
+
+\openright
 
 \tableofcontents
 
@@ -217,11 +257,36 @@ The thesis can be viewed at the Study Department of Doctoral Studies of the Facu
 \pagenumbering{arabic}
 \setcounter{page}{1}
 
-\include{abstract-content}
+\include{report-content}
 
-\include{bibliography}
+% All of these have to be `\input` instead of `\include', because the latter is already used in the main thesis.tex. Using it again would cause the aux file being overwritten each time, thus triggering a full recompilation.
 
-\chapwithtoc{List of Publications}
+\input{papers/vldb_2024/index}
+
+\input{papers/cikm_2022/index}
+\input{papers/edbt_2024/index}
+\input{papers/rcis_2025/index}
+\input{papers/vldb_2025-fdephunter/index}
+
+\input{papers/dke_2026/index}
+\input{papers/edbt_2026/index}
+
+\input{papers/enase_2025/index}
+\input{papers/edbt_2025/index}
+
+\input{papers/vldb_2025-dortdb/index}
+
+%%% Abbreviations used in the thesis, if any, including their explanation
+\printnoidxglossary[type=\acronymtype, title=List of Abbreviations, toctitle=List of Abbreviations]
+
+\clearpage
+
+\input{bibliography}
+
+\newpage
+
+%%% Doctoral theses must contain a list of author's publications
+\sectionWithToc{List of Publications}
 
 \input{pages/publications}
 

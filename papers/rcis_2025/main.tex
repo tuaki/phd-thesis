@@ -343,13 +343,13 @@ Subsequently, we applied SMOs \emph{deleteMapping()} and \emph{createMapping()} 
 
 \subsection{Propagation to Data}
 \pLabel{sec:propagation}
-Regarding propagation to data, introduced in~\citep{mm_evocat}, the SMOs can be further divided into heavy and light. A \textit{heavy operation} is an SMO propagated from the conceptual level to the mapping, the logical level, and the data instances. Conversely, a \textit{light operation} only triggers propagation to the mapping. Each SMO can be heavy. Operations that do not consist of \textit{delete(O)} or \textit{delete(m)} can be also light, e.g., SMOs \textit{createProperty()}, \textit{asArray()}, or \textit{asMap()}.
+Regarding propagation to data, introduced in~\citep{cikm_2022}, the SMOs can be further divided into heavy and light. A \textit{heavy operation} is an SMO propagated from the conceptual level to the mapping, the logical level, and the data instances. Conversely, a \textit{light operation} only triggers propagation to the mapping. Each SMO can be heavy. Operations that do not consist of \textit{delete(O)} or \textit{delete(m)} can be also light, e.g., SMOs \textit{createProperty()}, \textit{asArray()}, or \textit{asMap()}.
 
-There are multiple strategies for heavy SMO propagation, namely \textit{eager}, \textit{lazy}, and \textit{hybrid}. In the first case, we update all the data instances at once. In the second case, we update them one by one only when we need them. The last option is a combination of the first two \citep{mm_cat_journal,storl2022darwin}. Our approach~\citep{mm_evocat} is compatible with all of them; however, we focus only on the eager strategy at the moment.
+There are multiple strategies for heavy SMO propagation, namely \textit{eager}, \textit{lazy}, and \textit{hybrid}. In the first case, we update all the data instances at once. In the second case, we update them one by one only when we need them. The last option is a combination of the first two \citep{mm_cat_journal,storl2022darwin}. Our approach~\citep{cikm_2022} is compatible with all of them; however, we focus only on the eager strategy at the moment.
 
 \subsection{Propagation to Queries}
 \pLabel{sec:propagation:queries}
-The propagation of changes to queries depends on how we handle the schema and data changes. The first option involves versioning the schema and the data, allowing the original queries to continue working with the original schema version.  For new queries and applications, we use the most recent schema version. The second option we focus on involves propagating changes to both the data~\citep{mm_evocat} and queries~\citep{mm_evoque} and maintaining only the latest version. Generally, the propagation strategies follow the SMOs and the respective mappings when possible. However, the core problem is resolving cases that cannot be propagated straightforwardly.
+The propagation of changes to queries depends on how we handle the schema and data changes. The first option involves versioning the schema and the data, allowing the original queries to continue working with the original schema version.  For new queries and applications, we use the most recent schema version. The second option we focus on involves propagating changes to both the data~\citep{cikm_2022} and queries~\citep{edbt_2024} and maintaining only the latest version. Generally, the propagation strategies follow the SMOs and the respective mappings when possible. However, the core problem is resolving cases that cannot be propagated straightforwardly.
 
 More formally, let $I$ be a database instance consisting of data $D$ structurally corresponding to categorical schema $\mathbf{S}$
 (represented as a functor $I : D \rightarrow \mathbf{S}$). The impact of SMO  $O: \mathbf{S} \rightarrow \mathbf{S'}$ propagated to instances as $P_O : Inst(S) \rightarrow Inst(S')$ can be characterized using the concept \textit{information capacity}~\citep{DBLP:journals/siamcomp/Hull86,10.1145/2903726}: 
@@ -480,9 +480,9 @@ Around this representation, we have already built the following tools:
 \begin{itemize}
     \item \textit{MM-cat}~\citep{mm_cat} enables multi-model modeling, i.e., the manual creation of a categorical model and its mapping to any combination of the supported logical models. It also supports the respective data transformations between the logical and categorical models.
     \item \textit{MM-infer}~\citep{koupil2022mminfer} enables automatic inference of the categorical schema from sample multi-model instances. In addition, as the data set can be large, the data is processed in parallel.
-    \item \textit{MM-evocat}~\citep{mm_evocat} extends \textit{MM-cat} with the propagation of changes in the categorical schema to the data, i.e., it extends the SMOs with the respective propagation strategies.
+    \item \textit{MM-evocat}~\citep{cikm_2022} extends \textit{MM-cat} with the propagation of changes in the categorical schema to the data, i.e., it extends the SMOs with the respective propagation strategies.
     \item \textit{MM-quecat}~\citep{mm_quecat} adds support for querying over the categorical schema category $\mathbf{S}$ using MMQL. The queries are then decomposed according to the mapping. The subqueries are evaluated in the underlying DBMSs, and the partial results are combined to produce the final result.
-    \item \textit{MM-evoque}~\citep{mm_evoque} extends \textit{MM-quecat} for propagation of changes in the categorical schema to queries in MMQL.
+    \item \textit{MM-evoque}~\citep{edbt_2024} extends \textit{MM-quecat} for propagation of changes in the categorical schema to queries in MMQL.
 \end{itemize}
 
 % We don't have enough space for this ... (and this paper shouldn't be about implementation).
@@ -677,7 +677,7 @@ Only system \textit{Darwin}~\citep{storl2022darwin} allows for other data migrat
     }
 \toprule
     & \textbf{\textit{CGOOD}}\newline \citep{tuijn1996}    & \textbf{Spivak et al.} \citep{spivak2015relational}&  \textbf{\textit{Darwin}}\newline \citep{storl2022darwin}   & \textbf{\emph{MM-evolver}}~\citep{DBLP:journals/dke/HolubovaVS21}   & \textbf{\textit{Orion}%Hernández Chillón et al.
-    }\newline\citep{chillon2022taxonomy}  & \textbf{\emph{MM-evocat}}~\citep{mm_evocat} \\
+    }\newline\citep{chillon2022taxonomy}  & \textbf{\emph{MM-evocat}}~\citep{cikm_2022} \\
 \midrule
 %                               Tuijn       Spivak             Darwin    MM-evolver          Orion           MM-evocat
 \textbf{Schema modification}    & Yes       & Yes                & Yes       & Yes               & Yes           & Yes           \\
@@ -717,7 +717,7 @@ Only system \textit{Darwin}~\citep{storl2022darwin} allows for other data migrat
 %     }
 % \toprule
 %     & \textit{\textbf{CGOOD}}\newline \citep{tuijn1996}    & \textbf{Spivak et al.}~\citep{spivak2015relational}&  \textit{\textbf{Darwin}}\newline \citep{storl2022darwin}   & \textbf{\emph{MM-evolver}}~\citep{DBLP:journals/dke/HolubovaVS21}   & \textbf{\textit{Orion}%Hernández Chillón et al.
-%                             }~\citep{chillon2022taxonomy}  & \textbf{\emph{MM-evocat}}\newline~\citep{mm_evocat}  \\
+%                             }~\citep{chillon2022taxonomy}  & \textbf{\emph{MM-evocat}}\newline~\citep{cikm_2022}  \\
 % \midrule
 % %                               Tuijn       Spivak       Darwin     MM-evolver      Orion       MM-evocat
 % \textbf{Model-level}            & -         & -          & -         & -         & -         
