@@ -110,38 +110,6 @@
 
 \input{tex/macros}
 
-%%% Macros for definitions, theorems, claims, examples, ... (requires amsthm package)
-
-% \theoremstyle{plain}
-% \newtheorem{thm}{Theorem}
-% \newtheorem{lemma}[thm]{Lemma}
-% \newtheorem{claim}[thm]{Claim}
-% \newtheorem{defn}{Definition}
-
-% \theoremstyle{remark}
-% \newtheorem*{cor}{Corollary}
-% \newtheorem*{rem}{Remark}
-
-\newtheoremstyle{examplestyle}% name
-  {6pt}% Space above
-  {6pt}% Space below
-  {\small}% Body font
-  {}% Indent amount
-  {\bfseries}% Head font
-  {.}% Punctuation after head
-  {.5em}% Space after head
-  {}% Head spec
-
-\theoremstyle{examplestyle}
-\newtheorem{exampleinner}{Example}[chapter]
-
-\newenvironment{example}
-  {\pushQED{\qed}\begin{exampleinner}}
-  {\popQED\end{exampleinner}}
-
-\crefname{exampleinner}{example}{examples}
-\Crefname{exampleinner}{Example}{Examples}
-
 \input{glossary}
 
 % Only page numbers should be used as links in LOF and LOT.

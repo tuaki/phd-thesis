@@ -12,7 +12,10 @@
 % We let bibliography items stick out of the right margin a little
 \def\bibfont{\hfuzz=2pt}
 
-\printbibliography[heading=bibintoc]
+% See the comment in \publication.
+\defbibfilter{notpublicationonly}{not category=publication or category=cited}
+
+\printbibliography[heading=bibintoc, filter=notpublicationonly]
 
 %%% In case you prefer to write the bibliography manually (without biblatex),
 %%% you can use the following. Please follow the ISO 690 standard and
