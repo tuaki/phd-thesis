@@ -7,7 +7,12 @@
 \def\KeywordsXMP{}
 \input{tex/xmp}
 
-\documentclass[12pt,a4paper]{article}
+
+%% Settings for centered two-sided layout
+% Same pagination behavior as duplex, but with symmetric margins.
+\documentclass[12pt,a4paper,twoside]{article}
+\setlength\oddsidemargin{7.1mm}
+\setlength\evensidemargin{7.1mm}
 
 \setlength\textwidth{145mm}
 \setlength\textheight{247mm}
@@ -19,13 +24,69 @@
 
 \input{tex/macros}
 
+% Custom macros for the thesis report.
+% The point of these changes is:
+% - The \paperChapter command now doesn't print anything. It just stores the paper number for the given label.
+% - The \paperRef command now points to the paper in the list of publications, instead of the paper chapter in the report.
+
+\makeatletter
+
+\def\includePapers{false}
+
+% Usage: \paperChapter[<TOC title>]{<label>}{<title>}{<authors>}{<publication>}
+% Provide custom TOC title if the title is too long (it can overlap with the chapter number in the TOC).
+\renewcommand*{\paperChapter}[5][]{%
+\refstepcounter{Paper}%
+\edef\thisdisplay{\Roman{Paper}}%
+\protected@write\@auxout{}{%
+  \string\newlabel{#2@display}{{\thisdisplay}{\thepage}}%
+}%
+}
+
+% Prints reference to the given paper(s). Format: "Paper I", "Paper II", "Papers I, II, III". Only the number is hyperlinked.
+\renewcommand{\paperRef}[1]{%
+  \edef\trimmedArguments{\zap@space#1 \@empty}%
+  \paperRefCount=0\relax
+  \@for\paper:=\trimmedArguments\do{\advance\paperRefCount by 1}%
+  \ifnum\paperRefCount=1
+    Paper~%
+  \else
+    Papers~%
+  \fi
+  \paperRefCount=0\relax
+  \@for\paper:=\trimmedArguments\do{%
+    \advance\paperRefCount by 1
+    \ifnum\paperRefCount>1
+      ,\penalty0\ %
+    \fi
+    % The `pub:` allows us to reference the paper in the list of publications, instead of the paper chapter in the report.
+    \hyperref[pub:\paper]{\ref{\paper @display}}%
+  }%
+}
+
+\makeatother
+
 \pagenumbering{gobble}
 
 \begin{document}
 
-\section{List of Publications}
+\input{papers/vldb_2024/index}
+
+\input{papers/cikm_2022/index}
+\input{papers/edbt_2024/index}
+\input{papers/rcis_2025/index}
+\input{papers/vldb_2025-fdephunter/index}
+
+\input{papers/dke_2026/index}
+\input{papers/edbt_2026/index}
+
+\input{papers/enase_2025/index}
+\input{papers/edbt_2025/index}
+
+\input{papers/vldb_2025-dortdb/index}
+
+\sectionWithToc{List of Publications}
 
 \input{pages/publications}
 
 \end{document}
-
